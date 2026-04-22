@@ -111,13 +111,13 @@ const Hero = () => {
             {/* Profile Image */}
             <div className="relative w-full h-full rounded-3xl overflow-hidden border-4 border-dark-card shadow-2xl group">
               <img
-                src="/gallery/Vektor - zaqly v6.jpg"
+                src="/gallery/foto_profil.JPG"
                 alt="Muhammad Zaqly Luluang"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
                 <span className="text-white text-xs font-bold tracking-widest uppercase bg-primary/80 backdrop-blur-md px-3 py-1 rounded-full">
-                  Vector Artist
+                  Muhammad Zaqly
                 </span>
               </div>
             </div>
