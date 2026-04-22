@@ -6,7 +6,7 @@ const Footer = () => {
     { icon: <Github size={20} />, href: 'https://github.com/zaq-ly', label: 'GitHub' },
     { icon: <Linkedin size={20} />, href: 'https://www.linkedin.com/in/muhammad-zaqly-luluang-468a61327/', label: 'LinkedIn' },
     { icon: <Instagram size={20} />, href: 'https://www.instagram.com/zqlyy_/', label: 'Instagram' },
-    { icon: <Gmail size={20} />, href: 'muhammadzaqly01@gmail.com', label: 'Email' },
+    { icon: <Mail size={20} />, href: 'mailto:muhammadzaqly01@gmail.com', label: 'Email' },
   ];
 
   return (

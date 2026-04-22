@@ -81,7 +81,7 @@ const Navbar = () => {
         {/* Mobile Controls */}
         <div className="md:hidden flex items-center space-x-3">
           <button onClick={toggleDarkMode} className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white">
-            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
           </button>
           <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white">
             {isOpen ? <X size={24} /> : <Menu size={24} />}

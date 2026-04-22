@@ -51,11 +51,10 @@ const Gallery = () => {
             <button
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${
-                activeCategory === cat.key
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${activeCategory === cat.key
                   ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105'
                   : 'text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white bg-gray-50 dark:bg-dark-card border-gray-100 dark:border-dark-border'
-              }`}
+                }`}
             >
               {cat.label}
               {activeCategory === cat.key && (
@@ -89,29 +88,12 @@ const Gallery = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-center text-gray-400 dark:text-gray-600 text-sm mt-8"
+          className="text-center text-gray-400 dark:text-gray-600 text-sm mt-12"
         >
-          Menampilkan {filteredProjects.length} dari {projects.length} karya
+          Menampilkan {filteredProjects.length} dari {projects.length} karya profesional
         </motion.p>
 
         {/* View All Link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-16 text-center"
-        >
-          <a
-            href="https://github.com/zaq-ly"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center space-x-2 text-primary font-bold hover:underline group"
-          >
-            <span>Lihat semua proyek</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
-          </a>
-        </motion.div>
       </div>
     </section>
   );
