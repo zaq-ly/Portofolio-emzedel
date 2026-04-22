@@ -141,10 +141,10 @@ export const projects = [
   },
   {
     id: 18,
-    title: "Alines Purple",
+    title: "Aliens Purple",
     category: "illustration",
     description: "Karakter alien dengan palet warna ungu yang hidup dan gaya ilustrasi yang unik.",
-    image: "/gallery/Ilustrasi  - alines purple.jpg",
+    image: "/gallery/Ilustarsi - aliens purple.jpg",
     tags: ["Ilustrasi", "Sci-Fi", "Character"],
   },
   {
