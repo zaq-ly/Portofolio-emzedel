@@ -1,17 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { projects } from '../data/projects';
+import { projects, categories } from '../data/projects';
 import ProjectCard from '../components/ProjectCard';
-
-const categories = [
-  { key: 'all', label: 'All' },
-  { key: 'branding', label: 'Branding' },
-  { key: 'illustration', label: 'Illustration' },
-  { key: 'social-media', label: 'Social Media' },
-  { key: 'print', label: 'Print' },
-  { key: 'ui-ux', label: 'UI/UX' },
-];
 
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -38,7 +29,7 @@ const Gallery = () => {
             Featured Design Works
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-            A curated selection of my design projects. Each piece reflects my commitment to quality, creativity, and visual storytelling.
+            Koleksi karya design grafis — dari ilustrasi digital, vektor, logo branding, hingga graffiti typography.
           </p>
         </motion.div>
 
@@ -54,27 +45,32 @@ const Gallery = () => {
             <button
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 activeCategory === cat.key
-                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                  ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-105'
                   : 'text-gray-400 hover:text-white hover:bg-dark-card border border-dark-border'
               }`}
             >
               {cat.label}
+              {activeCategory === cat.key && (
+                <span className="ml-2 text-xs bg-white/20 px-1.5 py-0.5 rounded-full">
+                  {filteredProjects.length}
+                </span>
+              )}
             </button>
           ))}
         </motion.div>
 
-        {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Project Grid — 4 columns on large screens for 1:1 images */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           <AnimatePresence>
             {filteredProjects.map((project, index) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.5) }}
                 layout
               >
                 <ProjectCard project={project} />
@@ -83,24 +79,15 @@ const Gallery = () => {
           </AnimatePresence>
         </div>
 
-        {/* View All Link */}
-        <motion.div
+        {/* Count info */}
+        <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-16 text-center"
+          className="text-center text-gray-600 text-sm mt-8"
         >
-          <a
-            href="https://github.com/zaq-ly"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center space-x-2 text-primary font-bold hover:underline group"
-          >
-            <span>View all projects</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
-          </a>
-        </motion.div>
+          Menampilkan {filteredProjects.length} dari {projects.length} karya
+        </motion.p>
       </div>
     </section>
   );
