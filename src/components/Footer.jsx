@@ -1,43 +1,44 @@
 import React from 'react';
-import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
+import { Github, Linkedin, Instagram, Mail } from 'lucide-react';
 
 const Footer = () => {
   const socialLinks = [
-    { icon: <Github size={20} />, href: 'https://github.com/zaq-ly' },
-    { icon: <Linkedin size={20} />, href: '#' },
-    { icon: <Twitter size={20} />, href: '#' },
-    { icon: <Mail size={20} />, href: 'mailto:zaqly@example.com' },
+    { icon: <Github size={20} />, href: 'https://github.com/zaq-ly', label: 'GitHub' },
+    { icon: <Linkedin size={20} />, href: '#', label: 'LinkedIn' },
+    { icon: <Instagram size={20} />, href: '#', label: 'Instagram' },
+    { icon: <Mail size={20} />, href: 'mailto:zaqly@example.com', label: 'Email' },
   ];
 
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t dark:border-gray-800 py-12 transition-colors">
-      <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-        <div className="mb-6 md:mb-0">
-          <a href="#home" className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            EMZEDEL
+    <footer className="bg-dark-card border-t border-dark-border py-12 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center">
+        <div className="mb-6 md:mb-0 text-center md:text-left">
+          <a href="#home" className="font-display text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Muhammad Zaqly Luluang
           </a>
-          <p className="text-secondary dark:text-gray-400 mt-2">
-            Building digital experiences that matter.
+          <p className="text-gray-500 mt-2 text-sm">
+            Turning ideas into visual stories.
           </p>
         </div>
 
-        <div className="flex space-x-6">
+        <div className="flex space-x-4">
           {socialLinks.map((link, index) => (
             <a
               key={index}
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label={link.label}
+              className="text-gray-500 hover:text-primary p-2 rounded-full hover:bg-dark transition-all duration-300 hover:scale-110"
             >
               {link.icon}
             </a>
           ))}
         </div>
       </div>
-      
-      <div className="container mx-auto px-6 mt-8 pt-8 border-t dark:border-gray-800 text-center text-sm text-secondary dark:text-gray-500">
-        <p>&copy; {new Date().getFullYear()} EMZEDEL. All rights reserved.</p>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-8 pt-8 border-t border-dark-border text-center text-sm text-gray-600">
+        <p>&copy; {new Date().getFullYear()} Muhammad Zaqly Luluang. All rights reserved.</p>
       </div>
     </footer>
   );
