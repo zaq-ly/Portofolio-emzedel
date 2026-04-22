@@ -16,8 +16,14 @@ const About = () => {
   ];
 
   return (
-    <section id="about" className="py-20 md:py-28 bg-dark-card/50 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section id="about" className="relative py-20 md:py-28 bg-dark-card/50 transition-colors overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute inset-0 z-0 opacity-10">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] [background-size:40px_40px]"></div>
+      </div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] z-0"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-start gap-16">
           {/* Left — Bio */}
           <motion.div

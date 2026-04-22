@@ -4,82 +4,139 @@ import { ArrowRight } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section id="home" className="min-h-screen flex items-center pt-20 pb-20 px-4 sm:px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between">
+    <section id="home" className="relative min-h-screen flex items-center pt-20 pb-20 px-4 sm:px-6 overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute inset-0 z-0 opacity-20">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between relative z-10">
         {/* Left — Text */}
         <div className="md:w-1/2 text-center md:text-left mb-16 md:mb-0">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0 }}
-            className="text-primary font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4"
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Graphic Designer &amp; Visual Artist
-          </motion.h2>
+            <h2 className="text-primary font-bold tracking-[0.3em] uppercase text-xs md:text-sm mb-4 inline-block px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+              Creative Designer &amp; Visual Artist
+            </h2>
+          </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold leading-tight mb-6"
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold leading-[1.1] mb-6"
           >
-            Hi, I'm{' '}
+            Mempersembahkan{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-              Muhammad Zaqly Luluang
-            </span>
+              Seni Visual
+            </span>{' '}
+            Tanpa Batas
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             className="text-lg text-gray-400 mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed"
           >
-            A passionate graphic designer specializing in brand identity, digital illustration, and visual storytelling. I transform ideas into captivating visual experiences.
+            Halo! Saya <span className="text-white font-semibold">Muhammad Zaqly Luluang</span>. Saya membantu brand dan individu menceritakan kisah mereka melalui desain identitas, ilustrasi digital, dan karya seni visual yang ikonik.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45 }}
+            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4"
           >
             <a
               href="#gallery"
-              className="bg-primary hover:bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-primary/30 transition-all duration-300 flex items-center justify-center group hover:scale-105"
+              className="bg-primary hover:bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-primary/30 transition-all duration-300 flex items-center justify-center group relative overflow-hidden"
             >
-              View My Work
-              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" size={20} />
+              <span className="relative z-10 flex items-center">
+                Lihat Galeri Karya
+                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" size={20} />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-accent to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </a>
             <a
               href="#contact"
-              className="border-2 border-dark-border text-white px-8 py-4 rounded-xl font-bold hover:bg-dark-card hover:border-primary/50 transition-all duration-300"
+              className="group border-2 border-dark-border text-white px-8 py-4 rounded-xl font-bold hover:bg-dark-card hover:border-primary/50 transition-all duration-300 flex items-center justify-center"
             >
-              Contact Me
+              Hubungi Saya
             </a>
+          </motion.div>
+
+          {/* Social Proof / Trust Mini Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="mt-12 flex items-center justify-center md:justify-start space-x-6 text-gray-500"
+          >
+            <div className="flex flex-col">
+              <span className="text-white font-bold text-xl leading-none">80+</span>
+              <span className="text-[10px] uppercase tracking-widest mt-1">Artworks</span>
+            </div>
+            <div className="h-8 w-[1px] bg-dark-border"></div>
+            <div className="flex flex-col">
+              <span className="text-white font-bold text-xl leading-none">100%</span>
+              <span className="text-[10px] uppercase tracking-widest mt-1">Creative</span>
+            </div>
           </motion.div>
         </div>
 
         {/* Right — Visual */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="md:w-5/12 relative"
         >
-          <div className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto relative z-10">
+          <motion.div
+            animate={{
+              y: [0, -20, 0],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto relative z-10"
+          >
             {/* Glow Background */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary to-accent rounded-3xl rotate-6 opacity-20 animate-glow"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary to-accent rounded-3xl rotate-6 opacity-30 blur-2xl animate-glow"></div>
             {/* Profile Image */}
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
-              alt="Muhammad Zaqly Luluang"
-              className="w-full h-full object-cover rounded-3xl shadow-2xl relative z-20 border-4 border-dark-card"
-            />
-          </div>
-          {/* Decorative Blurs */}
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl"></div>
+            <div className="relative w-full h-full rounded-3xl overflow-hidden border-4 border-dark-card shadow-2xl group">
+              <img
+                src="/gallery/Vektor - zaqly v6.jpg"
+                alt="Muhammad Zaqly Luluang"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                <span className="text-white text-xs font-bold tracking-widest uppercase bg-primary/80 backdrop-blur-md px-3 py-1 rounded-full">
+                  Vector Artist
+                </span>
+              </div>
+            </div>
+          </motion.div>
+          {/* Decorative Elements */}
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-primary/20 rounded-full blur-[80px] animate-pulse"></div>
+          <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-accent/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+          
+          {/* Floating badge */}
+          <motion.div
+            animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -right-4 top-1/4 z-20 bg-dark-card/80 backdrop-blur-md border border-dark-border p-3 rounded-2xl shadow-xl hidden lg:block"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-[10px] text-white font-bold uppercase tracking-wider">Available for work</span>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

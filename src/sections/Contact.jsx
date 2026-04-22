@@ -4,8 +4,14 @@ import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 const Contact = () => {
   return (
-    <section id="contact" className="py-20 md:py-28 bg-dark-card/50 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section id="contact" className="relative py-20 md:py-28 bg-dark-card/50 transition-colors overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute inset-0 z-0 opacity-10">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] [background-size:40px_40px]"></div>
+      </div>
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] z-0"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
