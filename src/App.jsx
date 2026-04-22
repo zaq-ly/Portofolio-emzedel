@@ -8,7 +8,7 @@ import Contact from './sections/Contact';
 
 function App() {
   return (
-    <div className="min-h-screen bg-dark text-light">
+    <div className="min-h-screen bg-white text-gray-900 dark:bg-dark dark:text-light transition-colors duration-300">
       <Navbar />
       <main>
         <Hero />

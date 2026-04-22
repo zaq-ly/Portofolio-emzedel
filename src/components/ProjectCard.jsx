@@ -3,7 +3,7 @@ import { ExternalLink } from 'lucide-react';
 
 const ProjectCard = ({ project }) => {
   return (
-    <div className="group bg-dark-card rounded-2xl overflow-hidden border border-dark-border hover:border-primary/30 transition-all duration-500 flex flex-col h-full hover:shadow-lg hover:shadow-primary/5">
+    <div className="group bg-gray-50 dark:bg-dark-card rounded-2xl overflow-hidden border border-gray-100 dark:border-dark-border hover:border-primary/30 transition-all duration-500 flex flex-col h-full hover:shadow-lg hover:shadow-primary/5">
       {/* Image — 1:1 aspect ratio */}
       <div className="relative overflow-hidden aspect-square">
         <img
@@ -29,13 +29,13 @@ const ProjectCard = ({ project }) => {
           {project.tags.map((tag, tIndex) => (
             <span
               key={tIndex}
-              className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 bg-dark rounded-lg text-gray-500"
+              className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 bg-white dark:bg-dark rounded-lg text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-dark-border"
             >
               {tag}
             </span>
           ))}
         </div>
-        <h4 className="text-sm font-bold text-white group-hover:text-primary transition-colors duration-300">
+        <h4 className="text-sm font-bold text-dark dark:text-white group-hover:text-primary transition-colors duration-300">
           {project.title}
         </h4>
       </div>

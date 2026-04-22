@@ -9,7 +9,7 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-dark text-light font-sans antialiased;
+    @apply bg-white text-gray-900 dark:bg-dark dark:text-light font-sans antialiased transition-colors duration-300;
   }
   ::selection {
     @apply bg-primary/30 text-white;

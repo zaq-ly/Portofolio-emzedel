@@ -21,17 +21,17 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Gallery', href: '#gallery' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Beranda', href: '#home' },
+    { name: 'Tentang', href: '#about' },
+    { name: 'Galeri', href: '#gallery' },
+    { name: 'Kontak', href: '#contact' },
   ];
 
   return (
     <nav
       className={`fixed w-full z-50 transition-all duration-500 ${
         isScrolled
-          ? 'py-3 bg-dark/80 backdrop-blur-xl shadow-lg shadow-dark/50 border-b border-dark-border'
+          ? 'py-3 bg-white/80 dark:bg-dark/80 backdrop-blur-xl shadow-lg dark:shadow-dark/50 border-b border-gray-100 dark:border-dark-border'
           : 'py-5 bg-transparent'
       }`}
     >
@@ -47,14 +47,14 @@ const Navbar = () => {
             <a
               key={link.name}
               href={link.href}
-              className="text-gray-400 hover:text-white font-medium transition-colors duration-300 text-sm tracking-wide"
+              className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white font-medium transition-colors duration-300 text-sm tracking-wide"
             >
               {link.name}
             </a>
           ))}
           <button
             onClick={toggleDarkMode}
-            className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-dark-card transition-all duration-300"
+            className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-card transition-all duration-300"
           >
             <motion.div
               animate={{ rotate: isDarkMode ? 0 : 180 }}
@@ -67,10 +67,10 @@ const Navbar = () => {
 
         {/* Mobile Controls */}
         <div className="md:hidden flex items-center space-x-3">
-          <button onClick={toggleDarkMode} className="p-2 text-gray-400 hover:text-white">
+          <button onClick={toggleDarkMode} className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white">
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-gray-400 hover:text-white">
+          <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -84,7 +84,7 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden absolute top-full left-0 w-full bg-dark/95 backdrop-blur-xl border-t border-dark-border shadow-xl"
+            className="md:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-dark/95 backdrop-blur-xl border-t border-gray-100 dark:border-dark-border shadow-xl"
           >
             <div className="py-6 px-6 flex flex-col space-y-4">
               {navLinks.map((link) => (
@@ -92,7 +92,7 @@ const Navbar = () => {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-lg text-gray-400 hover:text-white font-medium transition-colors"
+                  className="text-lg text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white font-medium transition-colors"
                 >
                   {link.name}
                 </a>
