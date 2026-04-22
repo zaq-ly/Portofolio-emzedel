@@ -3,16 +3,16 @@ import { motion } from 'framer-motion';
 
 const About = () => {
   const skills = [
-    'Adobe Photoshop', 'Adobe Illustrator', 'Figma', 'Canva',
-    'Brand Identity', 'Typography', 'Digital Illustration', 'Layout Design',
-    'Color Theory', 'UI/UX Design', 'Photo Editing', 'Social Media Design',
+    'Adobe Illustrator', 'Figma', 'Affinity', 'Inkscape',
+    'Brand Identity', 'Digital Illustration', 'Layout Design',
+    'UI/UX Design', 'Photo Editing',
   ];
 
   const stats = [
-    { value: '50+', label: 'Projects Completed' },
-    { value: '3+', label: 'Years Experience' },
-    { value: '20+', label: 'Happy Clients' },
-    { value: '100+', label: 'Designs Created' },
+    { value: '50+', label: 'Proyek Selesai' },
+    { value: '3+', label: 'Tahun Pengalaman' },
+    { value: '20+', label: 'Klien Puas' },
+    { value: '100+', label: 'Desain Dibuat' },
   ];
 
   return (
@@ -34,16 +34,13 @@ const About = () => {
             className="lg:w-1/2"
           >
             <h3 className="text-primary font-bold uppercase tracking-[0.2em] text-sm mb-4">
-              About Me
+              Tentang Saya
             </h3>
             <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-6">
-              Creative Designer Based in Indonesia
+              Desainer Kreatif Berbasis di Indonesia
             </h2>
-            <p className="text-gray-400 text-lg mb-6 leading-relaxed">
-              With a deep passion for visual arts and graphic design, I specialize in creating compelling brand identities, eye-catching digital illustrations, and impactful social media visuals. Every project is an opportunity to tell a unique visual story.
-            </p>
             <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-              I believe design is more than aesthetics — it's about communication, emotion, and purpose. My approach combines creativity with strategic thinking to deliver designs that not only look beautiful but also achieve meaningful results.
+              Saya adalah seorang desainer grafis yang berfokus pada menciptakan identitas visual yang kuat dan ilustrasi digital yang bermakna. Dengan pendekatan yang minimalis namun elegan, saya membantu mewujudkan ide-ide kreatif menjadi kenyataan yang visual.
             </p>
 
             {/* Stats */}
@@ -72,7 +69,7 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:w-1/2"
           >
-            <h3 className="text-white font-bold text-xl mb-6">My Design Skills</h3>
+            <h3 className="text-white font-bold text-xl mb-6">Keahlian Desain Saya</h3>
             <div className="flex flex-wrap gap-3">
               {skills.map((skill, index) => (
                 <motion.span
@@ -97,7 +94,7 @@ const About = () => {
               className="mt-12 p-8 bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl border border-primary/10"
             >
               <h4 className="text-white font-bold mb-4 italic text-lg">
-                "Design is not just what it looks like and feels like. Design is how it works."
+                "Desain bukan hanya apa yang terlihat dan terasa. Desain adalah bagaimana ia bekerja."
               </h4>
               <p className="text-gray-500 text-sm">— Steve Jobs</p>
             </motion.div>

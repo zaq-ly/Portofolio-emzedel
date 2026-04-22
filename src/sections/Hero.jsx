@@ -117,7 +117,7 @@ const Hero = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
                 <span className="text-white text-xs font-bold tracking-widest uppercase bg-primary/80 backdrop-blur-md px-3 py-1 rounded-full">
-                  Muhammad Zaqly
+                  Muhammad Zaqly Luluang
                 </span>
               </div>
             </div>
@@ -125,7 +125,7 @@ const Hero = () => {
           {/* Decorative Elements */}
           <div className="absolute -top-10 -right-10 w-48 h-48 bg-primary/20 rounded-full blur-[80px] animate-pulse"></div>
           <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-accent/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
-          
+
           {/* Floating badge */}
           <motion.div
             animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
