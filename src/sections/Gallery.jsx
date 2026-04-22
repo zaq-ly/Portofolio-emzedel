@@ -77,7 +77,6 @@ const Gallery = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.5) }}
-                layout
               >
                 <ProjectCard project={project} />
               </motion.div>
