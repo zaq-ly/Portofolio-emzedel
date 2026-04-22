@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,6 +9,9 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-light text-dark dark:bg-dark dark:text-light transition-colors duration-300;
+    @apply bg-white text-gray-900 dark:bg-dark dark:text-light font-sans antialiased transition-colors duration-300;
+  }
+  ::selection {
+    @apply bg-primary/30 text-white;
   }
 }
