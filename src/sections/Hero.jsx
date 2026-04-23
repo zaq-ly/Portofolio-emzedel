@@ -52,7 +52,7 @@ const Hero = () => {
             className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4"
           >
             <a
-              href="#gallery"
+              href="#/#gallery"
               className="bg-primary hover:bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-primary/30 transition-all duration-300 flex items-center justify-center group relative overflow-hidden"
             >
               <span className="relative z-10 flex items-center">
@@ -62,11 +62,12 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-accent to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </a>
             <a
-              href="#contact"
+              href="#/#contact"
               className="group border-2 border-gray-200 dark:border-dark-border text-dark dark:text-white px-8 py-4 rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-dark-card hover:border-primary/50 transition-all duration-300 flex items-center justify-center"
             >
               Hubungi Saya
             </a>
+
           </motion.div>
 
           {/* Social Proof / Trust Mini Section */}

@@ -1,11 +1,33 @@
 import React, { useState } from 'react';
-import { ExternalLink } from 'lucide-react';
+import { Download } from 'lucide-react';
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, onClick }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const handleDownload = async (e) => {
+    e.stopPropagation(); // Mencegah modal terbuka
+    try {
+      const response = await fetch(project.image);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${project.title || 'karya'}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+      window.open(project.image, '_blank');
+    }
+  };
+
   return (
-    <div className="group bg-gray-50 dark:bg-dark-card rounded-2xl overflow-hidden border border-gray-100 dark:border-dark-border hover:border-primary/30 transition-all duration-500 flex flex-col h-full hover:shadow-lg hover:shadow-primary/5">
+    <div 
+      onClick={onClick}
+      className="group bg-gray-50 dark:bg-dark-card rounded-2xl overflow-hidden border border-gray-100 dark:border-dark-border hover:border-primary/30 transition-all duration-500 flex flex-col h-full hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
+    >
       {/* Image — 1:1 aspect ratio */}
       <div className="relative overflow-hidden aspect-square bg-gray-200 dark:bg-dark-border">
         {/* Skeleton/Shimmer Effect */}
@@ -30,8 +52,12 @@ const ProjectCard = ({ project }) => {
           <p className="text-white text-xs leading-relaxed line-clamp-2">
             {project.description}
           </p>
-          <button className="mt-3 self-start bg-white/20 backdrop-blur-sm border border-white/30 p-2 rounded-full text-white hover:bg-primary transition-colors duration-300">
-            <ExternalLink size={16} />
+          <button 
+            onClick={handleDownload}
+            className="mt-3 self-start bg-white/20 backdrop-blur-sm border border-white/30 p-2 rounded-full text-white hover:bg-primary transition-colors duration-300"
+            title="Unduh Karya"
+          >
+            <Download size={16} />
           </button>
         </div>
       </div>
