@@ -1,11 +1,66 @@
 import React from 'react';
+import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
+
 
 const Contact = () => {
+  const [formData, setFormData] = React.useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [loading, setLoading] = React.useState(false);
+  const [status, setStatus] = React.useState({ type: '', message: '' });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    // ... (submission logic)
+    e.preventDefault();
+    setLoading(true);
+    setStatus({ type: '', message: '' });
+
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert([
+          { 
+            full_name: formData.name, 
+            email: formData.email, 
+            subject: formData.subject, 
+            message: formData.message 
+          }
+        ]);
+
+      if (error) throw error;
+
+      setStatus({ type: 'success', message: 'Pesan Anda berhasil dikirim! Saya akan segera menghubungi Anda.' });
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setStatus({ type: 'error', message: 'Gagal mengirim pesan. Silakan coba lagi nanti.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Auto-dismiss alert setelah 5 detik
+  React.useEffect(() => {
+    if (status.message) {
+      const timer = setTimeout(() => {
+        setStatus({ type: '', message: '' });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [status.message]);
+
   return (
     <section id="contact" className="relative py-20 md:py-28 bg-white dark:bg-dark-card/50 transition-colors overflow-hidden">
-      {/* Background Decor */}
+      {/* ... (background decor) ... */}
       <div className="absolute inset-0 z-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] dark:bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] [background-size:40px_40px]"></div>
       </div>
@@ -89,12 +144,23 @@ const Contact = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="lg:w-2/3 bg-gray-50 dark:bg-dark-card p-8 md:p-12 rounded-3xl border border-gray-200 dark:border-dark-border"
           >
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            {status.message && (
+              <div className={`mb-6 p-4 rounded-xl text-sm font-medium ${
+                status.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+              }`}>
+                {status.message}
+              </div>
+            )}
+
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-600 dark:text-gray-300">Nama Anda</label>
                   <input
                     type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     className="w-full px-6 py-4 bg-white dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl transition-all duration-300 text-dark dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     placeholder="Nama Lengkap"
                     required
@@ -104,6 +170,9 @@ const Contact = () => {
                   <label className="text-sm font-bold text-gray-600 dark:text-gray-300">Email Anda</label>
                   <input
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full px-6 py-4 bg-white dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl transition-all duration-300 text-dark dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     placeholder="email@contoh.com"
                     required
@@ -114,6 +183,9 @@ const Contact = () => {
                 <label className="text-sm font-bold text-gray-600 dark:text-gray-300">Subjek</label>
                 <input
                   type="text"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
                   className="w-full px-6 py-4 bg-white dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl transition-all duration-300 text-dark dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                   placeholder="Apa yang bisa saya bantu?"
                   required
@@ -122,6 +194,9 @@ const Contact = () => {
               <div className="space-y-2">
                 <label className="text-sm font-bold text-gray-600 dark:text-gray-300">Pesan</label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   className="w-full px-6 py-4 bg-white dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl transition-all duration-300 text-dark dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 h-40 resize-none"
                   placeholder="Tulis pesan Anda di sini..."
                   required
@@ -129,13 +204,24 @@ const Contact = () => {
               </div>
               <button
                 type="submit"
-                className="w-full md:w-auto bg-primary hover:bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-primary/30 transition-all duration-300 flex items-center justify-center space-x-2 hover:scale-105 hover:shadow-xl"
+                disabled={loading}
+                className="w-full md:w-auto bg-primary hover:bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg shadow-primary/30 transition-all duration-300 flex items-center justify-center space-x-2 hover:scale-105 hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <span>Kirim Pesan</span>
-                <Send size={20} />
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    <span>Mengirim...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Kirim Pesan</span>
+                    <Send size={20} />
+                  </>
+                )}
               </button>
             </form>
           </motion.div>
+
         </div>
       </div>
     </section>

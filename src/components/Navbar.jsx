@@ -34,11 +34,13 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: 'Beranda', href: '#home' },
-    { name: 'Tentang', href: '#about' },
-    { name: 'Galeri', href: '#gallery' },
-    { name: 'Kontak', href: '#contact' },
+    { name: 'Beranda', href: '#/' },
+    { name: 'Tentang', href: '#/#about' },
+    { name: 'Galeri', href: '#/#gallery' },
+    { name: 'Kontak', href: '#/#contact' },
   ];
+
+
 
   return (
     <nav
@@ -50,9 +52,10 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
         {/* Logo */}
-        <a href="#home" className="font-display text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+        <a href="#/" className="font-display text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent hover:opacity-80 transition-opacity">
           MZL
         </a>
+
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-8">

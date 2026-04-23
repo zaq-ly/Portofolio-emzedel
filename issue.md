@@ -510,3 +510,30 @@ export default App;
 - Semua konten dummy bisa diganti nanti — fokus dulu ke implementasi UI yang sempurna
 - Gambar karya **wajib** diambil dari Google Drive "My art" folder. Jika tidak bisa diakses, gunakan placeholder dan beri komentar TODO
 - Pastikan `node_modules/` dan file build tidak masuk ke git (cek `.gitignore`)
+
+---
+
+### 11. Admin Dashboard & Dynamic Upload
+
+**Tujuan:** Membangun sistem admin yang aman untuk mengupload karya terbaru secara dinamis menggunakan Supabase.
+
+#### 11.1 Persiapan Backend (Supabase)
+- **Database:** Buat tabel `projects` (id, title, category, description, image_url, tags).
+- **Storage:** Buat public bucket `portfolio-images`.
+- **Security:** Aktifkan Row Level Security (RLS). Izin Insert/Update/Delete hanya untuk `authenticated` users.
+- **Auth:** Daftarkan 1 akun admin di dashboard Supabase dan matikan fitur Sign Up publik.
+
+#### 11.2 Implementasi Frontend
+- **Setup Client:** Buat `src/lib/supabaseClient.js` menggunakan URL dan Anon Key.
+- **Halaman Login (`/admin`):** Form login menggunakan `supabase.auth.signInWithPassword()`.
+- **Dashboard Admin:**
+  - Protected Route: Pastikan hanya admin yang bisa mengakses.
+  - Form Upload: Input file gambar, judul, kategori, deskripsi, dan tags.
+  - Alur: Upload gambar ke Storage → Ambil URL → Simpan metadata ke Database.
+
+#### 11.3 Integrasi Galeri
+- Refactor `Gallery.jsx` untuk mengambil data dari tabel `projects` Supabase menggunakan `useEffect`.
+- Tambahkan loading skeleton saat data sedang di-fetch.
+
+---
+

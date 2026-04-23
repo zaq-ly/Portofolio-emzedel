@@ -1,15 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { projects, categories } from '../data/projects';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { projects as staticProjects, categories } from '../data/projects';
 import ProjectCard from '../components/ProjectCard';
+import ImageModal from '../components/ImageModal';
+import { supabase } from '../lib/supabaseClient';
 
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dbProjects, setDbProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (data && data.length > 0) {
+        // Transform DB data to match ProjectCard expectations
+        const transformedData = data.map(p => ({
+          ...p,
+          image: p.image_url,
+          tags: Array.isArray(p.tags) ? p.tags : []
+        }));
+        setDbProjects(transformedData);
+      }
+    } catch (err) {
+      console.error("Error fetching projects:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Gabungkan data statis dan data DB (DB diutamakan/paling atas)
+  const allProjects = [...dbProjects, ...staticProjects];
+
+
 
   const filteredProjects = activeCategory === 'all'
-    ? projects
-    : projects.filter((p) => p.category === activeCategory);
+    ? allProjects
+    : allProjects.filter((p) => p.category === activeCategory);
+
+  const handleOpenModal = (project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
 
   return (
     <section id="gallery" className="relative py-20 md:py-28 px-4 sm:px-6 overflow-hidden bg-white dark:bg-dark transition-colors duration-300">
@@ -67,25 +111,35 @@ const Gallery = () => {
         </motion.div>
 
         {/* Project Grid — 4 columns on large screens for 1:1 images */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ 
-                  duration: 0.4,
-                  layout: { duration: 0.3 }
-                }}
-              >
-                <ProjectCard project={project} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 min-h-[400px]">
+          {loading && dbProjects.length === 0 ? (
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
+              <Loader2 className="animate-spin text-primary mb-4" size={40} />
+              <p>Memuat karya terbaru...</p>
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {filteredProjects.map((project, index) => (
+                <motion.div
+                  key={project.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ 
+                    duration: 0.4,
+                    layout: { duration: 0.3 }
+                  }}
+                >
+                  <ProjectCard 
+                    project={project} 
+                    onClick={() => handleOpenModal(project)}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
         </div>
 
         {/* Count info */}
@@ -95,11 +149,16 @@ const Gallery = () => {
           viewport={{ once: true }}
           className="text-center text-gray-400 dark:text-gray-600 text-sm mt-12"
         >
-          Menampilkan {filteredProjects.length} dari {projects.length} karya profesional
+          Menampilkan {filteredProjects.length} karya profesional
         </motion.p>
-
-        {/* View All Link */}
       </div>
+
+      {/* Lightbox Modal */}
+      <ImageModal 
+        isOpen={isModalOpen}
+        project={selectedProject}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 };
