@@ -118,7 +118,7 @@ const Hero = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
                 <span className="text-white text-xs font-bold tracking-widest uppercase bg-primary/80 backdrop-blur-md px-3 py-1 rounded-full">
-                  Muhammad Zaqly
+                  Muhammad Zaqly Luluang
                 </span>
               </div>
             </div>
@@ -135,7 +135,7 @@ const Hero = () => {
           >
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-[10px] text-dark dark:text-white font-bold uppercase tracking-wider">Tersedia untuk bekerja</span>
+              <span className="text-[10px] text-dark dark:text-white font-bold uppercase tracking-wider">Bersedia untuk bekerja.</span>
             </div>
           </motion.div>
         </motion.div>
