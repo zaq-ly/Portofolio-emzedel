@@ -1,19 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 
 const ProjectCard = ({ project }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   return (
     <div className="group bg-gray-50 dark:bg-dark-card rounded-2xl overflow-hidden border border-gray-100 dark:border-dark-border hover:border-primary/30 transition-all duration-500 flex flex-col h-full hover:shadow-lg hover:shadow-primary/5">
       {/* Image — 1:1 aspect ratio */}
-      <div className="relative overflow-hidden aspect-square">
+      <div className="relative overflow-hidden aspect-square bg-gray-200 dark:bg-dark-border">
+        {/* Skeleton/Shimmer Effect */}
+        {!isLoaded && (
+          <div className="absolute inset-0 z-10">
+            <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skeleton-shimmer animate-pulse"></div>
+          </div>
+        )}
+        
         <img
           src={project.image}
           alt={project.title}
           loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          onLoad={() => setIsLoaded(true)}
+          className={`w-full h-full object-cover group-hover:scale-110 transition-all duration-700 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         />
+        
         {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-4 z-20">
           <p className="text-white text-xs leading-relaxed line-clamp-2">
             {project.description}
           </p>

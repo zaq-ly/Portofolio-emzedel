@@ -68,14 +68,19 @@ const Gallery = () => {
 
         {/* Project Grid — 4 columns on large screens for 1:1 images */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          <AnimatePresence>
+          <AnimatePresence mode="popLayout">
             {filteredProjects.map((project, index) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.5) }}
+                transition={{ 
+                  duration: 0.4,
+                  layout: { duration: 0.3 }
+                }}
               >
                 <ProjectCard project={project} />
               </motion.div>
