@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Linkedin, Instagram } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Contact = () => {
@@ -21,13 +21,13 @@ const Contact = () => {
           className="mb-16"
         >
           <h3 className="text-primary font-bold uppercase tracking-[0.2em] text-sm mb-4">
-            Hubungi Saya
+            KONTAK
           </h3>
           <h2 className="text-3xl md:text-5xl font-display font-bold text-dark dark:text-white mb-6">
-            Mari Berkolaborasi
+            Ayo Ngobrol!
           </h2>
           <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-            Punya proyek menarik atau sekadar ingin menyapa? Saya selalu terbuka untuk peluang baru dan kolaborasi kreatif.
+            Pintu selalu terbuka buat siapa saja yang mau diskusi soal proses kreatif, sharing karya, atau sekadar nambah teman baru.
           </p>
         </motion.div>
 
@@ -35,8 +35,8 @@ const Contact = () => {
         <div className="flex flex-col md:flex-row justify-center items-stretch gap-8 max-w-5xl mx-auto">
           {[
             { icon: <Mail size={32} />, title: 'Email', detail: 'muhammadzaqly01@gmail.com', link: 'mailto:muhammadzaqly01@gmail.com' },
-            { icon: <Phone size={32} />, title: 'Telepon', detail: '081342445280', link: 'tel:+6281342445280' },
-            { icon: <MapPin size={32} />, title: 'Lokasi', detail: 'Makassar, Sulawesi Selatan', link: null },
+            { icon: <Linkedin size={32} />, title: 'LinkedIn', detail: 'Muhammad Zaqly Luluang', link: 'https://www.linkedin.com/in/muhammad-zaqly-luluang-468a61327/' },
+            { icon: <Instagram size={32} />, title: 'Instagram', detail: '@zqlyy_', link: 'https://www.instagram.com/zqlyy_/' },
           ].map((item, index) => (
             <motion.div
               key={index}
@@ -51,7 +51,7 @@ const Contact = () => {
               </div>
               <h4 className="text-xl font-bold text-dark dark:text-white mb-3">{item.title}</h4>
               {item.link ? (
-                <a href={item.link} className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors font-medium">
+                <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors font-medium">
                   {item.detail}
                 </a>
               ) : (

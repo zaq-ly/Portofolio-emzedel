@@ -19,7 +19,7 @@ const Hero = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <h2 className="text-primary font-bold tracking-[0.3em] uppercase text-xs md:text-sm mb-4 inline-block px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
-              Desainer Grafis &amp; Seniman Visual
+              Design Lover &amp; Visual Explorer
             </h2>
           </motion.div>
 
@@ -30,7 +30,7 @@ const Hero = () => {
             className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold leading-[1.1] mb-6 text-dark dark:text-white flex flex-col"
           >
             <span className="text-2xl md:text-3xl font-medium text-gray-600 dark:text-gray-300 mb-2 block">
-              Halo!, Saya
+              Hai, Saya
             </span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent relative inline-block mt-1 pb-2 font-black tracking-tight drop-shadow-sm">
               Muhammad Zaqly Luluang
@@ -43,7 +43,7 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             className="text-lg text-gray-500 dark:text-gray-400 mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed"
           >
-            Saya membantu brand dan individu menceritakan kisah mereka melalui desain identitas, ilustrasi digital, dan karya seni visual yang ikonik.
+            Kumpulan hasil corat-coret, eksperimen visual, dan eksplorasi desain dari seseorang yang menjadikan proses kreatif sebagai hobi utama. Masih terus belajar, masih terus mencoba hal baru, dan selalu menikmati setiap prosesnya.
           </motion.p>
 
           <motion.div
@@ -127,18 +127,9 @@ const Hero = () => {
           {/* Decorative Elements */}
           <div className="absolute -top-10 -right-10 w-48 h-48 bg-primary/10 dark:bg-primary/20 rounded-full blur-[80px] animate-pulse"></div>
           <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-accent/10 dark:bg-accent/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
-          
+
           {/* Floating badge */}
-          <motion.div
-            animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -right-4 top-1/4 z-20 bg-white/80 dark:bg-dark-card/80 backdrop-blur-md border border-gray-100 dark:border-dark-border p-3 rounded-2xl shadow-xl hidden lg:block"
-          >
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-[10px] text-dark dark:text-white font-bold uppercase tracking-wider">Bersedia untuk bekerja.</span>
-            </div>
-          </motion.div>
+          {/*  */}
         </motion.div>
       </div>
     </section>

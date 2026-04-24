@@ -285,11 +285,10 @@ const AdminDashboard = () => {
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm appearance-none text-gray-900 dark:text-white"
                 >
                   <option value="illustration">Illustration</option>
-                  <option value="branding">Branding</option>
+                  <option value="logo">Logo</option>
                   <option value="vector">Vector</option>
                   <option value="poster">Poster</option>
                   <option value="banner">Banner</option>
-                  <option value="graffiti">Graffiti</option>
                 </select>
               </div>
 
@@ -354,7 +353,7 @@ const AdminDashboard = () => {
                   {paginated.map((project) => (
                     <div key={project.id} className="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border p-4 rounded-2xl flex gap-4 group shadow-sm dark:shadow-none hover:border-primary/30 transition-all">
                       <div className="w-20 h-20 bg-gray-100 dark:bg-dark rounded-xl overflow-hidden flex-shrink-0">
-                        <img src={getOptimizedImageUrl(project.image_url, 200, 70)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                        <img src={getOptimizedImageUrl(project.image_url, 200, 70, 200, 'cover')} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-grow flex flex-col justify-between min-w-0">
                         <div>
@@ -399,11 +398,11 @@ const AdminDashboard = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={handleCancelEdit}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
           <div
-            className="relative bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row"
+            className="relative bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Image Preview (Left side) */}
-            <div className="w-full md:w-1/2 h-64 md:h-auto bg-gray-100 dark:bg-dark flex items-center justify-center p-4">
+            <div className="hidden md:flex w-full md:w-1/2 bg-gray-100 dark:bg-dark items-center justify-center p-4">
               <img
                 src={getOptimizedImageUrl(editingProject?.image_url, 800, 80)}
                 alt={editingProject?.title}
@@ -412,7 +411,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Form Edit (Right side) */}
-            <div className="w-full md:w-1/2 flex flex-col max-h-[90vh]">
+            <div className="w-full md:w-1/2 flex flex-col max-h-[90vh] min-h-0">
               <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-dark-border">
                 <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
                   <Edit size={20} className="text-primary" />
@@ -439,11 +438,10 @@ const AdminDashboard = () => {
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Kategori</label>
                     <select value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })} className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm appearance-none text-gray-900 dark:text-white">
                       <option value="illustration">Illustration</option>
-                      <option value="branding">Branding</option>
+                      <option value="logo">Logo</option>
                       <option value="vector">Vector</option>
                       <option value="poster">Poster</option>
                       <option value="banner">Banner</option>
-                      <option value="graffiti">Graffiti</option>
                     </select>
                   </div>
                   <div>
