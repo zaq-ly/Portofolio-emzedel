@@ -34,19 +34,19 @@ const Gallery = () => {
         .from('projects')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (data && data.length > 0) {
         const transformedData = data.map(p => ({
           ...p,
           image: p.image_url,
           tags: Array.isArray(p.tags)
             ? p.tags.map(t => {
-                const lowerT = t.toLowerCase();
-                if (lowerT === 'print' || lowerT === 'poster & banner') {
-                  return p.category === 'banner' ? 'Banner' : 'Poster';
-                }
-                return t;
-              })
+              const lowerT = t.toLowerCase();
+              if (lowerT === 'print' || lowerT === 'poster & banner') {
+                return p.category === 'banner' ? 'Banner' : 'Poster';
+              }
+              return t;
+            })
             : [],
           category: p.category === 'print' ? 'poster' : p.category
         }));
@@ -94,7 +94,7 @@ const Gallery = () => {
             Karya Desain Pilihan
           </h2>
           <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-            Koleksi karya desain grafis — dari ilustrasi digital, vektor, logo branding, hingga graffiti typography.
+            Koleksi karya desain grafis saya — dari ilustrasi digital, logo branding hingga Vector & etc.
           </p>
         </motion.div>
 
@@ -111,8 +111,8 @@ const Gallery = () => {
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${activeCategory === cat.key
-                  ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white bg-gray-50 dark:bg-dark-card border-gray-100 dark:border-dark-border'
+                ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105'
+                : 'text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white bg-gray-50 dark:bg-dark-card border-gray-100 dark:border-dark-border'
                 }`}
             >
               {cat.label}
@@ -142,13 +142,13 @@ const Gallery = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ 
+                  transition={{
                     duration: 0.4,
                     layout: { duration: 0.3 }
                   }}
                 >
-                  <ProjectCard 
-                    project={project} 
+                  <ProjectCard
+                    project={project}
                     onClick={() => handleOpenModal(project)}
                   />
                 </motion.div>
@@ -164,12 +164,12 @@ const Gallery = () => {
           viewport={{ once: true }}
           className="text-center text-gray-400 dark:text-gray-600 text-sm mt-12"
         >
-          Menampilkan {filteredProjects.length} karya profesional
+          Menampilkan {filteredProjects.length} karya
         </motion.p>
       </div>
 
       {/* Lightbox Modal */}
-      <ImageModal 
+      <ImageModal
         isOpen={isModalOpen}
         project={selectedProject}
         onClose={() => setIsModalOpen(false)}

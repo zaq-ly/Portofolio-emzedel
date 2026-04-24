@@ -8,12 +8,7 @@ const About = () => {
     'UI/UX Design', 'Photo Editing',
   ];
 
-  const stats = [
-    { value: '50+', label: 'Proyek Selesai' },
-    { value: '3+', label: 'Tahun Pengalaman' },
-    { value: '20+', label: 'Klien Puas' },
-    { value: '100+', label: 'Desain Dibuat' },
-  ];
+
 
   return (
     <section id="about" className="relative py-20 md:py-28 bg-gray-50 dark:bg-dark-card/50 transition-colors overflow-hidden">
@@ -37,28 +32,14 @@ const About = () => {
               Tentang Saya
             </h3>
             <h2 className="text-3xl md:text-4xl font-display font-bold text-dark dark:text-white mb-6">
-              Desainer Kreatif Berbasis di Indonesia
+              Seorang manusia biasa yang suka Design dan Ngegambar
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-lg mb-8 leading-relaxed">
-              Saya adalah seorang desainer grafis yang berfokus pada menciptakan identitas visual yang kuat dan ilustrasi digital yang bermakna. Dengan pendekatan yang minimalis namun elegan, saya membantu mewujudkan ide-ide kreatif menjadi kenyataan yang visual.
+              Halo! Saya seseorang yang punya passion di dunia design dan ilustrasi. Berawal dari hobi yang nggak sengaja, lama-lama jadi cinta beneran.
+              Proses kreatif buat saya itu menyenangkan. Menurut saya ide yang nggak dibuat itu sayang banget. Masih terus belajar, masih terus eksplorasi, dan nggak ada rencana buat berhenti.
             </p>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="p-4 bg-white dark:bg-dark-card rounded-xl border border-gray-100 dark:border-dark-border shadow-sm dark:shadow-none"
-                >
-                  <h4 className="text-2xl font-bold text-primary mb-1">{stat.value}</h4>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
-                </motion.div>
-              ))}
-            </div>
+
           </motion.div>
 
           {/* Right — Skills */}
@@ -94,9 +75,9 @@ const About = () => {
               className="mt-12 p-8 bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl border border-primary/10"
             >
               <h4 className="text-dark dark:text-white font-bold mb-4 italic text-lg leading-relaxed">
-                "Desain bukan hanya apa yang terlihat dan terasa. Desain adalah bagaimana ia bekerja."
+                "Kreativitas adalah kecerdasan yang sedang bersenang-senang."
               </h4>
-              <p className="text-gray-400 dark:text-gray-500 text-sm">— Steve Jobs</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm">— Albert Einstein</p>
             </motion.div>
           </motion.div>
         </div>

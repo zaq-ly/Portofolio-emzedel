@@ -886,7 +886,6 @@ export const categories = [
   { key: "all", label: "Semua Karya" },
   { key: "illustration", label: "Ilustrasi" },
   { key: "vector", label: "Vektor" },
-  { key: "branding", label: "Logo & Branding" },
+  { key: "branding", label: "Logo" },
   { key: "poster-banner", label: "Poster & Banner" },
-  { key: "graffiti", label: "Graffiti" },
 ];

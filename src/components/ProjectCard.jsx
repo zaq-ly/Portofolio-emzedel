@@ -21,7 +21,7 @@ const ProjectCard = ({ project, onClick }) => {
         )}
         
         <img
-          src={getOptimizedImageUrl(project.image, 600, 80)}
+          src={getOptimizedImageUrl(project.image, 600, 80, 600, 'cover')}
           alt={project.title}
           loading="lazy"
           onLoad={() => setIsLoaded(true)}
