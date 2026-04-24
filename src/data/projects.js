@@ -3,44 +3,44 @@ export const projects = [
   {
     "id": 1,
     "title": "GOCC",
-    "category": "print",
-    "description": "Karya print kreatif oleh Muhammad Zaqly Luluang.",
+    "category": "Poster",
+    "description": "Karya Poster kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Banner - GOCC.jpg",
     "tags": [
-      "Print",
+      "Poster",
       "Digital Art"
     ]
   },
   {
     "id": 2,
     "title": "Semhas ChatGPT",
-    "category": "print",
-    "description": "Karya print kreatif oleh Muhammad Zaqly Luluang.",
+    "category": "Banner",
+    "description": "Karya Banner kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Banner - Semhas ChatGPT.jpg",
     "tags": [
-      "Print",
+      "Banner",
       "Digital Art"
     ]
   },
   {
     "id": 3,
     "title": "Semhas PettaCoffee",
-    "category": "print",
-    "description": "Karya print kreatif oleh Muhammad Zaqly Luluang.",
+    "category": "Banner",
+    "description": "Karya Banner kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Banner - Semhas PettaCoffee.jpg",
     "tags": [
-      "Print",
+      "Banner",
       "Digital Art"
     ]
   },
   {
     "id": 4,
     "title": "GOCC",
-    "category": "print",
-    "description": "Karya print kreatif oleh Muhammad Zaqly Luluang.",
+    "category": "Banner",
+    "description": "Karya Banner kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Brosur - GOCC.jpg",
     "tags": [
-      "Print",
+      "Banner",
       "Digital Art"
     ]
   },
@@ -751,11 +751,11 @@ export const projects = [
   {
     "id": 69,
     "title": "Krispi celup",
-    "category": "print",
-    "description": "Karya print kreatif oleh Muhammad Zaqly Luluang.",
+    "category": "Poster",
+    "description": "Karya Poster kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Poster - krispi celup.jpg",
     "tags": [
-      "Print",
+      "Poster",
       "Digital Art"
     ]
   },
@@ -887,6 +887,6 @@ export const categories = [
   { key: "illustration", label: "Ilustrasi" },
   { key: "vector", label: "Vektor" },
   { key: "branding", label: "Logo & Branding" },
-  { key: "print", label: "Print & Banner" },
+  { key: "poster-banner", label: "Poster & Banner" },
   { key: "graffiti", label: "Graffiti" },
 ];

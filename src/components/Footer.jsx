@@ -1,9 +1,8 @@
 import React from 'react';
-import { Github, Linkedin, Instagram, Mail, Lock } from 'lucide-react';
+import { Linkedin, Instagram, Mail, Lock } from 'lucide-react';
 
 const Footer = () => {
   const socialLinks = [
-    { icon: <Github size={20} />, href: 'https://github.com/zaq-ly', label: 'GitHub' },
     { icon: <Linkedin size={20} />, href: 'https://www.linkedin.com/in/muhammad-zaqly-luluang-468a61327/', label: 'LinkedIn' },
     { icon: <Instagram size={20} />, href: 'https://www.instagram.com/zqlyy_/', label: 'Instagram' },
     { icon: <Mail size={20} />, href: 'mailto:muhammadzaqly01@gmail.com', label: 'Email' },

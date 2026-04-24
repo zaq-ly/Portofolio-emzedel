@@ -1,13 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Download } from 'lucide-react';
+import { X } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/image';
 
 const ImageModal = ({ isOpen, project, onClose }) => {
   if (!project) return null;
-
-  const handleDownload = (e) => {
-    // Optional: add any download tracking or custom logic here
-  };
 
   return (
     <AnimatePresence>
@@ -46,7 +43,7 @@ const ImageModal = ({ isOpen, project, onClose }) => {
             {/* Image Section */}
             <div className="w-full md:w-2/3 h-[50vh] md:h-auto relative bg-gray-100 dark:bg-dark flex items-center justify-center overflow-hidden">
               <img
-                src={project.image}
+                src={getOptimizedImageUrl(project.image, 1200, 85)}
                 alt={project.title}
                 className="w-full h-full object-contain"
               />
@@ -90,15 +87,10 @@ const ImageModal = ({ isOpen, project, onClose }) => {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-100 dark:border-dark-border">
-                <a 
-                  href={project.image}
-                  download={project.title}
-                  className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 cursor-pointer"
-                >
-                  <Download size={18} />
-                  Unduh Karya
-                </a>
+              <div className="mt-8 pt-6 border-t border-gray-100 dark:border-dark-border text-center">
+                <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                  Karya dibuat oleh Muhammad Zaqly Luluang
+                </p>
               </div>
             </div>
           </motion.div>

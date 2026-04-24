@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check local storage or default to dark
-    const saved = localStorage.getItem('theme');
-    return saved ? saved === 'dark' : true;
-  });
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -16,22 +11,9 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 20);
     };
     
-    // Sync theme
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isDarkMode]);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  }, []);
 
   const navLinks = [
     { name: 'Beranda', href: '#/' },
@@ -68,24 +50,10 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-card transition-all duration-300"
-          >
-            <motion.div
-              animate={{ rotate: isDarkMode ? 0 : 180 }}
-              transition={{ duration: 0.3 }}
-            >
-              {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
-            </motion.div>
-          </button>
         </div>
 
         {/* Mobile Controls */}
         <div className="md:hidden flex items-center space-x-3">
-          <button onClick={toggleDarkMode} className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white">
-            {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
           <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
