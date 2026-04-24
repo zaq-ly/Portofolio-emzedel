@@ -30,45 +30,45 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-dark flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-300">
       <div className="absolute inset-0 z-0 opacity-10">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] [background-size:40px_40px]"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] dark:bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] [background-size:40px_40px]"></div>
       </div>
 
-      <div className="max-w-md w-full bg-dark-card border border-dark-border p-8 rounded-3xl shadow-2xl relative z-10">
+      <div className="max-w-md w-full bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border p-8 rounded-3xl shadow-xl dark:shadow-2xl relative z-10">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-display font-bold text-white mb-2">Admin Login</h2>
-          <p className="text-gray-400">Masuk untuk mengelola portofolio Anda</p>
+          <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-2">Admin Login</h2>
+          <p className="text-gray-500 dark:text-gray-400">Masuk untuk mengelola portofolio Anda</p>
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl mb-6 text-sm">
+          <div className="bg-red-50 text-red-600 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 dark:text-red-500 p-4 rounded-xl mb-6 text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Email</label>
+            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Email</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-6 py-4 bg-dark border border-dark-border focus:border-primary outline-none rounded-xl transition-all text-white"
+              className="w-full px-6 py-4 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl transition-all text-gray-900 dark:text-white"
               placeholder="admin@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Password</label>
+            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-6 py-4 bg-dark border border-dark-border focus:border-primary outline-none rounded-xl transition-all text-white"
+                className="w-full px-6 py-4 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl transition-all text-gray-900 dark:text-white"
                 placeholder="••••••••"
               />
               <button
@@ -97,10 +97,10 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-dark-border text-center">
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-dark-border text-center">
           <button 
             onClick={() => navigate('/')}
-            className="flex items-center justify-center gap-2 mx-auto text-gray-500 hover:text-white text-sm transition-all group"
+            className="flex items-center justify-center gap-2 mx-auto text-gray-500 hover:text-gray-900 dark:hover:text-white text-sm transition-all group"
           >
             <Home size={16} className="group-hover:scale-110 transition-transform" />
             Kembali ke Beranda

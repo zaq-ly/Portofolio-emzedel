@@ -1,27 +1,9 @@
 import React, { useState } from 'react';
-import { Download } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/image';
 
 const ProjectCard = ({ project, onClick }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-
-  const handleDownload = async (e) => {
-    e.stopPropagation(); // Mencegah modal terbuka
-    try {
-      const response = await fetch(project.image);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${project.title || 'karya'}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Download failed:', error);
-      window.open(project.image, '_blank');
-    }
-  };
 
   return (
     <div 
@@ -32,13 +14,14 @@ const ProjectCard = ({ project, onClick }) => {
       <div className="relative overflow-hidden aspect-square bg-gray-200 dark:bg-dark-border">
         {/* Skeleton/Shimmer Effect */}
         {!isLoaded && (
-          <div className="absolute inset-0 z-10">
-            <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skeleton-shimmer animate-pulse"></div>
+          <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skeleton-shimmer animate-pulse absolute inset-0"></div>
+            <Loader2 className="animate-spin text-primary opacity-50 z-20" size={24} />
           </div>
         )}
         
         <img
-          src={project.image}
+          src={getOptimizedImageUrl(project.image, 600, 80)}
           alt={project.title}
           loading="lazy"
           onLoad={() => setIsLoaded(true)}
@@ -52,13 +35,9 @@ const ProjectCard = ({ project, onClick }) => {
           <p className="text-white text-xs leading-relaxed line-clamp-2">
             {project.description}
           </p>
-          <button 
-            onClick={handleDownload}
-            className="mt-3 self-start bg-white/20 backdrop-blur-sm border border-white/30 p-2 rounded-full text-white hover:bg-primary transition-colors duration-300"
-            title="Unduh Karya"
-          >
-            <Download size={16} />
-          </button>
+          <p className="mt-3 text-[10px] text-white/70 font-medium">
+            Karya dibuat oleh Muhammad Zaqly Luluang
+          </p>
         </div>
       </div>
 

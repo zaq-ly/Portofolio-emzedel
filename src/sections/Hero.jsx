@@ -27,13 +27,14 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold leading-[1.1] mb-6 text-dark dark:text-white"
+            className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold leading-[1.1] mb-6 text-dark dark:text-white flex flex-col"
           >
-            Mempersembahkan{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-              Seni Visual
-            </span>{' '}
-            Tanpa Batas
+            <span className="text-2xl md:text-3xl font-medium text-gray-600 dark:text-gray-300 mb-2 block">
+              Halo!, Saya
+            </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent relative inline-block mt-1 pb-2 font-black tracking-tight drop-shadow-sm">
+              Muhammad Zaqly Luluang
+            </span>
           </motion.h1>
 
           <motion.p
@@ -42,7 +43,7 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             className="text-lg text-gray-500 dark:text-gray-400 mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed"
           >
-            Halo! Saya <span className="text-dark dark:text-white font-semibold">Muhammad Zaqly Luluang</span>. Saya membantu brand dan individu menceritakan kisah mereka melalui desain identitas, ilustrasi digital, dan karya seni visual yang ikonik.
+            Saya membantu brand dan individu menceritakan kisah mereka melalui desain identitas, ilustrasi digital, dan karya seni visual yang ikonik.
           </motion.p>
 
           <motion.div

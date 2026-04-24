@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
-import { projects as staticProjects, categories } from '../data/projects';
+import { categories } from '../data/projects';
 import ProjectCard from '../components/ProjectCard';
 import ImageModal from '../components/ImageModal';
 import { supabase } from '../lib/supabaseClient';
@@ -15,6 +15,16 @@ const Gallery = () => {
 
   useEffect(() => {
     fetchProjects();
+
+    // Realtime subscription — auto refresh when admin updates
+    const channel = supabase
+      .channel('gallery-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+        fetchProjects();
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
   }, []);
 
   const fetchProjects = async () => {
@@ -26,11 +36,19 @@ const Gallery = () => {
         .order('created_at', { ascending: false });
       
       if (data && data.length > 0) {
-        // Transform DB data to match ProjectCard expectations
         const transformedData = data.map(p => ({
           ...p,
           image: p.image_url,
-          tags: Array.isArray(p.tags) ? p.tags : []
+          tags: Array.isArray(p.tags)
+            ? p.tags.map(t => {
+                const lowerT = t.toLowerCase();
+                if (lowerT === 'print' || lowerT === 'poster & banner') {
+                  return p.category === 'banner' ? 'Banner' : 'Poster';
+                }
+                return t;
+              })
+            : [],
+          category: p.category === 'print' ? 'poster' : p.category
         }));
         setDbProjects(transformedData);
       }
@@ -41,14 +59,11 @@ const Gallery = () => {
     }
   };
 
-  // Gabungkan data statis dan data DB (DB diutamakan/paling atas)
-  const allProjects = [...dbProjects, ...staticProjects];
-
-
-
   const filteredProjects = activeCategory === 'all'
-    ? allProjects
-    : allProjects.filter((p) => p.category === activeCategory);
+    ? dbProjects
+    : activeCategory === 'poster-banner'
+      ? dbProjects.filter(p => p.category === 'poster' || p.category === 'banner')
+      : dbProjects.filter(p => p.category === activeCategory);
 
   const handleOpenModal = (project) => {
     setSelectedProject(project);
