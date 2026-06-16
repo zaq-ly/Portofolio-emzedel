@@ -1,66 +1,59 @@
 import fs from 'fs';
-import { createClient } from '@supabase/supabase-js';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 import { projects } from './src/data/projects.js';
 
-// Load .env manually
 const envFile = fs.readFileSync('.env', 'utf-8');
 const envVars = {};
-envFile.split('\n').forEach(line => {
+envFile.split('\n').forEach((line) => {
   const match = line.match(/^([^=]+)=(.*)$/);
   if (match) {
     let val = match[2].trim();
-    // remove quotes if any
     if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
     if (val.startsWith("'") && val.endsWith("'")) val = val.slice(1, -1);
     envVars[match[1].trim()] = val;
   }
 });
 
-const supabaseUrl = envVars['VITE_SUPABASE_URL'];
-const supabaseKey = envVars['VITE_SUPABASE_ANON_KEY'];
+const app = initializeApp({
+  apiKey: envVars['VITE_FIREBASE_API_KEY'],
+  authDomain: envVars['VITE_FIREBASE_AUTH_DOMAIN'],
+  projectId: envVars['VITE_FIREBASE_PROJECT_ID'],
+  storageBucket: envVars['VITE_FIREBASE_STORAGE_BUCKET'],
+  messagingSenderId: envVars['VITE_FIREBASE_MESSAGING_SENDER_ID'],
+  appId: envVars['VITE_FIREBASE_APP_ID'],
+});
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Missing Supabase credentials in .env");
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = getFirestore(app);
 
 async function migrate() {
-  console.log(`Starting migration of ${projects.length} projects...`);
-  
+  console.log(`Starting migration of ${projects.length} projects to Firestore...`);
+
+  const existingSnapshot = await getDocs(collection(db, 'projects'));
+  const existingKeys = new Set(
+    existingSnapshot.docs.map((d) => `${d.data().title}::${d.data().image_url}`),
+  );
+
   for (const p of projects) {
-    // Check if it already exists (by title and image_url) to avoid duplicates if run multiple times
-    const { data: existing } = await supabase
-      .from('projects')
-      .select('id')
-      .eq('title', p.title)
-      .eq('image_url', p.image)
-      .single();
-      
-    if (existing) {
+    const key = `${p.title}::${p.image}`;
+    if (existingKeys.has(key)) {
       console.log(`Skipping existing: ${p.title}`);
       continue;
     }
 
-    const { error } = await supabase
-      .from('projects')
-      .insert([{
-        title: p.title,
-        category: p.category,
-        description: p.description || '',
-        image_url: p.image,
-        tags: p.tags
-      }]);
+    await addDoc(collection(db, 'projects'), {
+      title: p.title,
+      category: p.category,
+      description: p.description || '',
+      image_url: p.image,
+      tags: p.tags,
+      created_at: serverTimestamp(),
+    });
 
-    if (error) {
-      console.error(`Error inserting ${p.title}:`, error.message);
-    } else {
-      console.log(`Inserted: ${p.title}`);
-    }
+    console.log(`Inserted: ${p.title}`);
   }
-  
+
   console.log('Migration complete!');
 }
 
-migrate();
+migrate().catch(console.error);

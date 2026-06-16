@@ -3,7 +3,7 @@ export const projects = [
   {
     "id": 1,
     "title": "GOCC",
-    "category": "Poster",
+    "category": "poster",
     "description": "Karya Poster kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Banner - GOCC.jpg",
     "tags": [
@@ -14,7 +14,7 @@ export const projects = [
   {
     "id": 2,
     "title": "Semhas ChatGPT",
-    "category": "Banner",
+    "category": "banner",
     "description": "Karya Banner kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Banner - Semhas ChatGPT.jpg",
     "tags": [
@@ -25,7 +25,7 @@ export const projects = [
   {
     "id": 3,
     "title": "Semhas PettaCoffee",
-    "category": "Banner",
+    "category": "banner",
     "description": "Karya Banner kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Banner - Semhas PettaCoffee.jpg",
     "tags": [
@@ -36,7 +36,7 @@ export const projects = [
   {
     "id": 4,
     "title": "GOCC",
-    "category": "Banner",
+    "category": "banner",
     "description": "Karya Banner kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Brosur - GOCC.jpg",
     "tags": [
@@ -751,7 +751,7 @@ export const projects = [
   {
     "id": 69,
     "title": "Krispi celup",
-    "category": "Poster",
+    "category": "poster",
     "description": "Karya Poster kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Poster - krispi celup.jpg",
     "tags": [

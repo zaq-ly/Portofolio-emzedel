@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabaseClient';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../lib/firebaseClient';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = ({ children }) => {
@@ -9,17 +10,17 @@ const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
         navigate('/admin');
+        setAuthenticated(false);
       } else {
         setAuthenticated(true);
       }
       setLoading(false);
-    };
+    });
 
-    checkAuth();
+    return unsubscribe;
   }, [navigate]);
 
   if (loading) {

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Loader2 } from 'lucide-react';
-import { categories } from '../data/projects';
+import { Loader2 } from 'lucide-react';
+import { categories, projects as staticProjects } from '../data/projects';
 import ProjectCard from '../components/ProjectCard';
 import ImageModal from '../components/ImageModal';
-import { supabase } from '../lib/supabaseClient';
+import { subscribeProjects } from '../lib/projectsService';
+import { transformProjectForGallery } from '../utils/projects';
+import { db } from '../lib/firebaseClient';
 
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -14,50 +16,46 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProjects();
-
-    // Realtime subscription — auto refresh when admin updates
-    const channel = supabase
-      .channel('gallery-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
-        fetchProjects();
-      })
-      .subscribe();
-
-    return () => supabase.removeChannel(channel);
-  }, []);
-
-  const fetchProjects = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (data && data.length > 0) {
-        const transformedData = data.map(p => ({
-          ...p,
-          image: p.image_url,
-          tags: Array.isArray(p.tags)
-            ? p.tags.map(t => {
-              const lowerT = t.toLowerCase();
-              if (lowerT === 'print' || lowerT === 'poster & banner') {
-                return p.category === 'banner' ? 'Banner' : 'Poster';
-              }
-              return t;
-            })
-            : [],
-          category: p.category === 'print' ? 'poster' : p.category
-        }));
-        setDbProjects(transformedData);
-      }
-    } catch (err) {
-      console.error("Error fetching projects:", err);
-    } finally {
+    // Jika Firebase tidak tersedia, langsung gunakan data statis
+    if (!db) {
+      const fallback = staticProjects.map(p => transformProjectForGallery({
+        ...p,
+        image_url: p.image,
+      }));
+      setDbProjects(fallback);
       setLoading(false);
+      return;
     }
-  };
+
+    // Firebase tersedia — subscribe ke real-time updates
+    const unsubscribe = subscribeProjects(
+      (data) => {
+        if (data.length > 0) {
+          setDbProjects(data.map(transformProjectForGallery));
+        } else {
+          // Firestore kosong — fallback ke data statis
+          const fallback = staticProjects.map(p => transformProjectForGallery({
+            ...p,
+            image_url: p.image,
+          }));
+          setDbProjects(fallback);
+        }
+        setLoading(false);
+      },
+      (err) => {
+        console.error('Error fetching projects:', err);
+        // Fallback ke data statis jika error
+        const fallback = staticProjects.map(p => transformProjectForGallery({
+          ...p,
+          image_url: p.image,
+        }));
+        setDbProjects(fallback);
+        setLoading(false);
+      },
+    );
+
+    return unsubscribe;
+  }, []);
 
   const filteredProjects = activeCategory === 'all'
     ? dbProjects
@@ -134,7 +132,7 @@ const Gallery = () => {
             </div>
           ) : (
             <AnimatePresence mode="popLayout">
-              {filteredProjects.map((project, index) => (
+              {filteredProjects.map((project) => (
                 <motion.div
                   key={project.id}
                   layout
