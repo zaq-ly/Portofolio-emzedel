@@ -1,9 +1,10 @@
 import fs from 'fs';
-import { createClient } from '@supabase/supabase-js';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs, updateDoc, doc, query, where } from 'firebase/firestore';
 
 const envFile = fs.readFileSync('.env', 'utf-8');
 const envVars = {};
-envFile.split('\n').forEach(line => {
+envFile.split('\n').forEach((line) => {
   const match = line.match(/^([^=]+)=(.*)$/);
   if (match) {
     let val = match[2].trim();
@@ -13,25 +14,31 @@ envFile.split('\n').forEach(line => {
   }
 });
 
-const supabaseUrl = envVars['VITE_SUPABASE_URL'];
-const supabaseKey = envVars['VITE_SUPABASE_ANON_KEY'];
+const app = initializeApp({
+  apiKey: envVars['VITE_FIREBASE_API_KEY'],
+  authDomain: envVars['VITE_FIREBASE_AUTH_DOMAIN'],
+  projectId: envVars['VITE_FIREBASE_PROJECT_ID'],
+  storageBucket: envVars['VITE_FIREBASE_STORAGE_BUCKET'],
+  messagingSenderId: envVars['VITE_FIREBASE_MESSAGING_SENDER_ID'],
+  appId: envVars['VITE_FIREBASE_APP_ID'],
+});
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const db = getFirestore(app);
 
 async function updateCategory() {
-  console.log("Updating category 'print' to 'poster' in the database...");
-  
-  const { data, error } = await supabase
-    .from('projects')
-    .update({ category: 'poster' })
-    .eq('category', 'print')
-    .select();
+  console.log("Updating category 'print' to 'poster' in Firestore...");
 
-  if (error) {
-    console.error("Error updating database:", error.message);
-  } else {
-    console.log(`Successfully updated ${data.length} records.`);
+  const snapshot = await getDocs(
+    query(collection(db, 'projects'), where('category', '==', 'print')),
+  );
+
+  let count = 0;
+  for (const projectDoc of snapshot.docs) {
+    await updateDoc(doc(db, 'projects', projectDoc.id), { category: 'poster' });
+    count += 1;
   }
+
+  console.log(`Successfully updated ${count} records.`);
 }
 
-updateCategory();
+updateCategory().catch(console.error);

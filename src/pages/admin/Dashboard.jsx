@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabaseClient';
-import { Upload, Plus, LogOut, Loader2, CheckCircle2, AlertCircle, Trash2, LayoutGrid, MessageSquare, Mail as MailIcon, Edit, X } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../lib/firebaseClient';
+import {
+  fetchProjects,
+  subscribeProjects,
+  createProject,
+  updateProject,
+  deleteProject,
+  uploadProjectImage,
+} from '../../lib/projectsService';
+import { transformProject } from '../../utils/projects';
+import { Upload, Plus, LogOut, Loader2, CheckCircle2, AlertCircle, Trash2, Edit, X } from 'lucide-react';
 import { getOptimizedImageUrl } from '../../utils/image';
 
 const AdminDashboard = () => {
@@ -25,46 +35,24 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProjects();
+    loadProjects();
 
-    const projectsChannel = supabase
-      .channel('projects-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
-        fetchProjects();
-      })
-      .subscribe();
+    const unsubscribe = subscribeProjects(
+      (data) => setProjects(data),
+      (error) => console.error('Error fetch projects:', error),
+    );
 
-    return () => {
-      supabase.removeChannel(projectsChannel);
-    };
+    return unsubscribe;
   }, []);
 
-  const transformProject = (p) => ({
-    ...p,
-    category: p.category === 'print' ? 'poster' : p.category,
-    tags: Array.isArray(p.tags)
-      ? p.tags.map(t => {
-        const lowerT = t.toLowerCase();
-        if (lowerT === 'print' || lowerT === 'poster & banner') {
-          return p.category === 'banner' ? 'Banner' : 'Poster';
-        }
-        return t;
-      })
-      : p.tags,
-  });
-
-  const fetchProjects = async () => {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) console.error('Error fetch projects:', error);
-    if (data) setProjects(data.map(transformProject));
+  const loadProjects = async () => {
+    try {
+      const data = await fetchProjects();
+      setProjects(data);
+    } catch (error) {
+      console.error('Error fetch projects:', error);
+    }
   };
-
-
-
   // Auto-dismiss status alert
   useEffect(() => {
     if (status.message) {
@@ -81,7 +69,7 @@ const AdminDashboard = () => {
   }, [modalStatus.message]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut(auth);
     navigate('/admin');
   };
 
@@ -106,11 +94,7 @@ const AdminDashboard = () => {
 
   const uploadImageToStorage = async (file) => {
     const compressed = await compressImage(file);
-    const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
-    const filePath = `gallery/${fileName}`;
-    const { error } = await supabase.storage.from('portfolio-images').upload(filePath, compressed);
-    if (error) throw error;
-    return supabase.storage.from('portfolio-images').getPublicUrl(filePath).data.publicUrl;
+    return uploadProjectImage(compressed);
   };
 
   // Upload new project
@@ -122,15 +106,17 @@ const AdminDashboard = () => {
     try {
       const publicUrl = await uploadImageToStorage(imageFile);
       const parsedTags = uploadForm.tags.split(',').map(t => t.trim()).filter(Boolean);
-      const { error } = await supabase.from('projects').insert([{
-        title: uploadForm.title, category: uploadForm.category,
-        description: uploadForm.description, tags: parsedTags, image_url: publicUrl,
-      }]);
-      if (error) throw error;
+      await createProject({
+        title: uploadForm.title,
+        category: uploadForm.category,
+        description: uploadForm.description,
+        tags: parsedTags,
+        image_url: publicUrl,
+      });
       setStatus({ type: 'success', message: 'Karya berhasil diupload!' });
       setUploadForm({ title: '', category: 'illustration', description: '', tags: '' });
       setImageFile(null);
-      fetchProjects();
+      loadProjects();
     } catch (err) {
       setStatus({ type: 'error', message: err.message });
     } finally {
@@ -149,9 +135,7 @@ const AdminDashboard = () => {
         title: editForm.title, category: editForm.category,
         description: editForm.description, tags: parsedTags,
       };
-      const { data, error } = await supabase.from('projects').update(projectData).eq('id', editingId).select();
-      if (error) throw error;
-      if (!data || data.length === 0) throw new Error("Gagal menyimpan. Pastikan Anda memiliki akses atau coba lagi.");
+      await updateProject(editingId, projectData);
       const updatedProject = transformProject({
         ...editingProject, ...projectData,
       });
@@ -159,7 +143,7 @@ const AdminDashboard = () => {
       setModalStatus({ type: 'success', message: 'Karya berhasil diperbarui!' });
       setTimeout(() => {
         handleCancelEdit();
-        fetchProjects();
+        loadProjects();
       }, 1200);
     } catch (err) {
       setModalStatus({ type: 'error', message: err.message });
@@ -193,8 +177,8 @@ const AdminDashboard = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Apakah Anda yakin ingin menghapus karya ini?')) return;
     try {
-      await supabase.from('projects').delete().eq('id', id);
-      fetchProjects();
+      await deleteProject(id);
+      loadProjects();
       setStatus({ type: 'success', message: 'Karya berhasil dihapus.' });
     } catch (error) {
       setStatus({ type: 'error', message: error.message });

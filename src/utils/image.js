@@ -1,27 +1,7 @@
 /**
- * Mengubah URL Supabase Storage biasa menjadi URL dengan fitur Image Transformation.
- * Ini akan meresize gambar secara on-the-fly di server Supabase agar lebih ringan.
- * 
- * @param {string} originalUrl - URL asli dari Supabase Storage
- * @param {number|null} height - Tinggi gambar yang diinginkan (opsional)
- * @param {string} resize - Mode resize ('cover', 'contain', 'fill')
- * @returns {string} URL yang sudah dioptimasi
+ * Mengoptimalkan URL gambar untuk tampilan web.
+ * (Saat ini pass-through ke Firebase URL atau data lokal)
  */
 export const getOptimizedImageUrl = (originalUrl, width = 600, quality = 80, height = null, resize = 'cover') => {
-  if (!originalUrl || typeof originalUrl !== 'string') return originalUrl;
-  
-  // Hanya proses URL yang berasal dari Supabase Storage
-  if (originalUrl.includes('/storage/v1/object/public/')) {
-    // Ubah path endpoint untuk render image & tambahkan query parameter
-    let optimizedUrl = originalUrl.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') 
-           + `?width=${width}&quality=${quality}`;
-           
-    if (height) {
-      optimizedUrl += `&height=${height}&resize=${resize}`;
-    }
-    
-    return optimizedUrl;
-  }
-  
   return originalUrl;
 };
