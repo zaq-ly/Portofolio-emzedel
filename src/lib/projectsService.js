@@ -86,7 +86,7 @@ const updateProjectsFile = async (newProjectsArray, commitMessage) => {
   const currentFile = await fetchGitHubAPI('GET', filePath);
   
   // Buat konten baru
-  const fileContent = `export const categories = [\n  { key: 'all', label: 'All' },\n  { key: 'illustration', label: 'Illustration' },\n  { key: 'logo', label: 'Logo' },\n  { key: 'vector', label: 'Vector' },\n  { key: 'poster-banner', label: 'Poster & Banner' },\n  { key: 'graffiti', label: 'Graffiti' },\n  { key: 'branding', label: 'Branding' },\n];\n\nexport const projects = ${JSON.stringify(newProjectsArray, null, 2)};\n`;
+  const fileContent = `export const projects = ${JSON.stringify(newProjectsArray, null, 2)};\n\nexport const categories = [\n  { key: "all", label: "Semua Karya" },\n  { key: "illustration", label: "Ilustrasi" },\n  { key: "vector", label: "Vektor" },\n  { key: "branding", label: "Logo" },\n  { key: "poster-banner", label: "Poster & Banner" },\n];\n`;
   
   // Encode Base64 (mendukung Unicode)
   const base64Content = btoa(unescape(encodeURIComponent(fileContent)));
