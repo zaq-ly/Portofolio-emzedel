@@ -1,3 +1,12 @@
+export const categories = [
+  { key: 'all', label: 'All' },
+  { key: 'illustration', label: 'Illustration' },
+  { key: 'logo', label: 'Logo' },
+  { key: 'vector', label: 'Vector' },
+  { key: 'poster-banner', label: 'Poster & Banner' },
+  { key: 'graffiti', label: 'Graffiti' },
+  { key: 'branding', label: 'Branding' },
+];
 
 export const projects = [
   {
@@ -879,13 +888,16 @@ export const projects = [
       "Vector",
       "Digital Art"
     ]
+  },
+  {
+    "id": 81,
+    "title": "Poster Menu warung Lamongan",
+    "category": "poster",
+    "description": "Design daftar menu warung lamongan",
+    "image": "/gallery/1783065084766_Daftar_Menu_Warung_Dipa.png",
+    "tags": [
+      "Digital Art",
+      "Poster"
+    ]
   }
-];
-
-export const categories = [
-  { key: "all", label: "Semua Karya" },
-  { key: "illustration", label: "Ilustrasi" },
-  { key: "vector", label: "Vektor" },
-  { key: "branding", label: "Logo" },
-  { key: "poster-banner", label: "Poster & Banner" },
 ];
