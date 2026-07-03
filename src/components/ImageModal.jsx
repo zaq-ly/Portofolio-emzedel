@@ -21,7 +21,7 @@ const ImageModal = ({ isOpen, project, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-dark/95 backdrop-blur-md"
+            className="absolute inset-0 bg-black/90"
           />
 
           {/* Modal Content */}
@@ -30,18 +30,18 @@ const ImageModal = ({ isOpen, project, onClose }) => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative max-w-5xl w-full bg-white dark:bg-dark-card rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row z-10 max-h-[90vh]"
+            className="relative max-w-5xl w-full bg-white border-4 border-black shadow-brutal-lg flex flex-col md:flex-row z-10 max-h-[90vh]"
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-20 bg-dark/50 hover:bg-primary backdrop-blur-md text-white p-2 rounded-full transition-colors duration-300 md:hidden"
+              className="absolute top-4 right-4 z-20 bg-primary text-white border-4 border-black p-2 hover:bg-secondary hover:text-black transition-all duration-200"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
 
             {/* Image Section */}
-            <div className="w-full md:w-2/3 h-[50vh] md:h-auto relative bg-gray-100 dark:bg-dark flex items-center justify-center overflow-hidden">
+            <div className="w-full md:w-2/3 h-[50vh] md:h-auto relative bg-light-gray border-b-4 md:border-b-0 md:border-r-4 border-black flex items-center justify-center overflow-hidden">
               <img
                 src={getOptimizedImageUrl(project.image, 1200, 85)}
                 alt={project.title}
@@ -50,25 +50,17 @@ const ImageModal = ({ isOpen, project, onClose }) => {
             </div>
 
             {/* Details Section */}
-            <div className="w-full md:w-1/3 p-6 md:p-8 flex flex-col justify-between bg-white dark:bg-dark-card overflow-y-auto">
+            <div className="w-full md:w-1/3 p-6 md:p-8 flex flex-col justify-between overflow-y-auto">
               <div>
-                <div className="flex justify-between items-start mb-6">
-                  <h3 className="text-2xl font-display font-bold text-dark dark:text-white leading-tight">
-                    {project.title}
-                  </h3>
-                  <button
-                    onClick={onClose}
-                    className="hidden md:flex bg-gray-100 dark:bg-dark hover:bg-primary hover:text-white dark:text-gray-400 p-2 rounded-full transition-all duration-300"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
+                <h3 className="text-3xl font-black text-black leading-tight mb-6">
+                  {project.title}
+                </h3>
 
                 <div className="flex flex-wrap gap-2 mb-6">
                   {project.tags.map((tag, index) => (
                     <span
                       key={index}
-                      className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-primary/10 text-primary rounded-full border border-primary/20"
+                      className="text-xs font-black uppercase tracking-wider px-3 py-1 bg-secondary border-2 border-black"
                     >
                       {tag}
                     </span>
@@ -77,18 +69,18 @@ const ImageModal = ({ isOpen, project, onClose }) => {
 
                 <div className="space-y-4">
                   <div>
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                    <h4 className="text-sm font-black text-black uppercase tracking-widest mb-3">
                       Tentang Project
                     </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                    <p className="text-black text-base leading-relaxed font-bold">
                       {project.description || "Karya desain kreatif oleh Muhammad Zaqly Luluang."}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-100 dark:border-dark-border text-center">
-                <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+              <div className="mt-8 pt-6 border-t-4 border-black text-center">
+                <p className="text-sm font-black text-black uppercase tracking-wider">
                   Karya dibuat oleh Muhammad Zaqly Luluang
                 </p>
               </div>

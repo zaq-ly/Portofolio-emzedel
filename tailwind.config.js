@@ -8,38 +8,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#6366f1',
-        secondary: '#a5b4fc',
-        accent: '#06b6d4',
-        dark: '#0a0a0f',
-        'dark-card': '#13131a',
-        'dark-border': '#1e1e2e',
-        light: '#f8fafc',
+        primary: '#FF3366',
+        secondary: '#FFD23F',
+        accent: '#3B82F6',
+        dark: '#000000',
+        light: '#FFFFFF',
+        'light-gray': '#F5F5F5',
+        'dark-card': '#1A1A1A',
+        'dark-border': '#333333',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Outfit', 'sans-serif'],
+        mono: ['Courier New', 'monospace'],
       },
-      animation: {
-        'fade-in': 'fadeIn 0.8s ease-out forwards',
-        'slide-up': 'slideUp 0.6s ease-out forwards',
-        'glow': 'glow 2s ease-in-out infinite alternate',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(30px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        glow: {
-          '0%': { boxShadow: '0 0 5px rgba(99,102,241,0.3)' },
-          '100%': { boxShadow: '0 0 20px rgba(99,102,241,0.6)' },
-        },
+      boxShadow: {
+        'brutal': '8px 8px 0px 0px #000000',
+        'brutal-sm': '4px 4px 0px 0px #000000',
+        'brutal-lg': '12px 12px 0px 0px #000000',
       },
     },
   },
   plugins: [],
-}
+};
