@@ -16,7 +16,6 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Jika Firebase tidak tersedia, langsung gunakan data statis
     if (!db) {
       const fallback = staticProjects.map(p => transformProjectForGallery({
         ...p,
@@ -27,13 +26,11 @@ const Gallery = () => {
       return;
     }
 
-    // Firebase tersedia — subscribe ke real-time updates
     const unsubscribe = subscribeProjects(
       (data) => {
         if (data.length > 0) {
           setDbProjects(data.map(transformProjectForGallery));
         } else {
-          // Firestore kosong — fallback ke data statis
           const fallback = staticProjects.map(p => transformProjectForGallery({
             ...p,
             image_url: p.image,
@@ -44,7 +41,6 @@ const Gallery = () => {
       },
       (err) => {
         console.error('Error fetching projects:', err);
-        // Fallback ke data statis jika error
         const fallback = staticProjects.map(p => transformProjectForGallery({
           ...p,
           image_url: p.image,
@@ -69,66 +65,48 @@ const Gallery = () => {
   };
 
   return (
-    <section id="gallery" className="relative py-20 md:py-28 px-4 sm:px-6 overflow-hidden bg-white dark:bg-dark transition-colors duration-300">
-      {/* Background Decor */}
-      <div className="absolute inset-0 z-0 opacity-10">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e1e2e_1px,transparent_1px)] [background-size:40px_40px]"></div>
-      </div>
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] z-0"></div>
-
+    <section id="gallery" className="relative py-20 md:py-28 px-4 sm:px-6 overflow-hidden bg-white">
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h3 className="text-primary font-bold uppercase tracking-[0.2em] text-sm mb-4">
+        <div className="text-center mb-12">
+          <h3 className="bg-primary text-white inline-block px-6 py-3 font-black text-sm uppercase tracking-[0.2em] mb-6 border-4 border-black shadow-brutal">
             Portofolio Saya
           </h3>
-          <h2 className="text-3xl md:text-5xl font-display font-bold text-dark dark:text-white mb-6">
+          <h2 className="text-3xl md:text-5xl font-black text-black mb-6">
             Karya Desain Pilihan
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-            Koleksi karya desain grafis saya — dari ilustrasi digital, logo branding hingga Vector & etc.
+          <p className="text-lg text-black max-w-2xl mx-auto font-bold">
+            Koleksi karya desain grafis saya — dari ilustrasi digital, logo branding sampai vector & etc.
           </p>
-        </motion.div>
+        </div>
 
         {/* Filter Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
-        >
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           {categories.map((cat) => (
             <button
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${activeCategory === cat.key
-                ? 'bg-primary text-white border-primary shadow-lg shadow-primary/30 scale-105'
-                : 'text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white bg-gray-50 dark:bg-dark-card border-gray-100 dark:border-dark-border'
+              className={`px-6 py-3 border-4 border-black font-black text-sm uppercase tracking-wider transition-all duration-200 ${activeCategory === cat.key
+                  ? 'bg-secondary text-black shadow-brutal translate-x-[-2px] translate-y-[-2px]'
+                  : 'bg-white text-black hover:bg-light-gray hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal'
                 }`}
             >
               {cat.label}
               {activeCategory === cat.key && (
-                <span className="ml-2 text-xs bg-white/20 px-1.5 py-0.5 rounded-full">
+                <span className="ml-2 text-xs bg-black text-white px-2 py-0.5">
                   {filteredProjects.length}
                 </span>
               )}
             </button>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Project Grid — 4 columns on large screens for 1:1 images */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 min-h-[400px]">
+        {/* Project Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[400px]">
           {loading && dbProjects.length === 0 ? (
-            <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-500">
-              <Loader2 className="animate-spin text-primary mb-4" size={40} />
-              <p>Memuat karya terbaru...</p>
+            <div className="col-span-full flex flex-col items-center justify-center py-20">
+              <Loader2 className="animate-spin text-primary mb-4" size={48} />
+              <p className="text-lg font-black text-black">Memuat karya terbaru...</p>
             </div>
           ) : (
             <AnimatePresence mode="popLayout">
@@ -138,7 +116,7 @@ const Gallery = () => {
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
+                  viewport={{ once: true, margin: '-50px' }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{
                     duration: 0.4,
@@ -156,14 +134,9 @@ const Gallery = () => {
         </div>
 
         {/* Count info */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center text-gray-400 dark:text-gray-600 text-sm mt-12"
-        >
+        <p className="text-center text-black text-sm mt-12 font-black">
           Menampilkan {filteredProjects.length} karya
-        </motion.p>
+        </p>
       </div>
 
       {/* Lightbox Modal */}
