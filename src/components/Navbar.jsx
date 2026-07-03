@@ -6,10 +6,10 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Beranda', href: '#/' },
-    { name: 'Tentang', href: '#/#about' },
-    { name: 'Galeri', href: '#/#gallery' },
-    { name: 'Kontak', href: '#/#contact' },
+    { name: 'Beranda', href: '#' },
+    { name: 'Tentang', href: '#about' },
+    { name: 'Galeri', href: '#gallery' },
+    { name: 'Kontak', href: '#contact' },
   ];
 
   return (
@@ -17,7 +17,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
         {/* Logo */}
         <a
-          href="#/"
+          href="#"
           className="font-display text-2xl md:text-3xl font-black text-black"
         >
           EMZEDEL

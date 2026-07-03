@@ -27,7 +27,7 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center">
         <div className="text-center">
-          <a href="#/" className="font-display text-3xl font-black bg-secondary text-black px-6 py-3 border-4 border-white inline-block shadow-[8px_8px_0px_0px_white] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_white] active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200">
+          <a href="#" className="font-display text-3xl font-black bg-secondary text-black px-6 py-3 border-4 border-white inline-block shadow-[8px_8px_0px_0px_white] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[12px_12px_0px_0px_white] active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200">
             Muhammad Zaqly Luluang
           </a>
           <p className="text-white mt-8 text-xl font-black uppercase tracking-wider">
@@ -43,7 +43,7 @@ const Footer = () => {
 
         {/* Pintu Rahasia Super Tersembunyi */}
         <a
-          href="#/admin"
+          href="/admin"
           className="absolute right-4 bottom-0 opacity-0 hover:opacity-100 transition-all duration-200 text-xs font-black uppercase tracking-[0.3em] py-2 bg-secondary text-black px-3 border-4 border-white hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_white]"
           title="Admin Access"
         >

@@ -52,14 +52,14 @@ const Hero = () => {
             className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
           >
             <a
-              href="#/#gallery"
+              href="#gallery"
               className="bg-primary text-white border-4 border-black px-8 py-4 font-black text-lg shadow-brutal hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200 flex items-center justify-center gap-2"
             >
               Lihat Galeri
               <ArrowRight size={24} />
             </a>
             <a
-              href="#/#contact"
+              href="#contact"
               className="bg-white text-black border-4 border-black px-8 py-4 font-black text-lg shadow-brutal hover:bg-secondary hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200 flex items-center justify-center"
             >
               Hubungi Saya
