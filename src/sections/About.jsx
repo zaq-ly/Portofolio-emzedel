@@ -38,7 +38,7 @@ const About = () => {
               {skills.map((skill, index) => (
                 <span
                   key={index}
-                  className="bg-white border-4 border-black px-6 py-4 font-black text-sm uppercase tracking-wider shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal transition-all duration-200"
+                  className="bg-white border-4 border-black px-6 py-4 font-black text-sm uppercase tracking-wider shadow-brutal-sm hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-200 cursor-default"
                 >
                   {skill}
                 </span>

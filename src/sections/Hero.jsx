@@ -53,14 +53,14 @@ const Hero = () => {
           >
             <a
               href="#/#gallery"
-              className="bg-primary text-white border-4 border-black px-8 py-4 font-black text-lg shadow-brutal hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all duration-200 flex items-center justify-center gap-2"
+              className="bg-primary text-white border-4 border-black px-8 py-4 font-black text-lg shadow-brutal hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200 flex items-center justify-center gap-2"
             >
               Lihat Galeri
               <ArrowRight size={24} />
             </a>
             <a
               href="#/#contact"
-              className="bg-white text-black border-4 border-black px-8 py-4 font-black text-lg shadow-brutal hover:bg-secondary hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all duration-200 flex items-center justify-center"
+              className="bg-white text-black border-4 border-black px-8 py-4 font-black text-lg shadow-brutal hover:bg-secondary hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200 flex items-center justify-center"
             >
               Hubungi Saya
             </a>
@@ -89,19 +89,23 @@ const Hero = () => {
           initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          className="lg:w-5/12"
+          className="lg:w-5/12 relative"
         >
-          <div className="relative">
+          {/* Decorative shapes */}
+          <div className="absolute -top-12 -right-8 w-24 h-24 bg-secondary border-4 border-black rounded-full shadow-brutal z-0 animate-bounce" style={{ animationDuration: '3s' }}></div>
+          <div className="absolute -bottom-8 -left-8 w-16 h-16 bg-accent border-4 border-black shadow-brutal z-20 rotate-12"></div>
+          
+          <div className="relative z-10">
             {/* Decorative elements behind */}
-            <div className="absolute -z-10 top-4 left-4 w-full h-full bg-secondary border-4 border-black"></div>
-            <div className="absolute -z-20 top-8 left-8 w-full h-full bg-primary border-4 border-black"></div>
+            <div className="absolute -z-10 top-6 left-6 w-full h-full bg-secondary border-4 border-black"></div>
+            <div className="absolute -z-20 top-12 left-12 w-full h-full bg-primary border-4 border-black"></div>
 
             {/* Main image */}
-            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto border-4 border-black shadow-brutal-lg overflow-hidden">
+            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto border-4 border-black shadow-brutal-lg overflow-hidden bg-white">
               <img
                 src="/gallery/foto_profil.JPG"
                 alt="Muhammad Zaqly Luluang"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-500"
               />
             </div>
           </div>

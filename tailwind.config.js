@@ -27,6 +27,15 @@ module.exports = {
         'brutal-sm': '4px 4px 0px 0px #000000',
         'brutal-lg': '12px 12px 0px 0px #000000',
       },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        }
+      },
+      animation: {
+        marquee: 'marquee 15s linear infinite',
+      },
     },
   },
   plugins: [],

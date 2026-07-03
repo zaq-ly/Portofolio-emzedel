@@ -4,9 +4,8 @@ import { Loader2 } from 'lucide-react';
 import { categories, projects as staticProjects } from '../data/projects';
 import ProjectCard from '../components/ProjectCard';
 import ImageModal from '../components/ImageModal';
-import { subscribeProjects } from '../lib/projectsService';
+import { fetchProjects } from '../lib/projectsService';
 import { transformProjectForGallery } from '../utils/projects';
-import { db } from '../lib/firebaseClient';
 
 const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -16,41 +15,29 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!db) {
-      const fallback = staticProjects.map(p => transformProjectForGallery({
-        ...p,
-        image_url: p.image,
-      }));
-      setDbProjects(fallback);
-      setLoading(false);
-      return;
-    }
-
-    const unsubscribe = subscribeProjects(
-      (data) => {
-        if (data.length > 0) {
+    const loadData = async () => {
+      try {
+        const data = await fetchProjects();
+        if (data && data.length > 0) {
           setDbProjects(data.map(transformProjectForGallery));
         } else {
-          const fallback = staticProjects.map(p => transformProjectForGallery({
+          setDbProjects(staticProjects.map(p => transformProjectForGallery({
             ...p,
             image_url: p.image,
-          }));
-          setDbProjects(fallback);
+          })));
         }
-        setLoading(false);
-      },
-      (err) => {
+      } catch (err) {
         console.error('Error fetching projects:', err);
-        const fallback = staticProjects.map(p => transformProjectForGallery({
+        setDbProjects(staticProjects.map(p => transformProjectForGallery({
           ...p,
           image_url: p.image,
-        }));
-        setDbProjects(fallback);
+        })));
+      } finally {
         setLoading(false);
-      },
-    );
-
-    return unsubscribe;
+      }
+    };
+    
+    loadData();
   }, []);
 
   const filteredProjects = activeCategory === 'all'
@@ -87,8 +74,8 @@ const Gallery = () => {
               key={cat.key}
               onClick={() => setActiveCategory(cat.key)}
               className={`px-6 py-3 border-4 border-black font-black text-sm uppercase tracking-wider transition-all duration-200 ${activeCategory === cat.key
-                  ? 'bg-secondary text-black shadow-brutal translate-x-[-2px] translate-y-[-2px]'
-                  : 'bg-white text-black hover:bg-light-gray hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal'
+                  ? 'bg-secondary text-black shadow-brutal translate-x-[-2px] translate-y-[-2px] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
+                  : 'bg-white text-black hover:bg-light-gray hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
                 }`}
             >
               {cat.label}

@@ -1,29 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../lib/firebaseClient';
 import { LogIn, Loader2, Eye, EyeOff, Home } from 'lucide-react';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (localStorage.getItem('admin_auth') === 'true') {
+      navigate('/admin/dashboard');
+    }
+  }, [navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
+    // Simulasi loading kecil
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
+    
+    if (password === adminPassword) {
+      localStorage.setItem('admin_auth', 'true');
       navigate('/admin/dashboard');
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
+    } else {
+      setError('Password salah!');
     }
+    setLoading(false);
   };
 
   return (
@@ -45,18 +53,6 @@ const Login = () => {
         )}
 
         <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-6 py-4 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl transition-all text-gray-900 dark:text-white"
-              placeholder="admin@example.com"
-            />
-          </div>
-
           <div>
             <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Password</label>
             <div className="relative">
