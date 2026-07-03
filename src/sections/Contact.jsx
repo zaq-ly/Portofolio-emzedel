@@ -53,7 +53,7 @@ const Contact = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="bg-white border-4 border-black shadow-brutal hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all duration-200 flex-1 w-full"
+              className="bg-white border-4 border-black shadow-brutal hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200 flex-1 w-full"
             >
               <a href={item.link} target="_blank" rel="noopener noreferrer" className="block p-8">
                 <div className={`${item.bg} ${item.color} inline-flex p-4 border-4 border-black shadow-brutal-sm mb-6`}>

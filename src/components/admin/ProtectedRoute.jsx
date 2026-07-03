@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../lib/firebaseClient';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = ({ children }) => {
@@ -10,17 +8,14 @@ const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate('/admin');
-        setAuthenticated(false);
-      } else {
-        setAuthenticated(true);
-      }
-      setLoading(false);
-    });
-
-    return unsubscribe;
+    const isAuth = localStorage.getItem('admin_auth') === 'true';
+    if (!isAuth) {
+      navigate('/admin');
+      setAuthenticated(false);
+    } else {
+      setAuthenticated(true);
+    }
+    setLoading(false);
   }, [navigate]);
 
   if (loading) {

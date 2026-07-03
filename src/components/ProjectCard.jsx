@@ -8,10 +8,10 @@ const ProjectCard = ({ project, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="group bg-white border-4 border-black shadow-brutal hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all duration-200 flex flex-col h-full cursor-pointer"
+      className="group bg-white border-4 border-black shadow-brutal hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200 flex flex-col h-full cursor-pointer"
     >
       {/* Image — 1:1 aspect ratio */}
-      <div className="relative overflow-hidden aspect-square bg-light-gray border-b-4 border-black">
+      <div className="relative overflow-hidden aspect-square bg-light-gray border-b-4 border-black group-hover:p-2 transition-all duration-300">
         {/* Skeleton/Loading */}
         {!isLoaded && (
           <div className="absolute inset-0 z-10 flex items-center justify-center">

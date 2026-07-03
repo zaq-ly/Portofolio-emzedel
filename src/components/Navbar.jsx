@@ -29,7 +29,7 @@ const Navbar = () => {
             <a
               key={link.name}
               href={link.href}
-              className="border-4 border-black bg-white px-5 py-2 font-black text-sm uppercase tracking-wider hover:bg-secondary transition-all duration-200"
+              className="border-4 border-black bg-white px-5 py-2 font-black text-sm uppercase tracking-wider shadow-brutal-sm hover:bg-secondary hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-200"
             >
               {link.name}
             </a>
@@ -40,7 +40,7 @@ const Navbar = () => {
         <div className="md:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="border-4 border-black bg-white p-2 font-black"
+            className="border-4 border-black bg-white p-2 font-black shadow-brutal-sm hover:bg-secondary hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-200"
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
@@ -57,7 +57,7 @@ const Navbar = () => {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="border-4 border-black bg-white px-6 py-3 font-black text-lg uppercase tracking-wider hover:bg-secondary"
+                  className="border-4 border-black bg-white px-6 py-3 font-black text-lg uppercase tracking-wider shadow-brutal-sm hover:bg-secondary hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-200"
                 >
                   {link.name}
                 </a>

@@ -36,7 +36,7 @@ function App() {
   return (
     <Router>
       <ScrollToHash />
-      <div className="min-h-screen bg-white text-gray-900 dark:bg-dark dark:text-light transition-colors duration-300">
+      <div className="min-h-screen bg-white bg-grid-pattern text-gray-900 transition-colors duration-300">
         <Routes>
           {/* Main Portfolio Route */}
           <Route path="/" element={
