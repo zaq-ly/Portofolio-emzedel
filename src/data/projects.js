@@ -1,5 +1,7 @@
 export const categories = [
-  { key: "all", label: "Semua Karya" },
+  { key: "all", label: "Semua" },
+  { key: "frontend", label: "Front-End" },
+  { key: "uiux", label: "UI/UX" },
   { key: "illustration", label: "Ilustrasi" },
   { key: "vector", label: "Vektor" },
   { key: "branding", label: "Logo" },
@@ -897,5 +899,53 @@ export const projects = [
       "Digital Art",
       "Poster"
     ]
+  },
+  {
+    "id": 82,
+    "title": "Portfolio Website EMZEDEL",
+    "category": "frontend",
+    "type": "frontend",
+    "description": "Website portfolio pribadi yang dibangun dengan React + Tailwind CSS. Menampilkan karya desain, project front-end, dan keahlian UI/UX dalam satu platform.",
+    "image": "/gallery/foto_profil.JPG",
+    "tags": ["React", "Tailwind CSS", "Framer Motion", "Vite"],
+    "techStack": ["React", "Tailwind CSS", "Framer Motion", "Vite"],
+    "liveUrl": "#",
+    "githubUrl": "#"
+  },
+  {
+    "id": 83,
+    "title": "Contoh Project Front-End",
+    "category": "frontend",
+    "type": "frontend",
+    "description": "Ini adalah placeholder project. Ganti dengan project front-end kamu melalui Admin Dashboard.",
+    "image": "/gallery/foto_profil.JPG",
+    "tags": ["React", "JavaScript", "CSS"],
+    "techStack": ["React", "JavaScript", "CSS"],
+    "liveUrl": "#",
+    "githubUrl": "#"
+  },
+  {
+    "id": 84,
+    "title": "Contoh UI/UX Case Study",
+    "category": "uiux",
+    "type": "uiux",
+    "description": "Ini adalah placeholder project UI/UX. Ganti dengan case study UI/UX kamu melalui Admin Dashboard.",
+    "image": "/gallery/foto_profil.JPG",
+    "tags": ["Figma", "UI Design", "Prototyping"],
+    "techStack": ["Figma", "Prototyping"],
+    "liveUrl": "#",
+    "githubUrl": ""
+  },
+  {
+    "id": 85,
+    "title": "Contoh UI/UX Redesign",
+    "category": "uiux",
+    "type": "uiux",
+    "description": "Ini adalah placeholder redesign project. Ganti dengan case study UI/UX kamu melalui Admin Dashboard.",
+    "image": "/gallery/foto_profil.JPG",
+    "tags": ["Figma", "User Research", "Wireframe"],
+    "techStack": ["Figma", "User Research"],
+    "liveUrl": "#",
+    "githubUrl": ""
   }
 ];

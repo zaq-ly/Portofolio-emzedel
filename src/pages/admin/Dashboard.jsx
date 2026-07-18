@@ -16,10 +16,10 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState([]);
   const [uploadForm, setUploadForm] = useState({
-    title: '', category: 'illustration', description: '', tags: '',
+    title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '',
   });
   const [editForm, setEditForm] = useState({
-    title: '', category: 'illustration', description: '', tags: '',
+    title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '',
   });
   const [imageFile, setImageFile] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
@@ -104,15 +104,23 @@ const AdminDashboard = () => {
     try {
       const publicUrl = await uploadImageToStorage(imageFile);
       const parsedTags = uploadForm.tags.split(',').map(t => t.trim()).filter(Boolean);
-      await createProject({
+      const isDevProject = uploadForm.category === 'frontend' || uploadForm.category === 'uiux';
+      const projectData = {
         title: uploadForm.title,
         category: uploadForm.category,
         description: uploadForm.description,
         tags: parsedTags,
         image_url: publicUrl,
-      });
+      };
+      if (isDevProject) {
+        projectData.type = uploadForm.category;
+        projectData.techStack = uploadForm.techStack.split(',').map(t => t.trim()).filter(Boolean);
+        projectData.liveUrl = uploadForm.liveUrl;
+        projectData.githubUrl = uploadForm.githubUrl;
+      }
+      await createProject(projectData);
       setStatus({ type: 'success', message: 'Karya berhasil diupload!' });
-      setUploadForm({ title: '', category: 'illustration', description: '', tags: '' });
+      setUploadForm({ title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '' });
       setImageFile(null);
       loadProjects();
     } catch (err) {
@@ -156,6 +164,9 @@ const AdminDashboard = () => {
       category: project.category,
       description: project.description || '',
       tags: Array.isArray(project.tags) ? project.tags.join(', ') : '',
+      techStack: Array.isArray(project.techStack) ? project.techStack.join(', ') : '',
+      liveUrl: project.liveUrl || '',
+      githubUrl: project.githubUrl || '',
     });
     setEditingId(project.id);
     setEditingProject(project);
@@ -164,7 +175,7 @@ const AdminDashboard = () => {
   };
 
   const handleCancelEdit = () => {
-    setEditForm({ title: '', category: 'illustration', description: '', tags: '' });
+    setEditForm({ title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '' });
     setEditingId(null);
     setEditingProject(null);
     setStatus({ type: '', message: '' });
@@ -271,6 +282,8 @@ const AdminDashboard = () => {
                   <option value="vector">Vector</option>
                   <option value="poster">Poster</option>
                   <option value="banner">Banner</option>
+                  <option value="frontend">Front-End Project</option>
+                  <option value="uiux">UI/UX Project</option>
                 </select>
               </div>
 
@@ -295,6 +308,42 @@ const AdminDashboard = () => {
                   placeholder="Jelaskan sedikit tentang karya ini..."
                 ></textarea>
               </div>
+
+              {/* Conditional fields for dev projects */}
+              {(uploadForm.category === 'frontend' || uploadForm.category === 'uiux') && (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Tech Stack (Pisahkan dengan koma)</label>
+                    <input
+                      type="text"
+                      value={uploadForm.techStack}
+                      onChange={(e) => setUploadForm({ ...uploadForm, techStack: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm text-gray-900 dark:text-white"
+                      placeholder="React, Tailwind CSS, Vite"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Live Demo URL (opsional)</label>
+                    <input
+                      type="url"
+                      value={uploadForm.liveUrl}
+                      onChange={(e) => setUploadForm({ ...uploadForm, liveUrl: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm text-gray-900 dark:text-white"
+                      placeholder="https://example.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">GitHub URL (opsional)</label>
+                    <input
+                      type="url"
+                      value={uploadForm.githubUrl}
+                      onChange={(e) => setUploadForm({ ...uploadForm, githubUrl: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm text-gray-900 dark:text-white"
+                      placeholder="https://github.com/username/repo"
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="flex gap-2">
                 <button
@@ -424,6 +473,8 @@ const AdminDashboard = () => {
                       <option value="vector">Vector</option>
                       <option value="poster">Poster</option>
                       <option value="banner">Banner</option>
+                      <option value="frontend">Front-End Project</option>
+                      <option value="uiux">UI/UX Project</option>
                     </select>
                   </div>
                   <div>
@@ -434,6 +485,23 @@ const AdminDashboard = () => {
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Deskripsi</label>
                     <textarea rows="3" value={editForm.description} onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm resize-none text-gray-900 dark:text-white" placeholder="Jelaskan sedikit tentang karya ini..." />
                   </div>
+                  {/* Conditional fields for dev projects in edit modal */}
+                  {(editForm.category === 'frontend' || editForm.category === 'uiux') && (
+                    <>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Tech Stack (koma)</label>
+                        <input type="text" value={editForm.techStack} onChange={(e) => setEditForm({ ...editForm, techStack: e.target.value })} className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm text-gray-900 dark:text-white" placeholder="React, Tailwind CSS" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Live Demo URL</label>
+                        <input type="url" value={editForm.liveUrl} onChange={(e) => setEditForm({ ...editForm, liveUrl: e.target.value })} className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm text-gray-900 dark:text-white" placeholder="https://example.com" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">GitHub URL</label>
+                        <input type="url" value={editForm.githubUrl} onChange={(e) => setEditForm({ ...editForm, githubUrl: e.target.value })} className="w-full px-4 py-3 bg-gray-50 dark:bg-dark border border-gray-200 dark:border-dark-border focus:border-primary outline-none rounded-xl text-sm text-gray-900 dark:text-white" placeholder="https://github.com/username/repo" />
+                      </div>
+                    </>
+                  )}
                   <div className="flex gap-2 pt-2">
                     <button disabled={loading} type="submit" className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 disabled:opacity-50">
                       {loading ? <Loader2 className="animate-spin" size={20} /> : 'Simpan Perubahan'}

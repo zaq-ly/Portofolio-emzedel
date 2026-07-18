@@ -86,7 +86,7 @@ const updateProjectsFile = async (newProjectsArray, commitMessage) => {
   const currentFile = await fetchGitHubAPI('GET', filePath);
   
   // Buat konten baru
-  const fileContent = `export const projects = ${JSON.stringify(newProjectsArray, null, 2)};\n\nexport const categories = [\n  { key: "all", label: "Semua Karya" },\n  { key: "illustration", label: "Ilustrasi" },\n  { key: "vector", label: "Vektor" },\n  { key: "branding", label: "Logo" },\n  { key: "poster-banner", label: "Poster & Banner" },\n];\n`;
+  const fileContent = `export const categories = [\n  { key: "all", label: "Semua" },\n  { key: "frontend", label: "Front-End" },\n  { key: "uiux", label: "UI/UX" },\n  { key: "illustration", label: "Ilustrasi" },\n  { key: "vector", label: "Vektor" },\n  { key: "branding", label: "Logo" },\n  { key: "poster-banner", label: "Poster & Banner" },\n];\n\nexport const projects = ${JSON.stringify(newProjectsArray, null, 2)};\n`;
   
   // Encode Base64 (mendukung Unicode)
   const base64Content = btoa(unescape(encodeURIComponent(fileContent)));
@@ -99,7 +99,7 @@ const updateProjectsFile = async (newProjectsArray, commitMessage) => {
   });
 };
 
-export const createProject = async ({ title, category, description, tags, image_url }) => {
+export const createProject = async ({ title, category, description, tags, image_url, type, techStack, liveUrl, githubUrl }) => {
   // Tambah ke in-memory agar UI langsung update
   const newId = inMemoryProjects.length > 0 ? Math.max(...inMemoryProjects.map(p => p.id)) + 1 : 1;
   const newProject = {
@@ -110,6 +110,12 @@ export const createProject = async ({ title, category, description, tags, image_
     image: image_url,
     tags: Array.isArray(tags) ? tags : []
   };
+
+  // Tambah field khusus dev project
+  if (type) newProject.type = type;
+  if (techStack && techStack.length > 0) newProject.techStack = techStack;
+  if (liveUrl) newProject.liveUrl = liveUrl;
+  if (githubUrl) newProject.githubUrl = githubUrl;
   
   inMemoryProjects = [newProject, ...inMemoryProjects];
   
@@ -120,14 +126,18 @@ export const createProject = async ({ title, category, description, tags, image_
   );
 };
 
-export const updateProject = async (id, { title, category, description, tags }) => {
+export const updateProject = async (id, { title, category, description, tags, techStack, liveUrl, githubUrl }) => {
+  const updateData = { title, category, description, tags: Array.isArray(tags) ? tags : [] };
+  if (techStack) updateData.techStack = Array.isArray(techStack) ? techStack : [];
+  if (liveUrl !== undefined) updateData.liveUrl = liveUrl;
+  if (githubUrl !== undefined) updateData.githubUrl = githubUrl;
+
   inMemoryProjects = inMemoryProjects.map(p => 
-    p.id === id ? { ...p, title, category, description, tags: Array.isArray(tags) ? tags : [] } : p
+    p.id === id ? { ...p, ...updateData } : p
   );
   
-  // Kita harus update file aslinya (staticProjects)
   const updatedStatic = staticProjects.map(p =>
-    p.id === id ? { ...p, title, category, description, tags: Array.isArray(tags) ? tags : [] } : p
+    p.id === id ? { ...p, ...updateData } : p
   );
   
   await updateProjectsFile(updatedStatic, `Update project: ${title} via Admin Dashboard`);

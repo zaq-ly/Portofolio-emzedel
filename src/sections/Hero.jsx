@@ -1,114 +1,164 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Download, Code2, Palette, Layout } from 'lucide-react';
 
 const Hero = () => {
+  const pillars = [
+    { icon: <Code2 size={16} />, label: 'Front-End Dev' },
+    { icon: <Layout size={16} />, label: 'UI/UX Design' },
+    { icon: <Palette size={16} />, label: 'Design & Ilustrasi' },
+  ];
+
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-32 pb-16 px-4 sm:px-6 overflow-hidden bg-white">
-      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
+    <section id="home" className="relative min-h-screen flex items-center pt-24 pb-16 px-4 sm:px-6 overflow-hidden">
+      {/* Subtle background elements */}
+      <div className="absolute inset-0 bg-dot-pattern" />
+      <div className="absolute top-20 right-0 w-[500px] h-[500px] bg-accent/[0.03] rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/[0.02] rounded-full blur-3xl" />
+
+      <div className="max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-16 relative z-10">
         {/* Left — Text */}
-        <div className="lg:w-1/2 text-center lg:text-left">
+        <div className="lg:w-3/5 text-center lg:text-left">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <h2 className="inline-block bg-secondary border-4 border-black px-6 py-3 font-black text-sm uppercase tracking-[0.2em] mb-6 shadow-brutal-sm">
-              Design Lover & Visual Explorer
-            </h2>
+            <span className="section-label">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              Terbuka untuk peluang baru
+            </span>
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-            className="text-4xl md:text-6xl lg:text-7xl font-black leading-[1.1] mb-6 text-black"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.1] mb-4 text-text-primary"
           >
-            <span className="block text-2xl md:text-3xl mb-2 font-black">
-              HAI, SAYA
+            <span className="block text-lg md:text-xl font-sans font-medium text-text-secondary mb-3">
+              Hai, saya
             </span>
-            <span className="bg-primary text-white px-6 py-3 inline-block border-4 border-black shadow-brutal">
-              MUHAMMAD ZAQLY
-            </span>
-            <br />
-            <span className="text-black">
-              LULUANG
-            </span>
+            Muhammad Zaqly{' '}
+            <span className="text-accent">Luluang</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-            className="text-lg md:text-xl text-black mb-10 max-w-xl mx-auto lg:mx-0 font-bold leading-relaxed"
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="text-base md:text-lg text-text-secondary mb-6 max-w-lg mx-auto lg:mx-0 leading-relaxed"
           >
-            Koleksi hasil corat-coret, eksperimen visual, dan eksplorasi desain dari seseorang yang menjadikan proses kreatif sebagai hobi utama. Masih terus belajar, masih terus mencoba hal baru!
+            <span className="font-display font-semibold text-text-primary">Creative Developer</span> — Saya mendesain, mengilustrasikan, dan membangun pengalaman digital dari konsep hingga production code.
           </motion.p>
 
+          {/* Pillar badges */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex flex-wrap justify-center lg:justify-start gap-2 mb-8"
+          >
+            {pillars.map((pillar, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg
+                           bg-surface border border-border text-text-secondary
+                           hover:border-accent/30 hover:text-accent hover:bg-accent/[0.03]
+                           transition-all duration-200"
+              >
+                {pillar.icon}
+                {pillar.label}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3"
           >
             <a
-              href="#gallery"
-              className="bg-primary text-white border-4 border-black px-8 py-4 font-black text-lg shadow-brutal hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200 flex items-center justify-center gap-2"
+              href="#projects"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white
+                         font-medium text-sm rounded-xl hover:bg-primary/90
+                         transition-all duration-200 shadow-soft hover:shadow-card"
             >
-              Lihat Galeri
-              <ArrowRight size={24} />
+              Lihat Projects
+              <ArrowRight size={16} />
             </a>
             <a
               href="#contact"
-              className="bg-white text-black border-4 border-black px-8 py-4 font-black text-lg shadow-brutal hover:bg-secondary hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg active:translate-x-[8px] active:translate-y-[8px] active:shadow-none transition-all duration-200 flex items-center justify-center"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-surface text-text-primary
+                         font-medium text-sm rounded-xl border border-border
+                         hover:border-border-hover hover:bg-surface-secondary
+                         transition-all duration-200"
             >
               Hubungi Saya
             </a>
           </motion.div>
 
-          {/* Social Proof / Trust Mini Section */}
+          {/* Stats */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
             className="mt-12 flex items-center justify-center lg:justify-start gap-8"
           >
-            <div className="border-4 border-black bg-light-gray px-6 py-4 shadow-brutal-sm">
-              <span className="block text-3xl font-black">80+</span>
-              <span className="block text-xs font-black uppercase tracking-wider">Karya Seni</span>
-            </div>
-            <div className="border-4 border-black bg-accent text-white px-6 py-4 shadow-brutal-sm">
-              <span className="block text-3xl font-black">100%</span>
-              <span className="block text-xs font-black uppercase tracking-wider">Kreatif</span>
-            </div>
+            {[
+              { value: '80+', label: 'Karya Desain' },
+              { value: '3', label: 'Bidang Keahlian' },
+              { value: '∞', label: 'Semangat Belajar' },
+            ].map((stat, i) => (
+              <div key={i} className="text-center lg:text-left">
+                <span className="block text-2xl font-display font-bold text-text-primary">{stat.value}</span>
+                <span className="block text-xs text-text-tertiary">{stat.label}</span>
+              </div>
+            ))}
           </motion.div>
         </div>
 
         {/* Right — Visual */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          className="lg:w-5/12 relative"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="lg:w-2/5 relative"
         >
-          {/* Decorative shapes */}
-          <div className="absolute -top-12 -right-8 w-24 h-24 bg-secondary border-4 border-black rounded-full shadow-brutal z-0 animate-bounce" style={{ animationDuration: '3s' }}></div>
-          <div className="absolute -bottom-8 -left-8 w-16 h-16 bg-accent border-4 border-black shadow-brutal z-20 rotate-12"></div>
-          
-          <div className="relative z-10">
-            {/* Decorative elements behind */}
-            <div className="absolute -z-10 top-6 left-6 w-full h-full bg-secondary border-4 border-black"></div>
-            <div className="absolute -z-20 top-12 left-12 w-full h-full bg-primary border-4 border-black"></div>
+          {/* Decorative elements */}
+          <div className="absolute -top-6 -right-6 w-full h-full bg-accent/5 rounded-3xl" />
+          <div className="absolute -top-3 -right-3 w-full h-full bg-accent/[0.08] rounded-3xl" />
 
-            {/* Main image */}
-            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto border-4 border-black shadow-brutal-lg overflow-hidden bg-white">
-              <img
-                src="/gallery/foto_profil.JPG"
-                alt="Muhammad Zaqly Luluang"
-                className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-500"
-              />
-            </div>
+          {/* Main image */}
+          <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto rounded-3xl overflow-hidden shadow-elevated border border-border">
+            <img
+              src="/gallery/foto_profil.JPG"
+              alt="Muhammad Zaqly Luluang"
+              className="w-full h-full object-cover"
+            />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
           </div>
+
+          {/* Floating badge */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="absolute -bottom-4 -left-4 md:left-0 bg-surface border border-border rounded-2xl p-4 shadow-card"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                <Code2 size={20} className="text-accent" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-text-primary">Creative Developer</p>
+                <p className="text-[10px] text-text-tertiary">Design → Code Pipeline</p>
+              </div>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

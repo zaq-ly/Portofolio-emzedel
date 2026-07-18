@@ -4,7 +4,9 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Hero from './sections/Hero';
 import About from './sections/About';
-import Gallery from './sections/Gallery';
+import Skills from './sections/Skills';
+import Projects from './sections/Projects';
+import Experience from './sections/Experience';
 import Contact from './sections/Contact';
 
 import AdminLogin from './pages/admin/Login';
@@ -36,7 +38,7 @@ function App() {
   return (
     <Router>
       <ScrollToHash />
-      <div className="min-h-screen bg-white bg-grid-pattern text-gray-900 transition-colors duration-300">
+      <div className="min-h-screen bg-surface text-text-primary transition-colors duration-300">
         <Routes>
           {/* Main Portfolio Route */}
           <Route path="/" element={
@@ -45,15 +47,14 @@ function App() {
               <main>
                 <div id="home"><Hero /></div>
                 <div id="about"><About /></div>
-                <div id="gallery"><Gallery /></div>
+                <div id="skills"><Skills /></div>
+                <div id="projects"><Projects /></div>
+                <div id="experience"><Experience /></div>
                 <div id="contact"><Contact /></div>
               </main>
               <Footer />
             </>
           } />
-
-
-
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />

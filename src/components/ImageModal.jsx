@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, ExternalLink, Github } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/image';
 
 const ImageModal = ({ isOpen, project, onClose }) => {
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Escape') onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, handleKeyDown]);
+
   if (!project) return null;
+
+  const isDevProject = project.category === 'frontend' || project.category === 'uiux';
 
   return (
     <AnimatePresence>
@@ -13,76 +30,100 @@ const ImageModal = ({ isOpen, project, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={onClose}
         >
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-black/90"
-          />
+          <div className="absolute inset-0 bg-primary/80 backdrop-blur-sm" />
 
-          {/* Modal Content */}
+          {/* Modal */}
           <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative max-w-5xl w-full bg-white border-4 border-black shadow-brutal-lg flex flex-col md:flex-row z-10 max-h-[90vh]"
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="relative bg-surface rounded-2xl shadow-elevated overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
+            {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-20 bg-primary text-white border-4 border-black p-2 hover:bg-secondary hover:text-black transition-all duration-200"
+              className="absolute top-4 right-4 z-10 p-2 rounded-xl bg-primary/5 hover:bg-primary/10 text-text-secondary hover:text-text-primary transition-all"
             >
-              <X size={24} />
+              <X size={20} />
             </button>
 
-            {/* Image Section */}
-            <div className="w-full md:w-2/3 h-[50vh] md:h-auto relative bg-light-gray border-b-4 md:border-b-0 md:border-r-4 border-black flex items-center justify-center overflow-hidden">
+            {/* Image */}
+            <div className="relative bg-surface-tertiary flex-shrink-0">
               <img
-                src={getOptimizedImageUrl(project.image, 1200, 85)}
+                src={getOptimizedImageUrl(project.image, 1200, 90)}
                 alt={project.title}
-                className="w-full h-full object-contain"
+                className="w-full max-h-[60vh] object-contain"
               />
             </div>
 
-            {/* Details Section */}
-            <div className="w-full md:w-1/3 p-6 md:p-8 flex flex-col justify-between overflow-y-auto">
-              <div>
-                <h3 className="text-3xl font-black text-black leading-tight mb-6">
-                  {project.title}
-                </h3>
-
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="text-xs font-black uppercase tracking-wider px-3 py-1 bg-secondary border-2 border-black"
-                    >
-                      {tag}
+            {/* Info */}
+            <div className="p-6 border-t border-border">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-md ${
+                      project.category === 'frontend'
+                        ? 'bg-accent/10 text-accent'
+                        : project.category === 'uiux'
+                        ? 'bg-violet-500/10 text-violet-600'
+                        : 'bg-surface-tertiary text-text-secondary'
+                    }`}>
+                      {project.category === 'frontend' ? 'Front-End' :
+                       project.category === 'uiux' ? 'UI/UX' :
+                       project.category}
                     </span>
-                  ))}
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-sm font-black text-black uppercase tracking-widest mb-3">
-                      Tentang Project
-                    </h4>
-                    <p className="text-black text-base leading-relaxed font-bold">
-                      {project.description || "Karya desain kreatif oleh Muhammad Zaqly Luluang."}
-                    </p>
                   </div>
-                </div>
-              </div>
+                  <h3 className="font-display font-bold text-xl text-text-primary mb-1">
+                    {project.title}
+                  </h3>
+                  {project.description && (
+                    <p className="text-text-secondary text-sm">{project.description}</p>
+                  )}
 
-              <div className="mt-8 pt-6 border-t-4 border-black text-center">
-                <p className="text-sm font-black text-black uppercase tracking-wider">
-                  Karya dibuat oleh Muhammad Zaqly Luluang
-                </p>
+                  {/* Tags */}
+                  {project.tags && project.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                      {project.tags.map((tag, i) => (
+                        <span key={i} className="tag text-[10px]">{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Dev project links */}
+                {isDevProject && (
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {project.liveUrl && project.liveUrl !== '#' && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg bg-accent text-white hover:bg-accent-hover transition-all"
+                      >
+                        <ExternalLink size={14} />
+                        Demo
+                      </a>
+                    )}
+                    {project.githubUrl && project.githubUrl !== '#' && (
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg bg-surface-tertiary text-text-primary hover:bg-border transition-all"
+                      >
+                        <Github size={14} />
+                        Code
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
