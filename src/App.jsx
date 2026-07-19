@@ -9,25 +9,55 @@ import Projects from './sections/Projects';
 import Experience from './sections/Experience';
 import Contact from './sections/Contact';
 
+import Gallery from './pages/Gallery';
+import ITProjects from './pages/ITProjects';
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import ProtectedRoute from './components/admin/ProtectedRoute';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // Komponen pembantu untuk menangani scroll ke ID saat hash berubah
 const ScrollToHash = () => {
   const { pathname, hash } = useLocation();
+  const prevPathname = useRef(pathname);
 
   useEffect(() => {
+    const isCrossPage = prevPathname.current !== pathname;
+    const scrollBehavior = isCrossPage ? 'auto' : 'smooth';
+
+    // Override global CSS scroll behavior temporarily if cross-page
+    if (isCrossPage) {
+      document.documentElement.style.scrollBehavior = 'auto';
+    }
+
     if (hash) {
       const id = hash.replace('#', '');
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const scrollToElement = () => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: scrollBehavior });
+          // Hapus hash secara diam-diam agar saat di-refresh, halaman kembali ke atas
+          window.history.replaceState(null, '', pathname);
+        }
+      };
+      
+      // Scroll immediately, then again after a short delay to account for image loading
+      scrollToElement();
+      setTimeout(scrollToElement, 150);
+      setTimeout(scrollToElement, 500);
+    } else if (pathname === '/') {
+      window.scrollTo({ top: 0, behavior: scrollBehavior });
+    }
+    
+    prevPathname.current = pathname;
+
+    // Reset back to CSS default after all scrolls are done
+    if (isCrossPage) {
+      const timer = setTimeout(() => {
+        document.documentElement.style.scrollBehavior = '';
+      }, 600);
+      return () => clearTimeout(timer);
     }
   }, [pathname, hash]);
 
@@ -55,6 +85,10 @@ function App() {
               <Footer />
             </>
           } />
+
+          {/* Gallery Route */}
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/it-projects" element={<ITProjects />} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />

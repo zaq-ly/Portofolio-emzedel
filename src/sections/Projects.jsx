@@ -1,18 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
-import { categories, projects as staticProjects } from '../data/projects';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Loader2, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { projects as staticProjects } from '../data/projects';
 import ProjectCard from '../components/ProjectCard';
+import ITProjectCard from '../components/ITProjectCard';
 import ImageModal from '../components/ImageModal';
 import { fetchProjects } from '../lib/projectsService';
 import { transformProjectForGallery } from '../utils/projects';
+import { FadeIn } from '../components/animations/FadeIn';
+
+const StackedITCard = ({ project, index, total, onClick }) => {
+  const ref = useRef(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start 20vh', 'start -60vh']
+  });
+
+  const isLast = index === total - 1;
+  const scale = useTransform(scrollYProgress, [0, 1], [1, isLast ? 1 : 0.95]);
+  const filter = useTransform(scrollYProgress, [0, 1], ['blur(0px)', isLast ? 'blur(0px)' : 'blur(8px)']);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, isLast ? 1 : 0.6]);
+
+  return (
+    <>
+      <div ref={ref} className="w-full h-0 pointer-events-none invisible" />
+      <div className="sticky z-10 w-full mb-12 md:mb-24" style={{ top: '20vh' }}>
+        <motion.div 
+          style={{ scale, opacity, filter }}
+          className="w-full origin-top"
+        >
+          <FadeIn delay={0} direction="up" distance={40} className="w-full shadow-2xl rounded-[2rem]">
+            <ITProjectCard project={project} onClick={() => onClick(project)} />
+          </FadeIn>
+        </motion.div>
+      </div>
+    </>
+  );
+};
 
 const Projects = () => {
-  const [activeCategory, setActiveCategory] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dbProjects, setDbProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadData = async () => {
@@ -40,106 +73,115 @@ const Projects = () => {
     loadData();
   }, []);
 
-  const filteredProjects = activeCategory === 'all'
-    ? dbProjects
-    : activeCategory === 'poster-banner'
-      ? dbProjects.filter(p => p.category === 'poster' || p.category === 'banner')
-      : dbProjects.filter(p => p.category === activeCategory);
-
   const handleOpenModal = (project) => {
     setSelectedProject(project);
     setIsModalOpen(true);
   };
 
+  const itCategories = ['frontend', 'uiux'];
+
+  // IT Projects (hanya ambil yang di-feature admin, maksimal 3)
+  const itProjects = dbProjects.filter(p => itCategories.includes(p.category) && p.isFeatured).slice(0, 3);
+
+  // Design Projects (hanya ambil yang di-feature admin, maksimal 6)
+  const designProjects = dbProjects.filter(p => !itCategories.includes(p.category) && p.isFeatured).slice(0, 6);
+
   return (
-    <section id="projects" className="section-padding bg-surface">
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <span className="section-label">Projects</span>
-          <h2 className="section-title mb-4">
-            Karya & <span className="text-accent">Project</span> Saya
-          </h2>
-          <p className="section-subtitle mx-auto">
-            Dari ilustrasi digital, logo branding, hingga website — semua karya saya ada di sini.
-          </p>
-        </motion.div>
+    <section id="projects" className="section-padding bg-primary">
+      <div className="max-w-6xl mx-auto">
 
-        {/* Filter Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="flex flex-wrap justify-center gap-2 mb-10"
-        >
-          {categories.map((cat) => (
-            <button
-              key={cat.key}
-              onClick={() => setActiveCategory(cat.key)}
-              className={`px-4 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
-                activeCategory === cat.key
-                  ? 'bg-primary text-white shadow-soft'
-                  : 'bg-surface-secondary text-text-secondary border border-border hover:border-border-hover hover:text-text-primary'
-              }`}
-            >
-              {cat.label}
-              {activeCategory === cat.key && (
-                <span className="ml-1.5 text-[10px] bg-white/20 px-1.5 py-0.5 rounded">
-                  {filteredProjects.length}
-                </span>
-              )}
-            </button>
-          ))}
-        </motion.div>
+        {/* --- IT Development Section --- */}
+        <div className="mb-32">
+          <div className="text-center mb-16">
+            <FadeIn direction="up">
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-text-primary mb-4">
+                IT Development.
+              </h2>
+              <p className="text-lg text-text-secondary font-medium">
+                Project website dan pengembangan front-end.
+              </p>
+            </FadeIn>
+          </div>
 
-        {/* Project Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 min-h-[300px]">
-          {loading && dbProjects.length === 0 ? (
-            <div className="col-span-full flex flex-col items-center justify-center py-20">
-              <Loader2 className="animate-spin text-accent mb-4" size={32} />
-              <p className="text-sm text-text-secondary">Memuat projects...</p>
-            </div>
-          ) : (
-            <AnimatePresence mode="popLayout">
-              {filteredProjects.map((project) => (
-                <motion.div
+          <div className="block relative pb-12">
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="animate-spin text-text-secondary" size={32} />
+              </div>
+            ) : itProjects.length > 0 ? (
+              itProjects.map((project, index) => (
+                <StackedITCard
                   key={project.id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-50px' }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{
-                    duration: 0.3,
-                    layout: { duration: 0.3 }
-                  }}
-                >
+                  project={project}
+                  index={index}
+                  total={itProjects.length}
+                  onClick={handleOpenModal}
+                />
+              ))
+            ) : (
+              <div className="text-center text-text-tertiary py-10">
+                Belum ada project IT Development.
+              </div>
+            )}
+          </div>
+
+          <FadeIn direction="up" delay={0.3}>
+            <div className="flex justify-center mt-12">
+              <button
+                onClick={() => navigate('/it-projects')}
+                className="group flex items-center gap-3 px-8 py-4 bg-[#0071e3] text-white rounded-full font-bold text-sm hover:scale-105 transition-all duration-300 shadow-card hover:shadow-lg"
+              >
+                Lihat Semua Project IT
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </FadeIn>
+        </div>
+
+        {/* --- Visual Arts Section (Teaser) --- */}
+        <div id="visual-arts" className="scroll-mt-24">
+          <div className="text-center mb-16">
+            <FadeIn direction="up">
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-text-primary mb-4">
+                Karya Visual.
+              </h2>
+              <p className="text-lg text-text-secondary font-medium">
+                Sedikit cuplikan dari sisi kreatif saya.
+              </p>
+            </FadeIn>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {loading ? (
+              <div className="col-span-full flex justify-center py-10">
+                <Loader2 className="animate-spin text-text-secondary" size={32} />
+              </div>
+            ) : (
+              designProjects.map((project, index) => (
+                <FadeIn key={project.id} delay={index * 0.1} direction="up" distance={30}>
                   <ProjectCard
                     project={project}
                     onClick={() => handleOpenModal(project)}
                   />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          )}
-        </div>
+                </FadeIn>
+              ))
+            )}
+          </div>
 
-        {/* Count info */}
-        {!loading && (
-          <p className="text-center text-text-tertiary text-xs mt-10">
-            Menampilkan {filteredProjects.length} dari {dbProjects.length} karya
-          </p>
-        )}
+          <FadeIn direction="up" delay={0.3}>
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={() => navigate('/gallery')}
+                className="group flex items-center gap-3 px-8 py-4 bg-text-primary text-white rounded-full font-bold text-sm hover:scale-105 transition-all duration-300 shadow-card hover:shadow-lg"
+              >
+                Lihat Semua Karya Visual
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </FadeIn>
+        </div>
       </div>
 
-      {/* Lightbox Modal */}
       <ImageModal
         isOpen={isModalOpen}
         project={selectedProject}

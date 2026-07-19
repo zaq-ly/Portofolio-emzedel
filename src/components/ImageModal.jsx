@@ -1,9 +1,16 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Github } from 'lucide-react';
+import { X, ExternalLink, Github, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/image';
 
 const ImageModal = ({ isOpen, project, onClose }) => {
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+
+  // Reset index when project changes or modal opens
+  useEffect(() => {
+    setCurrentImgIndex(0);
+  }, [project, isOpen]);
+
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') onClose();
   }, [onClose]);
@@ -30,101 +37,135 @@ const ImageModal = ({ isOpen, project, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-0"
           onClick={onClose}
         >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-primary/80 backdrop-blur-sm" />
+          {/* Cinematic Dark Backdrop */}
+          <div className="absolute inset-0 bg-black/95 backdrop-blur-3xl" />
 
-          {/* Modal */}
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 md:top-8 md:right-8 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+          >
+            <X size={24} />
+          </button>
+
+          {/* Content Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="relative bg-surface rounded-2xl shadow-elevated overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-full h-full flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 z-10 p-2 rounded-xl bg-primary/5 hover:bg-primary/10 text-text-secondary hover:text-text-primary transition-all"
-            >
-              <X size={20} />
-            </button>
+            {/* Image (Maximized to screen edges) */}
+            <div className="w-full h-full flex items-center justify-center p-4 md:p-8 relative group">
+              {project.image && project.image.split(',').length > 1 ? (
+                <>
+                  <div className="w-full h-full overflow-hidden rounded-md shadow-2xl relative flex items-center justify-center">
+                    <img
+                      src={getOptimizedImageUrl(project.image.split(',')[currentImgIndex].trim(), 1600, 90)}
+                      alt={`${project.title} - ${currentImgIndex + 1}`}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                  
+                  {/* Controls */}
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev - 1 + project.image.split(',').length) % project.image.split(',').length); }}
+                    className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-all border border-white/10"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev + 1) % project.image.split(',').length); }}
+                    className="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-all border border-white/10"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
 
-            {/* Image */}
-            <div className="relative bg-surface-tertiary flex-shrink-0">
-              <img
-                src={getOptimizedImageUrl(project.image, 1200, 90)}
-                alt={project.title}
-                className="w-full max-h-[60vh] object-contain"
-              />
+                  {/* Dots */}
+                  <div className="absolute bottom-32 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                    {project.image.split(',').map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(idx); }}
+                        className={`w-2 h-2 rounded-full transition-all shadow-md ${currentImgIndex === idx ? 'bg-white w-5' : 'bg-white/50 hover:bg-white/80'}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <img
+                  src={getOptimizedImageUrl(project.image, 1600, 90)}
+                  alt={project.title}
+                  className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
+                />
+              )}
             </div>
 
-            {/* Info */}
-            <div className="p-6 border-t border-border">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-md ${
-                      project.category === 'frontend'
-                        ? 'bg-accent/10 text-accent'
-                        : project.category === 'uiux'
-                        ? 'bg-violet-500/10 text-violet-600'
-                        : 'bg-surface-tertiary text-text-secondary'
-                    }`}>
-                      {project.category === 'frontend' ? 'Front-End' :
-                       project.category === 'uiux' ? 'UI/UX' :
-                       project.category}
-                    </span>
-                  </div>
-                  <h3 className="font-display font-bold text-xl text-text-primary mb-1">
-                    {project.title}
-                  </h3>
-                  {project.description && (
-                    <p className="text-text-secondary text-sm">{project.description}</p>
-                  )}
-
-                  {/* Tags */}
-                  {project.tags && project.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {project.tags.map((tag, i) => (
-                        <span key={i} className="tag text-[10px]">{tag}</span>
-                      ))}
-                    </div>
-                  )}
+            {/* Info Overlay (Lighter cinematic bottom gradient) */}
+            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-24 pb-8 px-6 md:px-12 flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pointer-events-none">
+              <div className="min-w-0 flex-1 max-w-3xl pointer-events-auto">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">
+                    {project.category === 'frontend' ? 'Front-End' :
+                     project.category === 'uiux' ? 'UI/UX' :
+                     project.category === 'branding' ? 'Logo' :
+                     project.category}
+                  </span>
                 </div>
+                <h3 className="font-display font-bold text-3xl md:text-5xl text-white mb-3 tracking-tight">
+                  {project.title}
+                </h3>
+                {project.description && (
+                  <p className="text-white/70 text-base md:text-lg leading-relaxed mb-4">
+                    {project.description}
+                  </p>
+                )}
 
-                {/* Dev project links */}
-                {isDevProject && (
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {project.liveUrl && project.liveUrl !== '#' && (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg bg-accent text-white hover:bg-accent-hover transition-all"
-                      >
-                        <ExternalLink size={14} />
-                        Demo
-                      </a>
-                    )}
-                    {project.githubUrl && project.githubUrl !== '#' && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg bg-surface-tertiary text-text-primary hover:bg-border transition-all"
-                      >
-                        <Github size={14} />
-                        Code
-                      </a>
-                    )}
+                {/* Tags */}
+                {project.tags && project.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags.map((tag, i) => (
+                      <span key={i} className="px-3 py-1 bg-white/10 text-white/80 rounded-full text-xs font-medium backdrop-blur-sm border border-white/5">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 )}
               </div>
+
+              {/* Dev project links */}
+              {isDevProject && (
+                <div className="flex flex-wrap items-center gap-3 flex-shrink-0 mt-4 md:mt-0 pointer-events-auto">
+                  {project.liveUrl && project.liveUrl !== '#' && (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold rounded-full bg-white text-black hover:bg-gray-200 transition-all shadow-lg"
+                    >
+                      <ExternalLink size={18} />
+                      Live Demo
+                    </a>
+                  )}
+                  {project.githubUrl && project.githubUrl !== '#' && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold rounded-full bg-white/10 text-white hover:bg-white/20 transition-all backdrop-blur-md border border-white/10"
+                    >
+                      <Github size={18} />
+                      Source Code
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </motion.div>
         </motion.div>
