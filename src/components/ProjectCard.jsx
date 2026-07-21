@@ -31,7 +31,7 @@ const ProjectCard = ({ project, onClick }) => {
     >
       <motion.img
         variants={imageVariants}
-        src={getOptimizedImageUrl(project.image, 600, 80)}
+        src={getOptimizedImageUrl(project.image ? project.image.split(',')[0].trim() : '', 600, 80)}
         alt={project.title}
         loading="lazy"
         className="w-full h-full object-cover origin-center"

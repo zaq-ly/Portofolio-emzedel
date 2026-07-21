@@ -3,72 +3,66 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { FadeIn } from '../components/animations/FadeIn';
 
 const About = () => {
-  const containerRef = useRef(null);
-  
-  // Create a scroll-linked animation for pinning effect
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
   return (
-    <motion.section 
+    <section 
       id="about" 
-      ref={containerRef}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.1 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-black py-32 rounded-t-[3rem] md:rounded-t-[4rem]"
+      className="relative bg-[#1a1a1c] overflow-hidden rounded-t-[3rem] md:rounded-t-[4rem] shadow-2xl"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 relative">
-          
-          {/* Left side: Sticky Heading */}
-          <div className="lg:w-1/3">
-            <div className="sticky top-32">
-              <FadeIn direction="right">
-                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-6">
-                  Tentang Saya.
-                </h2>
-                <p className="text-gray-400 text-lg font-medium">
-                  Perjalanan dari kanvas digital menuju baris kode.
-                </p>
-              </FadeIn>
+      <div className="flex flex-col-reverse lg:flex-row w-full min-h-screen">
+        
+        {/* Left side: Text Content */}
+        <div className="w-full lg:w-3/5 flex items-center p-8 sm:p-12 md:p-16 lg:p-24 xl:pl-32">
+          <div className="w-full max-w-4xl">
+            <FadeIn direction="up">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-widest text-white uppercase drop-shadow-md">
+                TENTANG SAYA
+              </h2>
+            </FadeIn>
+            
+            <FadeIn direction="right" delay={0.2}>
+              <hr className="w-full border-t-2 border-white/20 my-8 md:my-10" />
+            </FadeIn>
+            
+            <div className="text-gray-300 text-sm sm:text-base md:text-lg font-medium leading-relaxed tracking-wide space-y-8 lg:pr-12">
+              {[
+                "Halo! Saya Muhammad Zaqly Luluang — seorang yang memulai perjalanan kreatif dari dunia desain grafis dan ilustrasi digital.",
+                "Berawal dari hobi menggambar dan eksperimen visual, saya jatuh cinta dengan proses kreatif. Seiring waktu, ketertarikan saya berkembang ke UI/UX Design — merancang pengalaman digital yang tidak hanya indah tapi juga fungsional.",
+                "Kemudian saya bertanya: \"Kenapa hanya desain? Kenapa tidak sekalian saya yang bangun?\" — Dan di situlah saya mulai mendalami Front-End Development. Sekarang, saya bisa menangani sepenuhnya dari awal: dari sketsa, wireframe, hingga ke baris kode."
+              ].map((text, index) => (
+                <motion.p
+                  key={index}
+                  initial={{ opacity: 0.2, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.5 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                >
+                  {text}
+                </motion.p>
+              ))}
             </div>
-          </div>
-
-          {/* Right side: Scrolling Content */}
-          <div className="lg:w-2/3 flex flex-col gap-24 py-16">
-            {[
-              "Halo! Saya Muhammad Zaqly Luluang — seorang yang memulai perjalanan kreatif dari dunia desain grafis dan ilustrasi digital.",
-              "Berawal dari hobi menggambar dan eksperimen visual, saya jatuh cinta dengan proses kreatif. Seiring waktu, ketertarikan saya berkembang ke UI/UX Design — merancang pengalaman digital yang tidak hanya indah tapi juga fungsional.",
-              "Kemudian saya bertanya: \"Kenapa hanya desain? Kenapa tidak sekalian saya yang bangun?\" — Dan di situlah saya mulai mendalami Front-End Development. Sekarang, saya bisa handle full pipeline: dari sketsa awal, wireframe, hingga production code."
-            ].map((text, index) => (
-              <motion.p
-                key={index}
-                initial={{ opacity: 0.2 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ amount: 0.3, margin: "-30% 0px -30% 0px" }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="text-2xl md:text-3xl text-white leading-relaxed font-medium tracking-tight"
-              >
-                {text}
-              </motion.p>
-            ))}
-
-            <FadeIn direction="up" distance={50} duration={1}>
-              <div className="bg-[#111] p-10 rounded-3xl shadow-xl border border-white/10">
-                <h3 className="text-2xl font-bold text-white mb-4 tracking-tight">💡 Yang membuat saya berbeda</h3>
-                <p className="text-gray-400 text-lg leading-relaxed">
-                  Saya bukan hanya bisa mendesain mockup, tapi juga mengimplementasikan langsung ke kode nyata. Satu orang, tiga keahlian — efisien dan konsisten dari desain ke produk jadi.
+            
+            <FadeIn direction="up" delay={0.2} className="mt-12">
+              <div className="bg-white/5 p-6 md:p-8 rounded-3xl border border-white/10 backdrop-blur-sm lg:mr-12">
+                <h3 className="text-xl font-bold text-white mb-3 tracking-tight">💡 Yang membuat saya berbeda</h3>
+                <p className="text-gray-400 text-sm md:text-base leading-relaxed">
+                  Saya bukan hanya bisa mendesain antarmuka, tapi juga mengimplementasikannya langsung ke kode nyata. Satu orang, berbagai keahlian — efisien dan konsisten dari desain ke produk jadi.
                 </p>
               </div>
             </FadeIn>
           </div>
         </div>
+
+        {/* Right side: Image */}
+        <div className="w-full lg:w-2/5 relative min-h-[50vh] lg:min-h-[90vh] lg:h-auto border-t lg:border-t-0 lg:border-l border-white/10">
+           <img 
+             src="/gallery/foto_profil.JPG" 
+             alt="Muhammad Zaqly Luluang"
+             className="absolute inset-0 w-full h-full object-cover object-top grayscale hover:grayscale-0 transition-all duration-700"
+           />
+        </div>
+
       </div>
-    </motion.section>
+    </section>
   );
 };
 

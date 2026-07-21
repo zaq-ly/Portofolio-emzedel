@@ -32,7 +32,7 @@ const ITProjectCard = ({ project, onClick }) => {
                   key={idx}
                   src={img}
                   alt={`${project.title} - ${idx + 1}`}
-                  className="w-full h-full object-cover flex-shrink-0"
+                  className="w-full h-full object-contain bg-surface flex-shrink-0"
                 />
               ))}
             </div>
@@ -66,7 +66,7 @@ const ITProjectCard = ({ project, onClick }) => {
           <img
             src={images[0]}
             alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+            className="w-full h-full object-contain bg-surface transition-transform duration-1000 ease-out group-hover:scale-110"
           />
         )}
         <div className="absolute inset-0 bg-black/5 pointer-events-none group-hover:bg-transparent transition-colors duration-500" />

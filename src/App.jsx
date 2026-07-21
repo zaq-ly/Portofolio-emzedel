@@ -11,6 +11,7 @@ import Contact from './sections/Contact';
 
 import Gallery from './pages/Gallery';
 import ITProjects from './pages/ITProjects';
+import ProjectDetail from './pages/ProjectDetail';
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import ProtectedRoute from './components/admin/ProtectedRoute';
@@ -89,6 +90,7 @@ function App() {
           {/* Gallery Route */}
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/it-projects" element={<ITProjects />} />
+          <Route path="/project/:id" element={<ProjectDetail />} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />

@@ -99,9 +99,9 @@ const Gallery = () => {
 
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {loading ? (
-              <div className="col-span-full flex justify-center py-20">
-                <Loader2 className="animate-spin text-text-secondary" size={32} />
-              </div>
+              Array(8).fill(0).map((_, i) => (
+                <div key={i} className="bg-surface-secondary rounded-3xl aspect-square animate-pulse border border-border/50"></div>
+              ))
             ) : (
               <AnimatePresence mode="popLayout">
                 {filteredProjects.map((project, index) => (

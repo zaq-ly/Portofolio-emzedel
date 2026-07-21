@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ArrowLeft } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { categories } from '../data/projects';
-import ITProjectCard from '../components/ITProjectCard';
-import ImageModal from '../components/ImageModal';
 import { fetchProjects } from '../lib/projectsService';
 import { transformProjectForGallery } from '../utils/projects';
 import { FadeIn } from '../components/animations/FadeIn';
+import ProjectCard from '../components/ProjectCard';
 
 const ITProjects = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [dbProjects, setDbProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredProject, setHoveredProject] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,11 +31,6 @@ const ITProjects = () => {
     loadData();
   }, []);
 
-  const handleOpenModal = (project) => {
-    setSelectedProject(project);
-    setIsModalOpen(true);
-  };
-
   const itCategories = ['frontend', 'uiux'];
   
   // IT Categories from data
@@ -51,6 +43,13 @@ const ITProjects = () => {
   const filteredProjects = activeCategory === 'all'
     ? allItProjects
     : allItProjects.filter(p => p.category === activeCategory);
+
+  const displayProject = hoveredProject || (filteredProjects.length > 0 ? filteredProjects[0] : null);
+
+  const getFirstImage = (project) => {
+    if (!project || !project.image) return '';
+    return project.image.split(',')[0].trim();
+  };
 
   return (
     <div className="min-h-screen bg-primary flex flex-col">
@@ -66,8 +65,7 @@ const ITProjects = () => {
           </button>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8">
           <div className="text-center mb-12">
             <FadeIn direction="up">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-text-primary mb-4">
@@ -97,46 +95,29 @@ const ITProjects = () => {
             </div>
           </FadeIn>
 
-          <div className="flex flex-col gap-12 md:gap-16">
-            {loading ? (
-              <div className="flex justify-center py-20">
-                <Loader2 className="animate-spin text-text-secondary" size={32} />
-              </div>
-            ) : (
-              <AnimatePresence mode="popLayout">
-                {filteredProjects.map((project) => (
-                  <motion.div
-                    key={project.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full"
-                  >
-                    <ITProjectCard
-                      project={project}
-                      onClick={() => handleOpenModal(project)}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            )}
-            
-            {!loading && filteredProjects.length === 0 && (
-              <div className="text-center text-text-secondary py-20 bg-surface-secondary/30 rounded-3xl border border-border/50">
-                Belum ada project untuk kategori ini.
-              </div>
-            )}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {Array(6).fill(0).map((_, i) => (
+                <div key={i} className="bg-surface-secondary rounded-3xl aspect-square animate-pulse border border-border/50"></div>
+              ))}
+            </div>
+          ) : filteredProjects.length === 0 ? (
+            <div className="py-12 text-text-secondary text-center text-lg">Belum ada project untuk kategori ini.</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {filteredProjects.map((project, index) => (
+                <FadeIn key={project.id} direction="up" delay={index * 0.1}>
+                  <ProjectCard 
+                    project={project}
+                    onClick={() => navigate(`/project/${project.id}`)}
+                  />
+                </FadeIn>
+              ))}
+            </div>
+          )}
+
         </div>
       </main>
-      
-      <ImageModal
-        isOpen={isModalOpen}
-        project={selectedProject}
-        onClose={() => setIsModalOpen(false)}
-      />
     </div>
   );
 };
