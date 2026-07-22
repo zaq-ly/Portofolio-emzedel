@@ -15,8 +15,11 @@ import ProjectDetail from './pages/ProjectDetail';
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import ProtectedRoute from './components/admin/ProtectedRoute';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import LoadingScreen from './components/LoadingScreen';
+import CustomCursor from './components/CustomCursor';
 
 // Komponen pembantu untuk menangani scroll ke ID saat hash berubah
 const ScrollToHash = () => {
@@ -66,42 +69,60 @@ const ScrollToHash = () => {
 };
 
 function App() {
+  const [isLoading, setIsLoading] = useState(() => {
+    return !window.location.pathname.startsWith('/zaqlyneroth');
+  });
+
   return (
-    <Router>
-      <ScrollToHash />
-      <div className="min-h-screen bg-surface text-text-primary transition-colors duration-300">
-        <Routes>
-          {/* Main Portfolio Route */}
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <main>
-                <div id="home"><Hero /></div>
-                <div id="about"><About /></div>
-                <div id="skills"><Skills /></div>
-                <div id="projects"><Projects /></div>
-                <div id="experience"><Experience /></div>
-                <div id="contact"><Contact /></div>
-              </main>
-              <Footer />
-            </>
-          } />
+    <AnimatePresence mode="wait">
+      {isLoading ? (
+        <LoadingScreen key="loading" onComplete={() => setIsLoading(false)} />
+      ) : (
+        <motion.div
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Router>
+            <CustomCursor />
+            <ScrollToHash />
+            <div className="min-h-screen bg-surface text-text-primary transition-colors duration-300">
+              <Routes>
+                {/* Main Portfolio Route */}
+                <Route path="/" element={
+                  <>
+                    <Navbar />
+                    <main>
+                      <div id="home"><Hero /></div>
+                      <div id="about"><About /></div>
+                      <div id="skills"><Skills /></div>
+                      <div id="projects"><Projects /></div>
+                      <div id="experience"><Experience /></div>
+                      <div id="contact"><Contact /></div>
+                    </main>
+                    <Footer />
+                  </>
+                } />
 
-          {/* Gallery Route */}
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/it-projects" element={<ITProjects />} />
-          <Route path="/project/:id" element={<ProjectDetail />} />
+                {/* Gallery Route */}
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/it-projects" element={<ITProjects />} />
+                <Route path="/project/:id" element={<ProjectDetail />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </div>
-    </Router>
+                {/* Admin Routes */}
+                <Route path="/zaqlyneroth" element={<AdminLogin />} />
+                <Route path="/zaqlyneroth/dashboard" element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
+              </Routes>
+            </div>
+          </Router>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

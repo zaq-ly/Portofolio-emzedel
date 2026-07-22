@@ -11,7 +11,7 @@ const Login = () => {
 
   useEffect(() => {
     if (localStorage.getItem('admin_auth') === 'true') {
-      navigate('/admin/dashboard');
+      navigate('/zaqlyneroth/dashboard');
     }
   }, [navigate]);
 
@@ -26,7 +26,7 @@ const Login = () => {
     
     if (password === adminPassword) {
       localStorage.setItem('admin_auth', 'true');
-      navigate('/admin/dashboard');
+      navigate('/zaqlyneroth/dashboard');
     } else {
       setError('Password salah.');
     }

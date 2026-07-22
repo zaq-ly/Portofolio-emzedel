@@ -53,7 +53,7 @@ const Navbar = () => {
         <div className="w-full px-6 h-14 flex justify-between items-center">
           {/* Logo */}
           <button 
-            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+            onClick={() => { window.location.href = '/'; }} 
             className="text-sm font-semibold tracking-tight text-text-primary hover:opacity-70 transition-opacity"
           >
             MZL.

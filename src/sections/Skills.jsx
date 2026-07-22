@@ -6,7 +6,7 @@ const Skills = () => {
     {
       title: 'Front-End Development',
       description: 'Membangun website dan aplikasi web yang responsif, cepat, dan interaktif.',
-      skills: ['React', 'JavaScript', 'HTML & CSS', 'Tailwind CSS', 'Framer Motion', 'Responsive Design', 'Git & GitHub'],
+      skills: ['React', 'JavaScript', 'HTML & CSS', 'Tailwind CSS', 'Responsive Design', 'Git & GitHub'],
     },
     {
       title: 'UI/UX Design',
@@ -16,7 +16,7 @@ const Skills = () => {
     {
       title: 'Design & Ilustrasi',
       description: 'Menciptakan karya visual yang unik — dari ilustrasi digital hingga brand identity.',
-      skills: ['Adobe Illustrator', 'Digital Illustration', 'Brand Identity', 'Vector Art', 'Photo Editing', 'Layout Design'],
+      skills: ['Adobe Illustrator', 'Affinity', 'Inkscape', 'Digital Illustration', 'Brand Identity', 'Vector Art', 'Photo Editing', 'Layout Design'],
     },
   ];
 

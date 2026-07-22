@@ -12,7 +12,7 @@ import { FadeIn } from '../components/animations/FadeIn';
 
 const StackedITCard = ({ project, index, total, onClick }) => {
   const ref = useRef(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start 20vh', 'start -60vh']
@@ -27,7 +27,7 @@ const StackedITCard = ({ project, index, total, onClick }) => {
     <>
       <div ref={ref} className="w-full h-0 pointer-events-none invisible" />
       <div className="sticky z-10 w-full mb-12 md:mb-24" style={{ top: '20vh' }}>
-        <motion.div 
+        <motion.div
           style={{ scale, opacity, filter }}
           className="w-full origin-top"
         >
@@ -88,17 +88,17 @@ const Projects = () => {
   const designProjects = dbProjects.filter(p => !itCategories.includes(p.category) && p.isFeatured).slice(0, 6);
 
   return (
-    <section id="projects" className="section-padding bg-primary">
-      <div className="max-w-6xl mx-auto">
-
-        {/* --- IT Development Section --- */}
-        <div className="mb-32">
-          <div className="text-center mb-16">
+    <div className="bg-primary w-full flex flex-col">
+      
+      {/* --- IT Development Section --- */}
+      <section id="projects" className="w-full bg-[#0a0a0c] text-white rounded-t-[3rem] rounded-b-[3rem] px-6 py-12 md:py-16 shadow-[0_20px_50px_rgba(0,0,0,0.4)] relative border-y border-white/5 z-20 -mt-8">
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="text-center mb-10">
             <FadeIn direction="up">
-              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-text-primary mb-4">
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
                 IT Development.
               </h2>
-              <p className="text-lg text-text-secondary font-medium">
+              <p className="text-lg text-white/70 font-medium">
                 Project website dan pengembangan front-end.
               </p>
             </FadeIn>
@@ -107,16 +107,16 @@ const Projects = () => {
           <div className="block relative pb-12">
             {loading ? (
               <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start w-full relative animate-pulse">
-                <div className="hidden lg:block w-full lg:w-1/2 aspect-[4/3] bg-surface-secondary rounded-[2rem]"></div>
+                <div className="hidden lg:block w-full lg:w-1/2 aspect-[4/3] bg-white/5 rounded-[2rem]"></div>
                 <div className="w-full lg:w-1/2 flex flex-col pt-4">
-                  <div className="border-b-2 border-border/60 pb-6 mb-4 flex justify-between">
-                    <div className="h-10 bg-surface-secondary rounded w-1/3"></div>
-                    <div className="h-8 bg-surface-secondary rounded w-8"></div>
+                  <div className="border-b-2 border-white/20 pb-6 mb-4 flex justify-between">
+                    <div className="h-10 bg-white/5 rounded w-1/3"></div>
+                    <div className="h-8 bg-white/5 rounded w-8"></div>
                   </div>
                   {Array(4).fill(0).map((_, i) => (
-                    <div key={i} className="py-8 border-b border-border/40 flex justify-between items-center">
-                      <div className="h-8 bg-surface-secondary rounded w-2/3"></div>
-                      <div className="h-5 bg-surface-secondary rounded w-1/4"></div>
+                    <div key={i} className="py-8 border-b border-white/10 flex justify-between items-center">
+                      <div className="h-8 bg-white/5 rounded w-2/3"></div>
+                      <div className="h-5 bg-white/5 rounded w-1/4"></div>
                     </div>
                   ))}
                 </div>
@@ -124,57 +124,57 @@ const Projects = () => {
             ) : itProjects.length > 0 ? (
               <FadeIn direction="up" delay={0.2}>
                 <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-start w-full relative">
-                  
+
                   {/* Left Side: Sticky Image Preview */}
-                  <div className="hidden lg:flex w-full lg:w-1/2 lg:sticky lg:top-32 rounded-[2rem] overflow-hidden shadow-2xl bg-surface-secondary border border-border/30 aspect-[4/3] items-center justify-center transition-all duration-500">
+                  <div className="hidden lg:flex w-full lg:w-1/2 lg:sticky lg:top-32 rounded-[2rem] overflow-hidden shadow-2xl bg-[#111] border border-white/10 aspect-[4/3] items-center justify-center transition-all duration-500">
                     {(() => {
                       const displayProject = hoveredProject || itProjects[0];
                       const firstImg = displayProject?.image ? displayProject.image.split(',')[0].trim() : '';
                       return firstImg ? (
-                        <img 
-                          src={firstImg} 
-                          alt={displayProject.title} 
+                        <img
+                          src={firstImg}
+                          alt={displayProject.title}
                           className="w-full h-full object-cover transition-opacity duration-500"
                         />
                       ) : (
-                        <div className="text-text-secondary font-medium">Belum ada preview</div>
+                        <div className="text-white/50 font-medium">Belum ada preview</div>
                       );
                     })()}
                   </div>
 
                   {/* Right Side: Scrollable List */}
                   <div className="w-full lg:w-1/2 flex flex-col pt-4">
-                    <div className="flex justify-between items-end border-b-2 border-border/60 pb-6 mb-4">
-                      <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-text-primary">WORK</h2>
-                      <span className="text-2xl font-semibold text-text-primary">{itProjects.length}</span>
+                    <div className="flex justify-between items-end border-b-2 border-white/30 pb-6 mb-4">
+                      <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-white">PROJECTS</h2>
+                      <span className="text-2xl font-semibold text-white">{itProjects.length}</span>
                     </div>
 
                     <div className="flex flex-col">
                       {itProjects.map((project) => {
                         const firstImg = project.image ? project.image.split(',')[0].trim() : '';
                         return (
-                          <div 
+                          <div
                             key={project.id}
                             onMouseEnter={() => setHoveredProject(project)}
                             onMouseLeave={() => setHoveredProject(null)}
                             onClick={() => navigate(`/project/${project.id}`)}
-                            className="group flex flex-col py-8 border-b border-border/40 cursor-pointer transition-colors duration-300 hover:border-text-primary"
+                            className="group flex flex-col py-8 border-b border-white/10 cursor-pointer transition-colors duration-300 hover:border-white"
                           >
                             {/* Mobile Preview Image (Shows only on small screens) */}
-                            <div className="block lg:hidden w-full aspect-video rounded-2xl overflow-hidden mb-6">
+                            <div className="block lg:hidden w-full aspect-video rounded-2xl overflow-hidden mb-6 border border-white/10">
                               {firstImg && <img src={firstImg} alt={project.title} className="w-full h-full object-cover" />}
                             </div>
 
                             <div className="flex items-center justify-between w-full">
                               <div className="flex items-center gap-4 overflow-hidden">
-                                <span className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 text-text-primary shrink-0 hidden sm:block">
+                                <span className="opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 text-white shrink-0 hidden sm:block">
                                   <ArrowRight size={24} />
                                 </span>
-                                <h3 className="text-3xl sm:text-4xl font-bold tracking-tighter text-text-primary group-hover:pl-2 transition-all duration-300 truncate">
+                                <h3 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white/90 group-hover:text-white group-hover:pl-2 transition-all duration-300 truncate">
                                   {project.title}
                                 </h3>
                               </div>
-                              <div className="text-text-secondary font-medium uppercase text-sm sm:text-lg text-right shrink-0 ml-4 group-hover:text-text-primary transition-colors duration-300">
+                              <div className="text-white/40 font-medium uppercase text-sm sm:text-lg text-right shrink-0 ml-4 group-hover:text-white transition-colors duration-300">
                                 {project.category}
                               </div>
                             </div>
@@ -186,7 +186,7 @@ const Projects = () => {
                 </div>
               </FadeIn>
             ) : (
-              <div className="text-center text-text-tertiary py-10">
+              <div className="text-center text-white/40 py-10">
                 Belum ada project IT Development.
               </div>
             )}
@@ -196,7 +196,7 @@ const Projects = () => {
             <div className="flex justify-center mt-12">
               <button
                 onClick={() => navigate('/it-projects')}
-                className="group flex items-center gap-3 px-8 py-4 bg-text-primary text-white rounded-full font-bold text-sm hover:scale-105 transition-all duration-300 shadow-card hover:shadow-lg"
+                className="group flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold text-sm hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]"
               >
                 Lihat Semua Project IT
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -204,9 +204,11 @@ const Projects = () => {
             </div>
           </FadeIn>
         </div>
+      </section>
 
-        {/* --- Visual Arts Section (Teaser) --- */}
-        <div id="visual-arts" className="scroll-mt-24">
+      {/* --- Visual Arts Section (Teaser) --- */}
+      <section id="visual-arts" className="w-full bg-primary section-padding scroll-mt-24 z-10">
+        <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-16">
             <FadeIn direction="up">
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-text-primary mb-4">
@@ -247,14 +249,14 @@ const Projects = () => {
             </div>
           </FadeIn>
         </div>
-      </div>
+      </section>
 
       <ImageModal
         isOpen={isModalOpen}
         project={selectedProject}
         onClose={() => setIsModalOpen(false)}
       />
-    </section>
+    </div>
   );
 };
 

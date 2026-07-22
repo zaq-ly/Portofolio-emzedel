@@ -52,13 +52,13 @@ const ITProjects = () => {
   };
 
   return (
-    <div className="min-h-screen bg-primary flex flex-col">
+    <div className="min-h-screen bg-[#0a0a0c] text-white flex flex-col">
       <main className="flex-grow pt-24 pb-24">
         {/* Sticky Premium Back Button */}
         <div className="fixed top-8 left-4 sm:left-8 z-50">
           <button 
             onClick={() => navigate('/#projects')}
-            className="group flex items-center gap-3 px-5 py-3 bg-text-primary text-surface rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:scale-105 transition-all duration-300 font-bold text-sm"
+            className="group flex items-center gap-3 px-5 py-3 bg-white text-black rounded-full shadow-[0_8px_30px_rgb(255,255,255,0.12)] hover:shadow-[0_8px_30px_rgb(255,255,255,0.2)] hover:scale-105 transition-all duration-300 font-bold text-sm"
           >
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" /> 
             <span className="hidden sm:inline">Kembali ke Beranda</span>
@@ -68,10 +68,10 @@ const ITProjects = () => {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-8">
           <div className="text-center mb-12">
             <FadeIn direction="up">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-text-primary mb-4">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-4">
                 IT Development.
               </h1>
-              <p className="text-lg text-text-secondary font-medium max-w-2xl mx-auto">
+              <p className="text-lg text-white/70 font-medium max-w-2xl mx-auto">
                 Kumpulan project website dan eksplorasi desain antarmuka (UI/UX) secara keseluruhan.
               </p>
             </FadeIn>
@@ -83,10 +83,10 @@ const ITProjects = () => {
                 <button
                   key={cat.key}
                   onClick={() => setActiveCategory(cat.key)}
-                  className={`px-5 py-2.5 text-sm font-medium rounded-full transition-all ${
+                  className={`px-5 py-2.5 text-sm font-bold rounded-full transition-all ${
                     activeCategory === cat.key
-                      ? 'bg-[#0071e3] text-white shadow-md'
-                      : 'bg-surface-secondary text-text-secondary hover:text-text-primary hover:bg-surface border border-border/50'
+                      ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                      : 'bg-white/5 text-white/50 hover:text-white hover:bg-white/10 border border-white/10'
                   }`}
                 >
                   {cat.label}
@@ -98,11 +98,11 @@ const ITProjects = () => {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {Array(6).fill(0).map((_, i) => (
-                <div key={i} className="bg-surface-secondary rounded-3xl aspect-square animate-pulse border border-border/50"></div>
+                <div key={i} className="bg-white/5 rounded-3xl aspect-square animate-pulse border border-white/10"></div>
               ))}
             </div>
           ) : filteredProjects.length === 0 ? (
-            <div className="py-12 text-text-secondary text-center text-lg">Belum ada project untuk kategori ini.</div>
+            <div className="py-12 text-white/50 text-center text-lg">Belum ada project untuk kategori ini.</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {filteredProjects.map((project, index) => (

@@ -139,3 +139,24 @@ export const deleteProject = async (id) => {
 
   if (error) throw error;
 };
+
+// ===== UPDATE FEATURED ORDER (USING CREATED_AT) =====
+export const updateFeaturedOrder = async (updates) => {
+  if (!supabase) throw new Error('Supabase belum dikonfigurasi.');
+  
+  const promises = updates.map(update => 
+    supabase
+      .from('projects')
+      .update({ created_at: update.created_at })
+      .eq('id', update.id)
+  );
+  
+  const results = await Promise.all(promises);
+  
+  for (const res of results) {
+    if (res.error) {
+      console.error("Supabase Error:", res.error);
+      throw new Error(`Gagal menyimpan urutan: ${res.error.message}`);
+    }
+  }
+};

@@ -1,39 +1,123 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { experiences } from '../data/experience';
-import { FadeIn } from '../components/animations/FadeIn';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Experience = () => {
+  const sectionRef = useRef(null);
+  const itemsRef = useRef([]);
+
+  useEffect(() => {
+    let ctx;
+    // Small delay to ensure the DOM layout is fully settled after App.jsx fade-in
+    const timer = setTimeout(() => {
+      ctx = gsap.context(() => {
+        ScrollTrigger.refresh();
+
+        // Animate the heading
+        gsap.from('.exp-heading', { 
+            y: 50, 
+            opacity: 0, 
+            duration: 1, 
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: '.exp-heading',
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
+        });
+
+        // Animate each item
+        itemsRef.current.forEach((item) => {
+          if (!item) return;
+          gsap.from(item, {
+              y: 50,
+              opacity: 0,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: item,
+                start: "top 85%",
+                toggleActions: "play none none reverse"
+              }
+          });
+        });
+
+          const descContainers = gsap.utils.toArray('.desc-container');
+          descContainers.forEach((container) => {
+            const words = gsap.utils.toArray('.desc-word', container);
+            if (words.length > 0) {
+              gsap.to(words, {
+                color: "#111827", // Gunakan dark gray/hitam pekat
+                fontWeight: 700, // Tambah sedikit ketebalan
+                stagger: 0.1,
+                scrollTrigger: {
+                  trigger: container,
+                  start: "top 75%", // Mulai ketika paragraf sudah di tengah-bawah layar
+                  end: "bottom 40%", // Selesai ketika paragraf di tengah-atas layar
+                  scrub: 1, // Smooth scrubbing
+                }
+              });
+            }
+          });
+      }, sectionRef);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      if (ctx) ctx.revert(); // Cleanup
+    };
+  }, []);
+
   return (
-    <section id="experience" className="section-padding bg-surface-secondary">
-      <div className="max-w-3xl mx-auto">
-        <FadeIn direction="up">
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-text-primary mb-12 text-center">
-            Pengalaman.
-          </h2>
-        </FadeIn>
+    <section id="experience" ref={sectionRef} className="section-padding bg-surface-secondary">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="exp-heading text-3xl md:text-5xl font-bold tracking-tight text-text-primary mb-16 text-center">
+          Pengalaman.
+        </h2>
 
         <div className="space-y-12">
           {experiences.map((exp, index) => (
-            <FadeIn key={exp.id} delay={index * 0.15} direction="up" distance={30}>
-              <div className="flex flex-col md:flex-row md:gap-8 border-b border-border/50 pb-8 last:border-0 last:pb-0">
-                <div className="md:w-1/4 mb-2 md:mb-0">
-                  <span className="text-sm font-semibold text-text-secondary">
-                    {exp.year}
-                  </span>
-                </div>
-                <div className="md:w-3/4">
-                  <h3 className="text-xl font-bold text-text-primary mb-1 tracking-tight">
-                    {exp.title}
-                  </h3>
-                  <p className="text-sm font-medium text-text-primary mb-3">
-                    {exp.institution}
-                  </p>
-                  <p className="text-sm text-text-secondary leading-relaxed">
-                    {exp.description}
-                  </p>
-                </div>
-              </div>
-            </FadeIn>
+            <div 
+              key={exp.id} 
+              ref={el => itemsRef.current[index] = el}
+              className="flex flex-col items-center text-center pb-12 border-b border-border/50 last:border-0 last:pb-0"
+            >
+              <span className="text-sm font-bold tracking-widest text-text-primary/60 mb-2">
+                {exp.year}
+              </span>
+              
+              <h3 className="text-2xl md:text-3xl font-black text-text-primary mb-2 tracking-tight">
+                {exp.title}
+              </h3>
+              
+              <p className="text-lg font-medium text-text-secondary mb-6">
+                {exp.institution}
+              </p>
+              
+              {exp.description && (
+                <p className="desc-container text-base leading-relaxed mb-6 max-w-2xl text-justify">
+                  {exp.description.split(' ').map((word, i) => (
+                    <span key={i} className="desc-word text-gray-400">
+                      {word}{' '}
+                    </span>
+                  ))}
+                </p>
+              )}
+              
+              {exp.points && (
+                <ul className="text-left inline-block space-y-3 text-text-secondary/90 w-full max-w-lg">
+                  {exp.points.map((point, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <div className="mt-2 w-1.5 h-1.5 rounded-full bg-text-primary shrink-0" />
+                      <span className="leading-relaxed">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           ))}
         </div>
       </div>

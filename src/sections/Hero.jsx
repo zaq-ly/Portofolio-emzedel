@@ -47,18 +47,50 @@ const Hero = () => {
           className="flex flex-col items-center text-center z-20 w-full"
         >
  
-          <FadeIn delay={0.4} direction="up" distance={30} className="w-full">
-            <h1 className="flex flex-col text-[2.5rem] sm:text-[4rem] md:text-6xl lg:text-7xl xl:text-[5.5rem] font-black tracking-tighter text-text-primary leading-[0.9] mb-8 drop-shadow-sm w-full max-w-4xl mx-auto">
-              <span className="text-left w-full pr-12 md:pr-0">MUHAMMAD</span>
-              <span 
-                className="text-center w-full opacity-80"
-                style={{ WebkitTextStroke: '3px currentColor', WebkitTextFillColor: 'transparent' }}
-              >
-                ZAQLY
-              </span>
-              <span className="text-right w-full text-text-secondary pl-12 md:pl-0">LULUANG.</span>
-            </h1>
-          </FadeIn>
+          <motion.h1 
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.2,
+                  delayChildren: 0.3,
+                }
+              }
+            }}
+            className="flex flex-col text-[2.5rem] sm:text-[4rem] md:text-6xl lg:text-7xl xl:text-[5.5rem] font-black tracking-tighter text-text-primary leading-[0.9] mb-8 drop-shadow-sm w-full max-w-4xl mx-auto"
+          >
+            <motion.span 
+              variants={{
+                hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+                visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: "spring", damping: 12, stiffness: 100 } }
+              }}
+              className="text-left w-full pr-12 md:pr-0 inline-block"
+            >
+              MUHAMMAD
+            </motion.span>
+            <motion.span 
+              variants={{
+                hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+                visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: "spring", damping: 12, stiffness: 100 } }
+              }}
+              className="text-center w-full opacity-80 inline-block"
+              style={{ WebkitTextStroke: '3px currentColor', WebkitTextFillColor: 'transparent' }}
+            >
+              ZAQLY
+            </motion.span>
+            <motion.span 
+              variants={{
+                hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+                visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: "spring", damping: 12, stiffness: 100 } }
+              }}
+              className="text-right w-full text-text-secondary pl-12 md:pl-0 inline-block"
+            >
+              LULUANG.
+            </motion.span>
+          </motion.h1>
           
           <FadeIn delay={0.6} direction="up" distance={20} className="mb-6 w-full flex justify-center">
             {/* Removed the background wrapper, kept a clean subtle border-bottom for Apple aesthetics */}

@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const isAuth = localStorage.getItem('admin_auth') === 'true';
     if (!isAuth) {
-      navigate('/admin');
+      navigate('/zaqlyneroth');
       setAuthenticated(false);
     } else {
       setAuthenticated(true);

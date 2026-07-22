@@ -8,7 +8,7 @@ const Footer = () => {
 
         <div className="flex items-center justify-center text-center">
           <p className="text-text-tertiary text-xs">
-            <a href="/admin" className="cursor-default" title="">&copy;</a> {new Date().getFullYear()} EMZEDEL. Hak cipta dilindungi undang-undang.
+            &copy; {new Date().getFullYear()} EMZEDEL. Hak cipta dilindungi undang-undang.
           </p>
         </div>
       </div>
