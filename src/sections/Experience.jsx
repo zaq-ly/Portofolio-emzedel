@@ -17,51 +17,51 @@ const Experience = () => {
         ScrollTrigger.refresh();
 
         // Animate the heading
-        gsap.from('.exp-heading', { 
-            y: 50, 
-            opacity: 0, 
-            duration: 1, 
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: '.exp-heading',
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
+        gsap.from('.exp-heading', {
+          y: 50,
+          opacity: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: '.exp-heading',
+            start: "top 85%",
+            toggleActions: "play none none reverse"
+          }
         });
 
         // Animate each item
         itemsRef.current.forEach((item) => {
           if (!item) return;
           gsap.from(item, {
-              y: 50,
-              opacity: 0,
-              duration: 0.8,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: item,
-                start: "top 85%",
-                toggleActions: "play none none reverse"
-              }
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: item,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
           });
         });
 
-          const descContainers = gsap.utils.toArray('.desc-container');
-          descContainers.forEach((container) => {
-            const words = gsap.utils.toArray('.desc-word', container);
-            if (words.length > 0) {
-              gsap.to(words, {
-                color: "#111827", // Gunakan dark gray/hitam pekat
-                fontWeight: 700, // Tambah sedikit ketebalan
-                stagger: 0.1,
-                scrollTrigger: {
-                  trigger: container,
-                  start: "top 75%", // Mulai ketika paragraf sudah di tengah-bawah layar
-                  end: "bottom 40%", // Selesai ketika paragraf di tengah-atas layar
-                  scrub: 1, // Smooth scrubbing
-                }
-              });
-            }
-          });
+        const descContainers = gsap.utils.toArray('.desc-container');
+        descContainers.forEach((container) => {
+          const words = gsap.utils.toArray('.desc-word', container);
+          if (words.length > 0) {
+            gsap.to(words, {
+              color: "#111827", // Gunakan dark gray/hitam pekat
+              fontWeight: 600, // Membuat teks menjadi agak tebal
+              stagger: 0.2, // Sedikit memperlambat efek per kata
+              scrollTrigger: {
+                trigger: container,
+                start: "top 70%", // Memperlebar jarak scroll agar animasi lebih lama
+                end: "bottom 30%",
+                scrub: 3, // Smooth scrubbing yang lebih lambat
+              }
+            });
+          }
+        });
       }, sectionRef);
     }, 100);
 
@@ -72,7 +72,7 @@ const Experience = () => {
   }, []);
 
   return (
-    <section id="experience" ref={sectionRef} className="section-padding bg-surface-secondary">
+    <section id="experience" ref={sectionRef} className="section-padding bg-surface">
       <div className="max-w-4xl mx-auto">
         <h2 className="exp-heading text-3xl md:text-5xl font-bold tracking-tight text-text-primary mb-16 text-center">
           Pengalaman.
@@ -80,23 +80,23 @@ const Experience = () => {
 
         <div className="space-y-12">
           {experiences.map((exp, index) => (
-            <div 
-              key={exp.id} 
+            <div
+              key={exp.id}
               ref={el => itemsRef.current[index] = el}
               className="flex flex-col items-center text-center pb-12 border-b border-border/50 last:border-0 last:pb-0"
             >
               <span className="text-sm font-bold tracking-widest text-text-primary/60 mb-2">
                 {exp.year}
               </span>
-              
+
               <h3 className="text-2xl md:text-3xl font-black text-text-primary mb-2 tracking-tight">
                 {exp.title}
               </h3>
-              
+
               <p className="text-lg font-medium text-text-secondary mb-6">
                 {exp.institution}
               </p>
-              
+
               {exp.description && (
                 <p className="desc-container text-base leading-relaxed mb-6 max-w-2xl text-justify">
                   {exp.description.split(' ').map((word, i) => (
@@ -106,7 +106,7 @@ const Experience = () => {
                   ))}
                 </p>
               )}
-              
+
               {exp.points && (
                 <ul className="text-left inline-block space-y-3 text-text-secondary/90 w-full max-w-lg">
                   {exp.points.map((point, i) => (

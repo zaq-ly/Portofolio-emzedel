@@ -3,26 +3,36 @@
 @tailwind utilities;
 
 @layer base {
-  /* Minimalist Scrollbar */
+  /* Premium Hidden Scrollbar (Globally) */
   ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Minimal Scrollbar for specific elements (like modals) */
+  .minimal-scrollbar::-webkit-scrollbar {
+    display: block;
     width: 6px;
     height: 6px;
   }
-  ::-webkit-scrollbar-track {
+  .minimal-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
+  .minimal-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 10px;
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.4);
+  .minimal-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  .minimal-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
   }
 
   html {
     scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
   body {
     @apply bg-primary text-text-primary font-sans antialiased;

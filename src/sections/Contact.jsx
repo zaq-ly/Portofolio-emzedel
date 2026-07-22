@@ -31,7 +31,7 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className="section-padding bg-primary">
+    <section id="contact" className="section-padding bg-surface">
       <div className="max-w-4xl mx-auto text-center">
         <FadeIn direction="up">
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-text-primary mb-4">

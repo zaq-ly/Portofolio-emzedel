@@ -27,12 +27,13 @@ const Navbar = () => {
   });
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Beranda', href: '#home' },
+    { name: 'Tentang', href: '#about' },
+    { name: 'Keahlian', href: '#skills' },
+    { name: 'Proyek', href: '#projects' },
+    { name: 'Pengalaman', href: '#experience' },
+    { name: 'Sertifikat', href: '#certificates' },
+    { name: 'Kontak', href: '#contact' },
   ];
 
   return (
@@ -65,7 +66,7 @@ const Navbar = () => {
               <a
                 key={link.name}
                 href={link.href}
-                className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
+                className="text-sm font-semibold text-text-secondary hover:text-text-primary hover:-translate-y-0.5 transition-all duration-300 inline-block"
               >
                 {link.name}
               </a>
@@ -100,7 +101,7 @@ const Navbar = () => {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="text-base font-semibold text-text-secondary hover:text-text-primary transition-colors py-2"
+                    className="text-base font-bold text-text-secondary hover:text-text-primary hover:translate-x-2 transition-all duration-300 py-2 inline-block"
                   >
                     {link.name}
                   </a>

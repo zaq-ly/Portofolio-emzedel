@@ -96,7 +96,7 @@ const Hero = () => {
             {/* Removed the background wrapper, kept a clean subtle border-bottom for Apple aesthetics */}
             <div className="inline-block border-b border-border/40 pb-2">
               <Typewriter 
-                text="Creative Developer. Design & Code." 
+                text="Pengembang Kreatif. Desain & Kode." 
                 delay={1} 
                 speed={60} 
                 className="text-xs md:text-sm lg:text-base font-bold text-text-secondary tracking-[0.2em] uppercase leading-relaxed"
@@ -107,7 +107,7 @@ const Hero = () => {
           <FadeIn delay={0.8} direction="up" distance={20} className="w-full">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
               <a href="#projects" className="relative z-30 w-full sm:w-auto px-8 py-3.5 bg-text-primary text-surface rounded-full text-xs lg:text-sm font-bold shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 text-center">
-                Lihat Projects
+                Lihat Proyek
               </a>
               <a href="#contact" className="relative z-30 w-full sm:w-auto px-8 py-3.5 border-2 border-text-primary text-text-primary rounded-full text-xs lg:text-sm font-bold hover:bg-text-primary hover:text-surface transition-all duration-300 text-center shadow-lg bg-background/50 backdrop-blur-sm">
                 Hubungi Saya

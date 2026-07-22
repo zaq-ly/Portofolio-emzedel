@@ -57,27 +57,15 @@ const CustomCursor = () => {
         }
       `}</style>
       
-      {/* Titik kecil (mengikuti instan) */}
+      {/* Cursor Tunggal yang Simpel dan Minimalis */}
       <motion.div
-        className="fixed top-0 left-0 w-3 h-3 bg-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
+        className="fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
         animate={{
-          x: mousePosition.x - 6,
-          y: mousePosition.y - 6,
-          scale: isHovering ? 0 : 1,
+          x: mousePosition.x - 8, // offset = setengah dari width/height (16px / 2)
+          y: mousePosition.y - 8,
+          scale: isHovering ? 2.5 : 1, // Membesar halus saat ada objek yg bisa diklik
         }}
-        transition={{ type: "tween", ease: "backOut", duration: 0.1 }}
-      />
-      
-      {/* Lingkaran besar (mengikuti dengan efek pegas/spring) */}
-      <motion.div
-        className="fixed top-0 left-0 w-10 h-10 border border-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
-        animate={{
-          x: mousePosition.x - 20,
-          y: mousePosition.y - 20,
-          scale: isHovering ? 1.5 : 1,
-          backgroundColor: isHovering ? "rgba(255,255,255,1)" : "transparent",
-        }}
-        transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.5 }}
+        transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
       />
     </>
   );

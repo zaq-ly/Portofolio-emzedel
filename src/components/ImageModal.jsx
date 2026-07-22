@@ -118,12 +118,12 @@ const ImageModal = ({ isOpen, project, onClose }) => {
                      project.category}
                   </span>
                 </div>
-                <h3 className="font-display font-bold text-3xl md:text-5xl text-white mb-3 tracking-tight">
+                <h3 className="font-display font-bold text-2xl md:text-4xl text-white mb-3 tracking-tight">
                   {project.title}
                 </h3>
                 {project.description && (
-                  <p className="text-white/70 text-base md:text-lg leading-relaxed mb-4">
-                    {project.description}
+                  <p className="text-white/70 text-sm md:text-base leading-relaxed mb-4">
+                    {project.category === 'certificate' ? project.description.replace(' / ', ' - ') : project.description}
                   </p>
                 )}
 
@@ -150,7 +150,7 @@ const ImageModal = ({ isOpen, project, onClose }) => {
                       className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold rounded-full bg-white text-black hover:bg-gray-200 transition-all shadow-lg"
                     >
                       <ExternalLink size={18} />
-                      Live Demo
+                      Kunjungi Web
                     </a>
                   )}
                   {project.githubUrl && project.githubUrl !== '#' && (
@@ -161,7 +161,7 @@ const ImageModal = ({ isOpen, project, onClose }) => {
                       className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold rounded-full bg-white/10 text-white hover:bg-white/20 transition-all backdrop-blur-md border border-white/10"
                     >
                       <Github size={18} />
-                      Source Code
+                      Kode Sumber
                     </a>
                   )}
                 </div>

@@ -8,6 +8,7 @@ import Skills from './sections/Skills';
 import Projects from './sections/Projects';
 import Experience from './sections/Experience';
 import Contact from './sections/Contact';
+import Certificates from './sections/Certificates';
 
 import Gallery from './pages/Gallery';
 import ITProjects from './pages/ITProjects';
@@ -99,6 +100,7 @@ function App() {
                       <div id="skills"><Skills /></div>
                       <div id="projects"><Projects /></div>
                       <div id="experience"><Experience /></div>
+                      <div id="certificates"><Certificates /></div>
                       <div id="contact"><Contact /></div>
                     </main>
                     <Footer />

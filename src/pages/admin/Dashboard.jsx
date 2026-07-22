@@ -20,8 +20,8 @@ const FormFields = ({ form, setForm, isEdit = false }) => {
   return (
     <>
       <div>
-        <label className={labelClass}>Judul</label>
-        <input type="text" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass} placeholder="Nama project" />
+        <label className={labelClass}>{form.category === 'certificate' ? 'Nama Sertifikat' : 'Judul'}</label>
+        <input type="text" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass} placeholder={form.category === 'certificate' ? "Contoh: Dicoding Front-End Developer" : "Nama project"} />
       </div>
       <div>
         <label className={labelClass}>Kategori</label>
@@ -33,6 +33,7 @@ const FormFields = ({ form, setForm, isEdit = false }) => {
           <option value="banner">Banner</option>
           <option value="frontend">Front-End Project</option>
           <option value="uiux">UI/UX Project</option>
+          <option value="certificate">Sertifikat</option>
         </select>
       </div>
       <div className="flex items-center gap-2 mt-2 mb-4">
@@ -52,9 +53,15 @@ const FormFields = ({ form, setForm, isEdit = false }) => {
         <input type="text" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} className={inputClass} placeholder="React, Figma, Digital Art" />
       </div>
       <div>
-        <label className={labelClass}>Deskripsi</label>
-        <textarea rows="3" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputClass + " resize-none"} placeholder="Jelaskan singkat tentang project ini..." />
+        <label className={labelClass}>{form.category === 'certificate' ? 'Lembaga Penerbit' : 'Deskripsi'}</label>
+        <textarea rows="3" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputClass + " resize-none"} placeholder={form.category === 'certificate' ? "Contoh: Dicoding Academy" : "Jelaskan singkat tentang project ini..."} />
       </div>
+      {form.category === 'certificate' && (
+        <div>
+          <label className={labelClass}>Tahun</label>
+          <input type="text" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} className={inputClass} placeholder="Contoh: 2024" />
+        </div>
+      )}
       {isDevProject && (
         <>
           <div>
@@ -166,10 +173,10 @@ const AdminDashboard = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [uploadForm, setUploadForm] = useState({
-    title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false,
+    title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false,
   });
   const [editForm, setEditForm] = useState({
-    title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false,
+    title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false,
   });
   const [imageFiles, setImageFiles] = useState([]);
   const [editImages, setEditImages] = useState([]);
@@ -181,6 +188,7 @@ const AdminDashboard = () => {
   const [projectToDelete, setProjectToDelete] = useState(null);
   const [gridSortType, setGridSortType] = useState('upload');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('all');
   const [previewImage, setPreviewImage] = useState(null);
   const [isFeaturedSortOpen, setIsFeaturedSortOpen] = useState(false);
   const [featuredProjects, setFeaturedProjects] = useState([]);
@@ -365,7 +373,7 @@ const AdminDashboard = () => {
     });
 
   const handleCancelUpload = () => {
-    setUploadForm({ title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false });
+    setUploadForm({ title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false });
     setImageFiles([]);
     setIsUploadModalOpen(false);
   };
@@ -391,7 +399,7 @@ const AdminDashboard = () => {
       const projectData = {
         title: uploadForm.title,
         category: uploadForm.category,
-        description: uploadForm.description,
+        description: uploadForm.category === 'certificate' && uploadForm.year ? `${uploadForm.description} - ${uploadForm.year}` : uploadForm.description,
         tags: parsedTags,
         image_url: publicUrl,
         isFeatured: uploadForm.isFeatured,
@@ -425,7 +433,7 @@ const AdminDashboard = () => {
       const projectData = {
         title: editForm.title,
         category: editForm.category,
-        description: editForm.description,
+        description: editForm.category === 'certificate' && editForm.year ? `${editForm.description} - ${editForm.year}` : editForm.description,
         tags: parsedTags,
         techStack: editForm.techStack ? editForm.techStack.split(',').map(t => t.trim()).filter(Boolean) : [],
         liveUrl: editForm.liveUrl,
@@ -460,10 +468,25 @@ const AdminDashboard = () => {
   };
 
   const handleEdit = (project) => {
+    let desc = project.description || '';
+    let year = '';
+    // Support both old slash format and new dash format for backwards compatibility
+    if (project.category === 'certificate') {
+      if (desc.includes(' - ')) {
+        const parts = desc.split(' - ');
+        year = parts.pop();
+        desc = parts.join(' - ');
+      } else if (desc.includes(' / ')) {
+        const parts = desc.split(' / ');
+        year = parts.pop();
+        desc = parts.join(' / ');
+      }
+    }
     setEditForm({
       title: project.title,
       category: project.category,
-      description: project.description || '',
+      description: desc,
+      year: year,
       tags: Array.isArray(project.tags) ? project.tags.join(', ') : '',
       techStack: Array.isArray(project.tech_stack || project.techStack) ? (project.tech_stack || project.techStack).join(', ') : '',
       liveUrl: project.live_url || project.liveUrl || '',
@@ -503,9 +526,18 @@ const AdminDashboard = () => {
     }
   };
 
-  const filtered = projects.filter(p =>
-    !searchQuery || p.title?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = projects.filter(p => {
+    const matchesSearch = !searchQuery || p.title?.toLowerCase().includes(searchQuery.toLowerCase());
+    let matchesTab = true;
+    if (activeTab === 'it') {
+      matchesTab = p.category === 'frontend' || p.category === 'uiux';
+    } else if (activeTab === 'visual') {
+      matchesTab = p.category !== 'frontend' && p.category !== 'uiux' && p.category !== 'certificate';
+    } else if (activeTab === 'certificate') {
+      matchesTab = p.category === 'certificate';
+    }
+    return matchesSearch && matchesTab;
+  });
 
 
   return (
@@ -523,7 +555,7 @@ const AdminDashboard = () => {
           </div>
           <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm font-medium text-[#86868b] hover:text-red-500 transition-colors">
             <LogOut size={16} />
-            Logout
+            Keluar
           </button>
         </div>
       </div>
@@ -532,14 +564,31 @@ const AdminDashboard = () => {
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <h2 className="text-2xl font-bold text-[#1d1d1f] tracking-tight">
-              Projects <span className="text-[#86868b] font-normal text-lg">({projects.length})</span>
+              Proyek <span className="text-[#86868b] font-normal text-lg">({filtered.length})</span>
             </h2>
+            <div className="flex bg-[#f5f5f7] p-1 rounded-xl shadow-sm overflow-x-auto hide-scrollbar">
+              <button onClick={() => setActiveTab('all')} className={`px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeTab === 'all' ? 'bg-white text-[#1d1d1f] shadow' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
+                Semua
+              </button>
+              <button onClick={() => setActiveTab('it')} className={`px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeTab === 'it' ? 'bg-white text-[#1d1d1f] shadow' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
+                IT Development
+              </button>
+              <button onClick={() => setActiveTab('visual')} className={`px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeTab === 'visual' ? 'bg-white text-[#1d1d1f] shadow' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
+                Karya Visual
+              </button>
+              <button onClick={() => setActiveTab('certificate')} className={`px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeTab === 'certificate' ? 'bg-white text-[#1d1d1f] shadow' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
+                Sertifikat
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4 mb-8">
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <div className="relative w-full max-w-md">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868b]" size={18} />
                 <input
                   type="text"
-                  placeholder="Cari project..."
+                  placeholder="Cari proyek..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-11 pr-4 py-2.5 bg-white border border-[#d2d2d7] rounded-xl text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all placeholder:text-[#86868b]"
@@ -552,7 +601,7 @@ const AdminDashboard = () => {
                 </button>
                 <button onClick={() => setIsUploadModalOpen(true)} className="px-6 py-2.5 bg-[#1d1d1f] hover:bg-black text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-xl flex items-center gap-2 text-sm whitespace-nowrap">
                   <Plus size={18} />
-                  Tambah Project
+                  Tambah Proyek
                 </button>
               </div>
             </div>
@@ -637,7 +686,7 @@ const AdminDashboard = () => {
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-grow">
+            <div className="p-6 overflow-y-auto minimal-scrollbar flex-grow">
               <form onSubmit={handleUpload} className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -780,7 +829,7 @@ const AdminDashboard = () => {
             </div>
             <div
               ref={gridScrollRef}
-              className="flex-1 overflow-y-auto p-6 md:p-8"
+              className="flex-1 overflow-y-auto minimal-scrollbar p-6 md:p-8"
               onDragOver={handleDragOverScrollVertical}
               onWheel={(e) => { if (dragItem.current !== null) e.currentTarget.scrollBy({ top: e.deltaY, behavior: 'auto' }); }}
             >
@@ -846,7 +895,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto flex-grow">
+            <div className="p-6 overflow-y-auto minimal-scrollbar flex-grow">
               <form onSubmit={handleUpdate} className="space-y-4">
                 {/* Edit Image Upload */}
                 <div>
@@ -1021,7 +1070,7 @@ const AdminDashboard = () => {
             </div>
             
             <div
-              className="flex-1 overflow-y-auto p-6 md:p-8"
+              className="flex-1 overflow-y-auto minimal-scrollbar p-6 md:p-8"
               onDragOver={handleDragOverScrollVertical}
               onWheel={(e) => { if (dragItem.current !== null) e.currentTarget.scrollBy({ top: e.deltaY, behavior: 'auto' }); }}
             >

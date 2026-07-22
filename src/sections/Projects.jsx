@@ -85,10 +85,10 @@ const Projects = () => {
   const itProjects = dbProjects.filter(p => itCategories.includes(p.category) && p.isFeatured).slice(0, 6);
 
   // Design Projects (hanya ambil yang di-feature admin, maksimal 6)
-  const designProjects = dbProjects.filter(p => !itCategories.includes(p.category) && p.isFeatured).slice(0, 6);
+  const designProjects = dbProjects.filter(p => !itCategories.includes(p.category) && p.category !== 'certificate' && p.isFeatured).slice(0, 6);
 
   return (
-    <div className="bg-primary w-full flex flex-col">
+    <div className="bg-surface w-full flex flex-col">
       
       {/* --- IT Development Section --- */}
       <section id="projects" className="w-full bg-[#0a0a0c] text-white rounded-t-[3rem] rounded-b-[3rem] px-6 py-12 md:py-16 shadow-[0_20px_50px_rgba(0,0,0,0.4)] relative border-y border-white/5 z-20 -mt-8">
@@ -99,7 +99,7 @@ const Projects = () => {
                 IT Development.
               </h2>
               <p className="text-lg text-white/70 font-medium">
-                Project website dan pengembangan front-end.
+                Proyek website dan pengembangan front-end.
               </p>
             </FadeIn>
           </div>
@@ -145,7 +145,7 @@ const Projects = () => {
                   {/* Right Side: Scrollable List */}
                   <div className="w-full lg:w-1/2 flex flex-col pt-4">
                     <div className="flex justify-between items-end border-b-2 border-white/30 pb-6 mb-4">
-                      <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-white">PROJECTS</h2>
+                      <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-white">PROYEK</h2>
                       <span className="text-2xl font-semibold text-white">{itProjects.length}</span>
                     </div>
 
@@ -187,7 +187,7 @@ const Projects = () => {
               </FadeIn>
             ) : (
               <div className="text-center text-white/40 py-10">
-                Belum ada project IT Development.
+                Belum ada proyek IT Development.
               </div>
             )}
           </div>
@@ -198,7 +198,7 @@ const Projects = () => {
                 onClick={() => navigate('/it-projects')}
                 className="group flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold text-sm hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]"
               >
-                Lihat Semua Project IT
+                Lihat Semua Proyek IT
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
@@ -207,7 +207,7 @@ const Projects = () => {
       </section>
 
       {/* --- Visual Arts Section (Teaser) --- */}
-      <section id="visual-arts" className="w-full bg-primary section-padding scroll-mt-24 z-10">
+      <section id="visual-arts" className="w-full bg-surface section-padding scroll-mt-24 z-10">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-16">
             <FadeIn direction="up">
