@@ -4,6 +4,7 @@ import { ArrowLeft, ExternalLink, Github, Loader2, LayoutGrid, Maximize2 } from 
 import { fetchProjects } from '../lib/projectsService';
 import { transformProjectForGallery } from '../utils/projects';
 import { FadeIn } from '../components/animations/FadeIn';
+import ImageModal from '../components/ImageModal';
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -12,6 +13,8 @@ const ProjectDetail = () => {
   const [loading, setLoading] = useState(true);
   const [dimensions, setDimensions] = useState({});
   const [viewMode, setViewMode] = useState('auto'); // Default to auto, user can toggle to grid or full
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,16 +33,22 @@ const ProjectDetail = () => {
     loadProject();
   }, [id]);
 
-  const images = project?.image ? project.image.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const parsedImages = project?.image ? project.image.split(',').map(s => {
+    const parts = s.trim().split('|');
+    if (parts.length > 1) {
+      return { label: parts[0], url: parts[1] };
+    }
+    return { label: null, url: parts[0] };
+  }).filter(item => Boolean(item.url)) : [];
 
   useEffect(() => {
     if (!project) return;
-    images.forEach((url, i) => {
+    parsedImages.forEach((item, i) => {
       const img = new Image();
       img.onload = () => {
         setDimensions(prev => ({ ...prev, [i]: { width: img.width, height: img.height } }));
       };
-      img.src = url;
+      img.src = item.url;
     });
   }, [project]);
 
@@ -150,7 +159,7 @@ const ProjectDetail = () => {
         </FadeIn>
 
         <div className="flex flex-wrap justify-center items-start gap-8 gap-y-16">
-          {images.map((img, i) => {
+          {parsedImages.map((item, i) => {
             const dim = dimensions[i];
             const isLoaded = !!dim;
             const isPortrait = isLoaded && dim.width < dim.height;
@@ -160,24 +169,42 @@ const ProjectDetail = () => {
             else if (viewMode === 'full') isGrid = false;
             else isGrid = isPortrait; // auto mode
 
+            const displayLabel = item.label || (i === 0 ? 'Homepage' : `Preview ${i + 1}`);
+
             return (
               <FadeIn 
                 key={i} 
                 direction="up" 
                 delay={i * 0.1}
-                className={`transition-opacity duration-500 flex flex-col items-center ${isLoaded ? 'opacity-100' : 'opacity-0'} ${isGrid ? 'w-[45%] sm:w-40 md:w-44 lg:w-48' : 'w-full max-w-4xl'}`}
+                className={`transition-opacity duration-500 flex flex-col items-center ${isLoaded ? 'opacity-100' : 'opacity-0'} ${isGrid ? 'w-[45%] md:w-[30%] lg:w-[28%] max-w-[340px]' : 'w-full max-w-4xl'}`}
               >
                 <h3 className="text-sm font-bold text-text-secondary tracking-[0.2em] uppercase mb-6 text-center w-full">
-                  {i === 0 ? 'Homepage' : `Preview ${i + 1}`}
+                  {displayLabel}
                 </h3>
-                <div className="w-full rounded-2xl overflow-hidden shadow-xl border border-border/20">
-                  <img src={img} alt={`${project.title} - Preview ${i + 1}`} className="w-full h-auto object-cover block mx-auto" loading="lazy" />
+                <div 
+                  className="w-full rounded-2xl overflow-hidden shadow-xl border border-border/20 cursor-pointer hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 relative group"
+                  onClick={() => {
+                    setSelectedImageIndex(i);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  <img src={item.url} alt={`${project.title} - ${displayLabel}`} className="w-full h-auto object-cover block mx-auto" loading="lazy" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center pointer-events-none">
+                    <Maximize2 className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-md" size={32} />
+                  </div>
                 </div>
               </FadeIn>
             );
           })}
         </div>
       </main>
+
+      <ImageModal
+        isOpen={isModalOpen}
+        project={project}
+        initialIndex={selectedImageIndex}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

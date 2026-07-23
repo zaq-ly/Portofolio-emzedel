@@ -3,25 +3,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, Github, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/image';
 
-const ImageModal = ({ isOpen, project, onClose }) => {
-  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+const ImageModal = ({ isOpen, project, onClose, initialIndex = 0 }) => {
+  const [currentImgIndex, setCurrentImgIndex] = useState(initialIndex);
 
-  // Reset index when project changes or modal opens
+  // Reset index when project changes, modal opens, or initialIndex changes
   useEffect(() => {
-    setCurrentImgIndex(0);
-  }, [project, isOpen]);
+    if (isOpen) {
+      setCurrentImgIndex(initialIndex);
+    }
+  }, [project, isOpen, initialIndex]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') onClose();
   }, [onClose]);
 
   useEffect(() => {
+    window.dispatchEvent(new CustomEvent('modalStateChange', { detail: { isOpen } }));
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
     }
     return () => {
       document.body.style.overflow = '';
+      window.dispatchEvent(new CustomEvent('modalStateChange', { detail: { isOpen: false } }));
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, handleKeyDown]);
@@ -29,6 +35,13 @@ const ImageModal = ({ isOpen, project, onClose }) => {
   if (!project) return null;
 
   const isDevProject = project.category === 'frontend' || project.category === 'uiux';
+  const isMultiImage = project.image.split(',').length > 1;
+  
+  const currentImageString = project.image.split(',')[currentImgIndex]?.trim() || '';
+  const parts = currentImageString.split('|');
+  const hasCustomLabel = parts.length > 1;
+  const currentImageLabel = hasCustomLabel ? parts[0] : (currentImgIndex === 0 ? 'Homepage' : `Preview ${currentImgIndex + 1}`);
+  const showLabel = hasCustomLabel || isMultiImage || isDevProject;
 
   return (
     <AnimatePresence>
@@ -38,7 +51,7 @@ const ImageModal = ({ isOpen, project, onClose }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-0"
+          className="fixed inset-0 z-[200] flex items-center justify-center p-0"
           onClick={onClose}
         >
           {/* Cinematic Dark Backdrop */}
@@ -47,7 +60,7 @@ const ImageModal = ({ isOpen, project, onClose }) => {
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 md:top-8 md:right-8 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/10"
+            className="absolute top-4 right-4 md:top-8 md:right-8 z-[200] p-3 rounded-full bg-black/60 hover:bg-black/80 text-white transition-all backdrop-blur-md border border-white/20 shadow-lg"
           >
             <X size={24} />
           </button>
@@ -61,49 +74,50 @@ const ImageModal = ({ isOpen, project, onClose }) => {
             className="relative w-full h-full flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Image (Maximized to screen edges) */}
-            <div className="w-full h-full flex items-center justify-center p-4 md:p-8 relative group">
+            <div className="w-full h-full overflow-y-auto md:overflow-hidden p-0 md:p-8 pb-0 md:pb-8 relative group flex flex-col md:items-center md:justify-center">
               {project.image && project.image.split(',').length > 1 ? (
                 <>
-                  <div className="w-full h-full overflow-hidden rounded-md shadow-2xl relative flex items-center justify-center">
+                  <div className="w-full min-h-full relative flex flex-col md:items-center md:justify-center overflow-y-auto md:overflow-hidden m-auto">
                     <img
-                      src={getOptimizedImageUrl(project.image.split(',')[currentImgIndex].trim(), 1600, 90)}
+                      src={getOptimizedImageUrl(project.image.split(',')[currentImgIndex].split('|').pop().trim(), 1600, 90)}
                       alt={`${project.title} - ${currentImgIndex + 1}`}
-                      className="max-w-full max-h-full object-contain"
+                      className="w-full md:w-auto h-auto md:max-w-full md:max-h-full md:object-contain md:rounded-md md:shadow-2xl m-auto"
                     />
                   </div>
                   
                   {/* Controls */}
                   <button 
                     onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev - 1 + project.image.split(',').length) % project.image.split(',').length); }}
-                    className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-all border border-white/10"
+                    className="fixed md:absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-all border border-white/10 z-50"
                   >
                     <ChevronLeft size={24} />
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev + 1) % project.image.split(',').length); }}
-                    className="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-all border border-white/10"
+                    className="fixed md:absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-all border border-white/10 z-50"
                   >
                     <ChevronRight size={24} />
                   </button>
 
                   {/* Dots */}
-                  <div className="absolute bottom-32 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                  <div className="fixed md:absolute bottom-[220px] md:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-[200]">
                     {project.image.split(',').map((_, idx) => (
                       <button
                         key={idx}
                         onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(idx); }}
-                        className={`w-2 h-2 rounded-full transition-all shadow-md ${currentImgIndex === idx ? 'bg-white w-5' : 'bg-white/50 hover:bg-white/80'}`}
+                        className={`w-2 h-2 rounded-full transition-all shadow-md border border-black/10 ${currentImgIndex === idx ? 'bg-white w-5' : 'bg-white/50 hover:bg-white/80'}`}
                       />
                     ))}
                   </div>
                 </>
               ) : (
-                <img
-                  src={getOptimizedImageUrl(project.image, 1600, 90)}
-                  alt={project.title}
-                  className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
-                />
+                <div className="w-full min-h-full flex flex-col md:items-center md:justify-center m-auto">
+                  <img
+                    src={getOptimizedImageUrl(project.image.split(',')[0].split('|').pop().trim(), 1600, 90)}
+                    alt={project.title}
+                    className="w-full md:w-auto h-auto md:max-w-full md:max-h-full md:object-contain md:rounded-md md:shadow-2xl m-auto"
+                  />
+                </div>
               )}
             </div>
 
@@ -121,10 +135,19 @@ const ImageModal = ({ isOpen, project, onClose }) => {
                 <h3 className="font-display font-bold text-2xl md:text-4xl text-white mb-3 tracking-tight">
                   {project.title}
                 </h3>
-                {project.description && (
-                  <p className="text-white/70 text-sm md:text-base leading-relaxed mb-4">
-                    {project.category === 'certificate' ? project.description.replace(' / ', ' - ') : project.description}
-                  </p>
+                
+                {project.category === 'certificate' ? (
+                  project.description && (
+                    <p className="text-white/70 text-sm md:text-base leading-relaxed mb-4">
+                      {project.description.replace(' / ', ' - ')}
+                    </p>
+                  )
+                ) : (
+                  showLabel && (
+                    <p className="text-[#0071e3] text-lg md:text-xl font-bold leading-relaxed mb-4 tracking-wide capitalize">
+                      {currentImageLabel}
+                    </p>
+                  )
                 )}
 
                 {/* Tags */}

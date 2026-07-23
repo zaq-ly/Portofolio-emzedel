@@ -8,7 +8,7 @@ const Footer = () => {
 
         <div className="flex items-center justify-center text-center">
           <p className="text-text-tertiary text-xs">
-            &copy; {new Date().getFullYear()} EMZEDEL. Hak cipta dilindungi undang-undang.
+            &copy; {new Date().getFullYear()} MZL. Hak cipta dilindungi undang-undang.
           </p>
         </div>
       </div>

@@ -72,7 +72,7 @@ const Certificates = () => {
   };
 
   return (
-    <section ref={sectionRef} id="certificates" className="w-full bg-[#111113] text-white rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.4)] relative z-20 overflow-hidden my-12 py-16 md:py-24">
+    <section ref={sectionRef} id="certificates" className="w-full bg-[#111113] text-white rounded-3xl md:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.4)] relative z-20 overflow-hidden my-12 py-16 md:py-24">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
         
         {/* Left Side: Typography */}

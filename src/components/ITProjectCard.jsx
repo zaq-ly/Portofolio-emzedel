@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowUpRight, Github, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ITProjectCard = ({ project, onClick }) => {
-  const images = project.image ? project.image.split(',') : [];
+  const images = project.image ? project.image.split(',').map(img => img.split('|').pop().trim()) : [];
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
   const handleNext = (e) => {

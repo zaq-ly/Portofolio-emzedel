@@ -52,12 +52,12 @@ const Experience = () => {
             gsap.to(words, {
               color: "#111827", // Gunakan dark gray/hitam pekat
               fontWeight: 600, // Membuat teks menjadi agak tebal
-              stagger: 0.2, // Sedikit memperlambat efek per kata
+              stagger: 0.05, // Stagger yang lebih kecil agar tidak menumpuk waktu terlalu lama
               scrollTrigger: {
                 trigger: container,
-                start: "top 70%", // Memperlebar jarak scroll agar animasi lebih lama
-                end: "bottom 30%",
-                scrub: 3, // Smooth scrubbing yang lebih lambat
+                start: "top 90%", // Mulai lebih awal saat elemen baru masuk layar bawah
+                end: "bottom 50%", // Selesai lebih cepat saat bagian bawah teks mencapai tengah layar
+                scrub: 1, // Scrubbing yang lebih responsif, tidak terlalu delay
               }
             });
           }

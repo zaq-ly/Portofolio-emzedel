@@ -91,7 +91,7 @@ const Projects = () => {
     <div className="bg-surface w-full flex flex-col">
       
       {/* --- IT Development Section --- */}
-      <section id="projects" className="w-full bg-[#0a0a0c] text-white rounded-t-[3rem] rounded-b-[3rem] px-6 py-12 md:py-16 shadow-[0_20px_50px_rgba(0,0,0,0.4)] relative border-y border-white/5 z-20 -mt-8">
+      <section id="projects" className="w-full bg-[#0a0a0c] text-white rounded-t-3xl rounded-b-3xl md:rounded-t-[3rem] md:rounded-b-[3rem] px-6 py-12 md:py-16 shadow-[0_20px_50px_rgba(0,0,0,0.4)] relative border-y border-white/5 z-20 -mt-8">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-10">
             <FadeIn direction="up">
@@ -129,7 +129,8 @@ const Projects = () => {
                   <div className="hidden lg:flex w-full lg:w-1/2 lg:sticky lg:top-32 rounded-[2rem] overflow-hidden shadow-2xl bg-[#111] border border-white/10 aspect-[4/3] items-center justify-center transition-all duration-500">
                     {(() => {
                       const displayProject = hoveredProject || itProjects[0];
-                      const firstImg = displayProject?.image ? displayProject.image.split(',')[0].trim() : '';
+                      const firstImgRaw = displayProject?.image ? displayProject.image.split(',')[0].trim() : '';
+                      const firstImg = firstImgRaw ? firstImgRaw.split('|').pop() : '';
                       return firstImg ? (
                         <img
                           src={firstImg}
@@ -151,7 +152,8 @@ const Projects = () => {
 
                     <div className="flex flex-col">
                       {itProjects.map((project) => {
-                        const firstImg = project.image ? project.image.split(',')[0].trim() : '';
+                        const firstImgRaw = project.image ? project.image.split(',')[0].trim() : '';
+                        const firstImg = firstImgRaw ? firstImgRaw.split('|').pop() : '';
                         return (
                           <div
                             key={project.id}

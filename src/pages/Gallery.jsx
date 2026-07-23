@@ -43,8 +43,8 @@ const Gallery = () => {
   const itCategories = ['frontend', 'uiux'];
   
   // Design Projects & Categories
-  const designCategoriesList = categories.filter(c => !itCategories.includes(c.key));
-  const allDesignProjects = dbProjects.filter(p => !itCategories.includes(p.category));
+  const designCategoriesList = categories.filter(c => !itCategories.includes(c.key) && c.key !== 'certificate');
+  const allDesignProjects = dbProjects.filter(p => !itCategories.includes(p.category) && p.category !== 'certificate');
 
   const filteredProjects = activeCategory === 'all'
     ? allDesignProjects

@@ -46,9 +46,9 @@ const ITProjects = () => {
 
   const displayProject = hoveredProject || (filteredProjects.length > 0 ? filteredProjects[0] : null);
 
-  const getFirstImage = (project) => {
+  const getCoverImage = (project) => {
     if (!project || !project.image) return '';
-    return project.image.split(',')[0].trim();
+    return project.image.split(',')[0].split('|').pop().trim();
   };
 
   return (

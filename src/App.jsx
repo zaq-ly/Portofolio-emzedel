@@ -10,17 +10,19 @@ import Experience from './sections/Experience';
 import Contact from './sections/Contact';
 import Certificates from './sections/Certificates';
 
-import Gallery from './pages/Gallery';
-import ITProjects from './pages/ITProjects';
-import ProjectDetail from './pages/ProjectDetail';
-import AdminLogin from './pages/admin/Login';
-import AdminDashboard from './pages/admin/Dashboard';
 import ProtectedRoute from './components/admin/ProtectedRoute';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Suspense, lazy } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import LoadingScreen from './components/LoadingScreen';
 import CustomCursor from './components/CustomCursor';
+import { LoaderOne } from './components/ui/loader';
+
+const Gallery = lazy(() => import('./pages/Gallery'));
+const ITProjects = lazy(() => import('./pages/ITProjects'));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
+const AdminLogin = lazy(() => import('./pages/admin/Login'));
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 
 // Komponen pembantu untuk menangani scroll ke ID saat hash berubah
 const ScrollToHash = () => {
@@ -89,37 +91,45 @@ function App() {
             <CustomCursor />
             <ScrollToHash />
             <div className="min-h-screen bg-surface text-text-primary transition-colors duration-300">
-              <Routes>
-                {/* Main Portfolio Route */}
-                <Route path="/" element={
-                  <>
-                    <Navbar />
-                    <main>
-                      <div id="home"><Hero /></div>
-                      <div id="about"><About /></div>
-                      <div id="skills"><Skills /></div>
-                      <div id="projects"><Projects /></div>
-                      <div id="experience"><Experience /></div>
-                      <div id="certificates"><Certificates /></div>
-                      <div id="contact"><Contact /></div>
-                    </main>
-                    <Footer />
-                  </>
-                } />
+              <Suspense 
+                fallback={
+                  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-surface/80 backdrop-blur-sm">
+                    <LoaderOne />
+                  </div>
+                }
+              >
+                <Routes>
+                  {/* Main Portfolio Route */}
+                  <Route path="/" element={
+                    <>
+                      <Navbar />
+                      <main>
+                        <div id="home"><Hero /></div>
+                        <div id="about"><About /></div>
+                        <div id="skills"><Skills /></div>
+                        <div id="projects"><Projects /></div>
+                        <div id="experience"><Experience /></div>
+                        <div id="certificates"><Certificates /></div>
+                        <div id="contact"><Contact /></div>
+                      </main>
+                      <Footer />
+                    </>
+                  } />
 
-                {/* Gallery Route */}
-                <Route path="/gallery" element={<Gallery />} />
-                <Route path="/it-projects" element={<ITProjects />} />
-                <Route path="/project/:id" element={<ProjectDetail />} />
+                  {/* Gallery Route */}
+                  <Route path="/gallery" element={<Gallery />} />
+                  <Route path="/it-projects" element={<ITProjects />} />
+                  <Route path="/project/:id" element={<ProjectDetail />} />
 
-                {/* Admin Routes */}
-                <Route path="/zaqlyneroth" element={<AdminLogin />} />
-                <Route path="/zaqlyneroth/dashboard" element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                } />
-              </Routes>
+                  {/* Admin Routes */}
+                  <Route path="/zaqlyneroth" element={<AdminLogin />} />
+                  <Route path="/zaqlyneroth/dashboard" element={
+                    <ProtectedRoute>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  } />
+                </Routes>
+              </Suspense>
             </div>
           </Router>
         </motion.div>

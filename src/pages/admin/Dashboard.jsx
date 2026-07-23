@@ -15,7 +15,7 @@ import toast, { Toaster } from 'react-hot-toast';
 const inputClass = "w-full px-4 py-3 bg-[#f5f5f7] border border-[#d2d2d7] rounded-xl text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all placeholder:text-[#86868b]";
 const labelClass = "block text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-2";
 
-const FormFields = ({ form, setForm, isEdit = false }) => {
+const FormFields = ({ form, setForm, isEdit = false, imageCount = 0 }) => {
   const isDevProject = form.category === 'frontend' || form.category === 'uiux';
   return (
     <>
@@ -76,6 +76,31 @@ const FormFields = ({ form, setForm, isEdit = false }) => {
             <label className={labelClass}>GitHub URL</label>
             <input type="url" value={form.githubUrl} onChange={(e) => setForm({ ...form, githubUrl: e.target.value })} className={inputClass} placeholder="https://github.com/username/repo" />
           </div>
+          {imageCount > 0 && (
+            <div className="mt-4 p-4 bg-white border border-[#d2d2d7] rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+              <label className="block text-xs font-bold text-[#1d1d1f] uppercase tracking-wider mb-4">
+                Judul Gambar (Opsional)
+              </label>
+              <div className="space-y-3">
+                {Array.from({ length: imageCount }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 bg-[#f5f5f7] p-2 rounded-lg border border-[#d2d2d7]/50">
+                    <span className="text-xs font-bold text-[#86868b] w-20 shrink-0 text-center">Gambar {i + 1}</span>
+                    <input 
+                      type="text" 
+                      value={form.imageLabels?.[i] || ''}
+                      onChange={(e) => {
+                        const newLabels = [...(form.imageLabels || [])];
+                        newLabels[i] = e.target.value;
+                        setForm({ ...form, imageLabels: newLabels });
+                      }}
+                      placeholder={i === 0 ? 'Homepage' : `Preview ${i + 1}`}
+                      className="flex-1 px-3 py-2 bg-white border border-[#d2d2d7] rounded-md text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] transition-all placeholder:text-[#86868b]/60"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
     </>
@@ -373,7 +398,7 @@ const AdminDashboard = () => {
     });
 
   const handleCancelUpload = () => {
-    setUploadForm({ title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false });
+    setUploadForm({ title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false, imageLabels: [] });
     setImageFiles([]);
     setIsUploadModalOpen(false);
   };
@@ -387,10 +412,12 @@ const AdminDashboard = () => {
       const isDevProject = uploadForm.category === 'frontend' || uploadForm.category === 'uiux';
       const uploadedUrls = [];
 
-      for (const file of imageFiles) {
+      for (let i = 0; i < imageFiles.length; i++) {
+        const file = imageFiles[i];
         const compressed = await compressImage(file);
         const url = await uploadProjectImage(compressed);
-        uploadedUrls.push(url);
+        const label = (uploadForm.imageLabels && uploadForm.imageLabels[i]) ? uploadForm.imageLabels[i] : (i === 0 ? 'Homepage' : `Preview ${i + 1}`);
+        uploadedUrls.push(`${label}|${url}`);
       }
 
       const publicUrl = uploadedUrls.join(',');
@@ -442,14 +469,17 @@ const AdminDashboard = () => {
       };
 
       const finalUrls = [];
-      for (const item of editImages) {
+      for (let i = 0; i < editImages.length; i++) {
+        const item = editImages[i];
+        const label = (editForm.imageLabels && editForm.imageLabels[i]) ? editForm.imageLabels[i] : (i === 0 ? 'Homepage' : `Preview ${i + 1}`);
+        let url = '';
         if (item.type === 'file') {
           const compressed = await compressImage(item.data);
-          const url = await uploadProjectImage(compressed);
-          finalUrls.push(url);
+          url = await uploadProjectImage(compressed);
         } else {
-          finalUrls.push(item.data);
+          url = item.data;
         }
+        finalUrls.push(`${label}|${url}`);
       }
       projectData.image_url = finalUrls.join(',');
 
@@ -492,11 +522,25 @@ const AdminDashboard = () => {
       liveUrl: project.live_url || project.liveUrl || '',
       githubUrl: project.github_url || project.githubUrl || '',
       isFeatured: project.is_featured || project.isFeatured || false,
+      imageLabels: [],
     });
     setEditingId(project.id);
     setEditingProject(project);
-    const existingImgs = (project.image_url || project.image || '').split(',').map(s => s.trim()).filter(Boolean);
-    setEditImages(existingImgs.map(u => ({ type: 'url', data: u })));
+    const existingImgsRaw = (project.image_url || project.image || '').split(',').map(s => s.trim()).filter(Boolean);
+    const existingImgs = [];
+    const existingLabels = [];
+    existingImgsRaw.forEach((raw) => {
+      const parts = raw.split('|');
+      if (parts.length > 1) {
+        existingLabels.push(parts[0]);
+        existingImgs.push({ type: 'url', data: parts[1] });
+      } else {
+        existingLabels.push('');
+        existingImgs.push({ type: 'url', data: parts[0] });
+      }
+    });
+    setEditImages(existingImgs);
+    setEditForm(prev => ({ ...prev, imageLabels: existingLabels }));
     setIsEditModalOpen(true);
   };
 
@@ -630,7 +674,7 @@ const AdminDashboard = () => {
                   <div key={project.id} className="bg-white rounded-2xl p-4 flex gap-4 shadow-[0_1px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] transition-all group">
                     <div className="w-20 h-20 bg-[#f5f5f7] rounded-xl overflow-hidden flex-shrink-0">
                       <img
-                        src={(project.image_url || project.image) ? (project.image_url || project.image).split(',')[0].trim() : ''}
+                        src={(project.image_url || project.image) ? (project.image_url || project.image).split(',')[0].split('|').pop().trim() : ''}
                         alt=""
                         loading="lazy"
                         className="w-full h-full object-cover"
@@ -793,7 +837,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                <FormFields form={uploadForm} setForm={setUploadForm} />
+                <FormFields form={uploadForm} setForm={setUploadForm} imageCount={imageFiles.length} />
 
                 <div className="flex gap-3 pt-2">
                   <button disabled={loading} type="submit" className="flex-1 bg-[#0071e3] hover:bg-[#0077ED] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm">
@@ -1004,7 +1048,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                <FormFields form={editForm} setForm={setEditForm} isEdit />
+                <FormFields form={editForm} setForm={setEditForm} isEdit imageCount={editImages.length} />
                 <div className="flex gap-3 pt-2">
                   <button disabled={loading} type="submit" className="flex-1 bg-[#0071e3] hover:bg-[#0077ED] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm">
                     {loading ? <Loader2 className="animate-spin" size={18} /> : 'Simpan'}

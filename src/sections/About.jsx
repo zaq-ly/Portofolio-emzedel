@@ -4,6 +4,7 @@ import { FadeIn } from '../components/animations/FadeIn';
 import { FileText, X } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ScrollReveal from '../components/animations/ScrollReveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,38 +19,6 @@ const About = () => {
   const profileRotateX = useTransform(dragY, [-100, 100], [20, -20]);
   const profileRotateY = useTransform(dragX, [-100, 100], [-20, 20]);
   const lanyardRotateZ = useTransform(dragX, [-200, 200], [8, -8]);
-
-  // 3D tilt states removed for simplicity
-
-  useEffect(() => {
-    let ctx;
-    const timer = setTimeout(() => {
-      ctx = gsap.context(() => {
-        ScrollTrigger.refresh();
-        const masterContainer = sectionRef.current.querySelector('.about-master-container');
-        if (masterContainer) {
-          const words = gsap.utils.toArray('.about-desc-word', masterContainer);
-          if (words.length > 0) {
-            gsap.to(words, {
-              color: "#ffffff",
-              stagger: 0.1,
-              scrollTrigger: {
-                trigger: masterContainer,
-                start: "top 65%",
-                end: "bottom 70%",
-                scrub: 1,
-              }
-            });
-          }
-        }
-      }, sectionRef);
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      if (ctx) ctx.revert();
-    };
-  }, []);
 
   return (
     <section
@@ -78,13 +47,14 @@ const About = () => {
                 "Selama masa studi dan perjalanan karier, saya telah aktif terlibat dalam berbagai proyek pembuatan aplikasi dan karya desain digital. Pengalaman ini tidak hanya mengasah kemampuan teknis saya, tetapi juga mengajarkan saya bagaimana mengelola alur kerja dari tahap konseptualisasi hingga menjadi sebuah produk yang siap digunakan.",
                 "Dalam bekerja, saya sangat menghargai kolaborasi tim dan mampu beradaptasi dengan cepat terhadap teknologi baru. Prinsip utama saya adalah teknologi harus mampu memecahkan masalah; oleh karena itu, saya selalu berorientasi pada penciptaan solusi cerdas yang memberikan manfaat nyata dan kemudahan bagi penggunanya."
               ].map((text, index) => (
-                <p key={index} className="about-desc-container">
-                  {text.split(' ').map((word, i) => (
-                    <span key={i} className="about-desc-word text-white/30 mr-[0.25em] inline-block">
-                      {word}
-                    </span>
-                  ))}
-                </p>
+                <ScrollReveal
+                  key={index}
+                  baseOpacity={0.3}
+                  containerClassName="about-desc-container"
+                  textClassName="text-white"
+                >
+                  {text}
+                </ScrollReveal>
               ))}
             </div>
 
@@ -103,7 +73,7 @@ const About = () => {
                 <div className="bg-white/5 hover:bg-white/10 p-6 md:p-8 rounded-3xl border border-white/10 hover:border-white/20 transition-all duration-300">
                   <h3 className="text-xl font-bold text-white mb-3 tracking-tight drop-shadow-md">💡 Yang membuat saya berbeda</h3>
                   <p className="text-gray-400 text-sm md:text-base leading-relaxed">
-                    Saya bukan hanya bisa mendesain antarmuka, tapi juga mengimplementasikannya langsung ke kode nyata. Satu orang, berbagai keahlian — efisien dan konsisten dari desain ke produk jadi.
+                    Saya bukan hanya bisa mendesain antarmuka, tapi juga mengimplementasikannya langsung ke kode nyata. Satu orang, berbagai keahlian efisien dan konsisten dari desain ke produk jadi.
                   </p>
                 </div>
               </div>
@@ -132,10 +102,8 @@ const About = () => {
               className="absolute inset-0 w-full h-full rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 bg-[#1a1a1c]"
             >
 
-
-
               <img
-                src="/gallery/foto_profil.JPG"
+                src="/gallery/foto_profile_v2.jpeg"
                 alt="Muhammad Zaqly Luluang"
                 className="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
                 draggable={false}
