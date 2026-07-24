@@ -12,6 +12,18 @@ const About = () => {
   const sectionRef = useRef(null);
   const cardRef = useRef(null);
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // States for Draggable Profile Picture ID Card
   const dragX = useMotionValue(0);
@@ -87,10 +99,10 @@ const About = () => {
           {/* Draggable Wrapper (Handles X/Y position) */}
           <motion.div
             style={{ x: dragX, y: dragY }}
-            drag
+            drag={!isMobile}
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={0.15}
-            className="w-72 sm:w-80 md:w-96 lg:w-[28rem] xl:w-[30rem] aspect-[4/5] relative cursor-grab active:cursor-grabbing z-30"
+            className={`w-72 sm:w-80 md:w-96 lg:w-[28rem] xl:w-[30rem] aspect-[4/5] relative z-30 ${!isMobile ? 'cursor-grab active:cursor-grabbing' : ''}`}
           >
 
 
