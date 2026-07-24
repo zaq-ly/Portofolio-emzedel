@@ -77,7 +77,7 @@ function App() {
   });
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       {isLoading ? (
         <LoadingScreen key="loading" onComplete={() => setIsLoading(false)} />
       ) : (

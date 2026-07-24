@@ -26,8 +26,8 @@ const Noise = ({
       canvas.width = canvasSize;
       canvas.height = canvasSize;
 
-      canvas.style.width = '100vw';
-      canvas.style.height = '100vh';
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
     };
 
     const drawGrain = () => {
@@ -77,38 +77,40 @@ const LoadingScreen = ({ onComplete }) => {
     // Simulasi waktu loading
     const timer = setTimeout(() => {
       onComplete();
-    }, 2500);
+    }, 2000);
     return () => clearTimeout(timer);
   }, [onComplete]);
 
   return (
     <motion.div
-      className="min-h-screen w-full bg-white text-black flex flex-col items-center justify-center overflow-hidden relative"
+      className="fixed inset-0 z-[100] text-black flex flex-col items-center justify-center"
       initial={{ opacity: 1 }}
       exit={{
-        y: "-100vh",
+        y: "-200vh",
         opacity: 0,
-        transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 }
+        transition: { duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0 }
       }}
     >
-      <div className="absolute inset-0 z-0 opacity-100">
-        <Noise patternAlpha={20} />
+      {/* Latar belakang putih dengan pinggiran bawah yang sangat halus saat ditarik ke atas */}
+      <div 
+        className="absolute top-0 left-0 w-full"
+        style={{ 
+          height: '200vh', 
+          backgroundColor: '#ffffff',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)'
+        }}
+      >
+        <div className="absolute inset-0 z-0 opacity-100">
+          <Noise patternAlpha={20} />
+        </div>
       </div>
 
       <div className="flex flex-col items-center relative z-10">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-sm md:text-base font-medium tracking-[0.2em] text-text-secondary mb-3 md:mb-4"
-        >
-          Selamat Datang
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+          initial={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           className="text-xl sm:text-3xl md:text-5xl text-text-primary flex flex-wrap justify-center gap-2 md:gap-3"
         >
           <span className="font-bold">MZL</span>
