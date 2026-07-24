@@ -59,7 +59,7 @@ const CustomCursor = () => {
       
       {/* Cursor Tunggal yang Simpel dan Minimalis */}
       <motion.div
-        className="fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-[10000] mix-blend-difference"
+        className="fixed top-0 left-0 w-4 h-4 bg-transparent backdrop-invert rounded-full pointer-events-none z-[10000]"
         animate={{
           x: mousePosition.x - 8, // offset = setengah dari width/height (16px / 2)
           y: mousePosition.y - 8,

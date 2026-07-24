@@ -60,14 +60,14 @@ const Hero = () => {
                 }
               }
             }}
-            className="flex flex-col text-[2.5rem] sm:text-[4rem] md:text-6xl lg:text-7xl xl:text-[5.5rem] font-black tracking-tighter text-text-primary leading-[0.9] mb-8 drop-shadow-sm w-full max-w-4xl mx-auto"
+            className="flex flex-col text-[2.5rem] sm:text-[4rem] md:text-6xl lg:text-7xl xl:text-[5.5rem] font-black tracking-tighter text-text-primary leading-none mb-8 w-full max-w-4xl mx-auto"
           >
             <motion.span 
               variants={{
                 hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
                 visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: "spring", damping: 12, stiffness: 100 } }
               }}
-              className="text-left w-full pr-12 md:pr-0 inline-block"
+              className="text-left w-full pr-12 md:pr-0 inline-block text-text-primary"
             >
               MUHAMMAD
             </motion.span>
@@ -76,8 +76,7 @@ const Hero = () => {
                 hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
                 visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: "spring", damping: 12, stiffness: 100 } }
               }}
-              className="text-center w-full opacity-80 inline-block"
-              style={{ WebkitTextStroke: '3px currentColor', WebkitTextFillColor: 'transparent' }}
+              className="text-center w-full inline-block text-[#8B8B8B]"
             >
               ZAQLY
             </motion.span>
@@ -86,7 +85,7 @@ const Hero = () => {
                 hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
                 visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: "spring", damping: 12, stiffness: 100 } }
               }}
-              className="text-right w-full text-text-secondary pl-12 md:pl-0 inline-block"
+              className="text-right w-full inline-block text-[#BABABA] pl-12 md:pl-0"
             >
               LULUANG.
             </motion.span>
