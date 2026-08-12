@@ -25,8 +25,8 @@ const Contact = () => {
     {
       icon: <Instagram size={20} />,
       title: 'Instagram',
-      detail: '@zqlyy_',
-      link: 'https://www.instagram.com/m.zaqly/',
+      detail: '@zzaqly',
+      link: 'https://www.instagram.com/zzaqly?igsh=eDQ3NXJwd2pzZ2Zm',
     },
   ];
 
