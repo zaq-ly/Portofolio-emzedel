@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { categories } from '../data/projects';
 import { fetchProjects } from '../lib/projectsService';
-import { transformProjectForGallery } from '../utils/projects';
+import { transformProjectForGallery, getFirstProjectImage } from '../utils/projects';
 import { FadeIn } from '../components/animations/FadeIn';
 import ProjectCard from '../components/ProjectCard';
 
@@ -48,7 +48,7 @@ const ITProjects = () => {
 
   const getCoverImage = (project) => {
     if (!project || !project.image) return '';
-    return project.image.split(',')[0].split('|').pop().trim();
+    return getFirstProjectImage(project.image);
   };
 
   return (

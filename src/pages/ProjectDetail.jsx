@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Github, Loader2, LayoutGrid, Maximize2 } from 'lucide-react';
 import { fetchProjects } from '../lib/projectsService';
-import { transformProjectForGallery } from '../utils/projects';
+import { transformProjectForGallery, parseProjectImages } from '../utils/projects';
 import { FadeIn } from '../components/animations/FadeIn';
 import ImageModal from '../components/ImageModal';
 
@@ -23,7 +23,7 @@ const ProjectDetail = () => {
         const data = await fetchProjects();
         // Handle ID which could be a string or number
         const found = data.map(transformProjectForGallery).find(p => p.id === parseInt(id) || p.id === id);
-        setProject(found);
+        setProject(found || null);
       } catch (err) {
         console.error('Error fetching project:', err);
       } finally {
@@ -33,13 +33,7 @@ const ProjectDetail = () => {
     loadProject();
   }, [id]);
 
-  const parsedImages = project?.image ? project.image.split(',').map(s => {
-    const parts = s.trim().split('|');
-    if (parts.length > 1) {
-      return { label: parts[0], url: parts[1] };
-    }
-    return { label: null, url: parts[0] };
-  }).filter(item => Boolean(item.url)) : [];
+  const parsedImages = parseProjectImages(project?.image);
 
   useEffect(() => {
     if (!project) return;

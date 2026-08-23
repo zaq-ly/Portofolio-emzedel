@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchProjects } from '../lib/projectsService';
-import { transformProjectForGallery } from '../utils/projects';
+import { transformProjectForGallery, getFirstProjectImage } from '../utils/projects';
 import { FadeIn } from '../components/animations/FadeIn';
 import ImageModal from '../components/ImageModal';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -113,7 +113,7 @@ const Certificates = () => {
                   const zIndex = 10 - absOffset;
                   const opacity = absOffset > 1 ? 0 : 1; // Show only 3 items clearly (center + 1 left + 1 right)
                   
-                  const coverImage = cert.image ? cert.image.split(',')[0].trim() : '';
+                  const coverImage = cert.image ? getFirstProjectImage(cert.image) : '';
 
                   return (
                     <motion.div

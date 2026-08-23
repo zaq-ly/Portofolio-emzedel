@@ -11,6 +11,7 @@ import {
 } from '../../lib/projectsService';
 import { Upload, Plus, LogOut, Loader2, CheckCircle2, AlertCircle, Trash2, Edit, X, Search, ArrowLeft, ChevronLeft, ChevronRight, LayoutGrid, Eye } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import { parseProjectImages, getFirstProjectImage } from '../../utils/projects';
 
 const inputClass = "w-full px-4 py-3 bg-[#f5f5f7] border border-[#d2d2d7] rounded-xl text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all placeholder:text-[#86868b]";
 const labelClass = "block text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-2";
@@ -113,18 +114,29 @@ const AdminDashboard = () => {
   const gridScrollRef = useRef(null);
 
   const [activeDragIndex, setActiveDragIndex] = useState(null);
-  const pointerDragState = useRef({ isDragging: false, startIndex: null, ghost: null, offsetX: 0, offsetY: 0 });
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const pointerDragState = useRef({ isDragging: false, startIndex: null, targetIndex: null, ghost: null, offsetX: 0, offsetY: 0 });
 
   const performPointerSwap = (fromIndex, toIndex) => {
+    if (fromIndex === null || toIndex === null || fromIndex === toIndex) return;
     const swap = (prev) => {
+      if (!Array.isArray(prev)) return prev;
+      if (fromIndex < 0 || fromIndex >= prev.length || toIndex < 0 || toIndex >= prev.length) return prev;
       const arr = [...prev];
-      const item = arr.splice(fromIndex, 1)[0];
+      const [item] = arr.splice(fromIndex, 1);
+      if (item === undefined) return prev;
       arr.splice(toIndex, 0, item);
       return arr;
     };
-    if (gridSortType === 'upload') setImageFiles(swap);
-    else if (gridSortType === 'edit') setEditImages(swap);
-    else if (gridSortType === 'featured') setFeaturedProjects(swap);
+    if (gridSortType === 'upload') {
+      setImageFiles(swap);
+      setUploadForm(prev => ({ ...prev, imageLabels: swap(prev.imageLabels || []) }));
+    } else if (gridSortType === 'edit') {
+      setEditImages(swap);
+      setEditForm(prev => ({ ...prev, imageLabels: swap(prev.imageLabels || []) }));
+    } else if (gridSortType === 'featured') {
+      setFeaturedProjects(swap);
+    }
   };
 
   const handlePointerMove = (e) => {
@@ -141,30 +153,46 @@ const AdminDashboard = () => {
     const itemElem = elem.closest('[data-grid-index]');
     if (itemElem) {
       const hoverIndex = parseInt(itemElem.getAttribute('data-grid-index'), 10);
-      if (hoverIndex !== pointerDragState.current.startIndex) {
-        performPointerSwap(pointerDragState.current.startIndex, hoverIndex);
-        pointerDragState.current.startIndex = hoverIndex;
-        setActiveDragIndex(hoverIndex);
+      if (!isNaN(hoverIndex) && pointerDragState.current.targetIndex !== hoverIndex) {
+        pointerDragState.current.targetIndex = hoverIndex;
+        setDragOverIndex(hoverIndex);
       }
     }
   };
 
-  const handlePointerUp = (e) => {
+  const handlePointerUp = () => {
+    if (!pointerDragState.current.isDragging) return;
+    const from = pointerDragState.current.startIndex;
+    const to = pointerDragState.current.targetIndex;
+
     pointerDragState.current.isDragging = false;
     setActiveDragIndex(null);
+    setDragOverIndex(null);
+
     if (pointerDragState.current.ghost) {
       pointerDragState.current.ghost.remove();
       pointerDragState.current.ghost = null;
     }
     window.removeEventListener('pointermove', handlePointerMove);
     window.removeEventListener('pointerup', handlePointerUp);
+
+    if (from !== null && to !== null && from !== to) {
+      performPointerSwap(from, to);
+    }
   };
 
   const handlePointerDown = (e, index) => {
     e.preventDefault();
-    pointerDragState.current.isDragging = true;
-    pointerDragState.current.startIndex = index;
+    pointerDragState.current = {
+      isDragging: true,
+      startIndex: index,
+      targetIndex: index,
+      ghost: null,
+      offsetX: 0,
+      offsetY: 0,
+    };
     setActiveDragIndex(index);
+    setDragOverIndex(index);
 
     const rect = e.currentTarget.getBoundingClientRect();
     const ghost = e.currentTarget.cloneNode(true);
@@ -198,10 +226,10 @@ const AdminDashboard = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [uploadForm, setUploadForm] = useState({
-    title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false,
+    title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false, imageLabels: [],
   });
   const [editForm, setEditForm] = useState({
-    title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false,
+    title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false, imageLabels: [],
   });
   const [imageFiles, setImageFiles] = useState([]);
   const [editImages, setEditImages] = useState([]);
@@ -221,7 +249,6 @@ const AdminDashboard = () => {
 
   const openFeaturedSort = () => {
     const featured = projects.filter(p => p.is_featured || p.isFeatured);
-    // They are already sorted by created_at descending from fetchProjects
     setFeaturedProjects(featured);
     setGridSortType('featured');
     setIsFeaturedSortOpen(true);
@@ -248,49 +275,74 @@ const AdminDashboard = () => {
   };
 
   const handleFileSelection = (files, isEdit, append = false) => {
-    // 1. Abaikan file sistem bawaan OS (.DS_Store, thumbs.db, desktop.ini)
-    const actualFiles = files.filter(f => {
+    if (!files || !Array.isArray(files) || files.length === 0) return;
+
+    // 1. Filter hanya gambar web valid & abaikan file sistem / sampah OS
+    const isSupportedWebImage = (f) => {
+      if (!f || f.size === 0) return false;
       const name = f.name.toLowerCase();
-      return !name.startsWith('.') && name !== 'thumbs.db' && name !== 'desktop.ini';
-    });
+      const path = (f.webkitRelativePath || f.name).toLowerCase();
+      
+      // Abaikan file sistem / OS junk
+      if (
+        name.startsWith('.') ||
+        name.startsWith('~$') ||
+        path.includes('__macosx') ||
+        path.includes('.ds_store') ||
+        name === 'thumbs.db' ||
+        name === 'ehthumbs.db' ||
+        name === 'desktop.ini'
+      ) {
+        return false;
+      }
 
-    if (actualFiles.length === 0) return;
+      // Validasi ekstensi gambar web
+      const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg', 'avif', 'bmp', 'jfif'];
+      const extMatch = name.match(/\.([a-z0-9]+)$/i);
+      const ext = extMatch ? extMatch[1].toLowerCase() : '';
+      
+      return validExtensions.includes(ext);
+    };
 
-    // 2. Filter hanya JPG dan PNG (Abaikan file lain tanpa membatalkan proses)
-    const validFiles = actualFiles.filter(f => {
-      const validTypes = ['image/jpeg', 'image/png'];
-      return validTypes.includes(f.type);
-    });
+    const validFiles = files.filter(isSupportedWebImage);
 
     if (validFiles.length === 0) {
-      toast.error('Gagal: Tidak ada gambar format JPG atau PNG yang valid ditemukan.');
+      toast.error('Gagal: Tidak ada gambar format web yang valid (JPG, PNG, WEBP, GIF, SVG, AVIF, JFIF) ditemukan.');
       return;
     }
 
-    // 3. Proses urutan file yang sudah aman
-    const sorted = validFiles.sort((a, b) => {
+    // 2. Urutkan file secara natural (thumb/cover didahulukan, lalu urutan angka natural)
+    const sorted = [...validFiles].sort((a, b) => {
       const aName = a.name.toLowerCase();
       const bName = b.name.toLowerCase();
-      const aIsThumb = aName.includes('thumb');
-      const bIsThumb = bName.includes('thumb');
+      const aIsThumb = aName.includes('thumb') || aName.includes('cover');
+      const bIsThumb = bName.includes('thumb') || bName.includes('cover');
 
       if (aIsThumb && !bIsThumb) return -1;
       if (!aIsThumb && bIsThumb) return 1;
 
-      const aNumMatch = aName.match(/^(\d+)/);
-      const bNumMatch = bName.match(/^(\d+)/);
-      const aNum = aNumMatch ? parseInt(aNumMatch[1], 10) : Infinity;
-      const bNum = bNumMatch ? parseInt(bNumMatch[1], 10) : Infinity;
-
-      if (aNum !== bNum) return aNum - bNum;
-      return aName.localeCompare(bName);
+      return aName.localeCompare(bName, undefined, { numeric: true, sensitivity: 'base' });
     });
 
+    // 3. Simpan dengan preview URL yang stabil (tidak re-create setiap render)
     if (isEdit) {
-      const newItems = sorted.map(file => ({ type: 'file', data: file }));
-      setEditImages(prev => append ? [...newItems, ...prev] : newItems);
+      const newItems = sorted.map(file => ({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+        type: 'file',
+        data: file,
+        file: file,
+        preview: URL.createObjectURL(file),
+        name: file.name,
+      }));
+      setEditImages(prev => append ? [...prev, ...newItems] : newItems);
     } else {
-      setImageFiles(prev => append ? [...sorted, ...prev] : sorted);
+      const newItems = sorted.map(file => ({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+        file: file,
+        preview: URL.createObjectURL(file),
+        name: file.name,
+      }));
+      setImageFiles(prev => append ? [...prev, ...newItems] : newItems);
     }
   };
 
@@ -315,30 +367,57 @@ const AdminDashboard = () => {
 
   const removeImage = (index, isEdit) => {
     if (isEdit) {
-      setEditImages(prev => prev.filter((_, i) => i !== index));
+      setEditImages(prev => {
+        const item = prev[index];
+        if (item?.preview && item.preview.startsWith('blob:')) {
+          try { URL.revokeObjectURL(item.preview); } catch {}
+        }
+        return prev.filter((_, i) => i !== index);
+      });
+      setEditForm(prev => ({
+        ...prev,
+        imageLabels: prev.imageLabels ? prev.imageLabels.filter((_, i) => i !== index) : []
+      }));
     } else {
-      setImageFiles(prev => prev.filter((_, i) => i !== index));
+      setImageFiles(prev => {
+        const item = prev[index];
+        if (item?.preview && item.preview.startsWith('blob:')) {
+          try { URL.revokeObjectURL(item.preview); } catch {}
+        }
+        return prev.filter((_, i) => i !== index);
+      });
+      setUploadForm(prev => ({
+        ...prev,
+        imageLabels: prev.imageLabels ? prev.imageLabels.filter((_, i) => i !== index) : []
+      }));
     }
   };
 
   const handleDragSort = (isEdit = false) => {
-    if (dragItem.current === null || dragOverItem.current === null) return;
-    if (dragItem.current === dragOverItem.current) return;
+    const from = dragItem.current;
+    const to = dragOverItem.current;
+    if (from === null || to === null || from === to) {
+      dragItem.current = null;
+      dragOverItem.current = null;
+      return;
+    }
+
+    const swap = (prev) => {
+      if (!Array.isArray(prev)) return prev;
+      if (from < 0 || from >= prev.length || to < 0 || to >= prev.length) return prev;
+      const arr = [...prev];
+      const [removed] = arr.splice(from, 1);
+      if (removed === undefined) return prev;
+      arr.splice(to, 0, removed);
+      return arr;
+    };
 
     if (isEdit) {
-      setEditImages((prev) => {
-        const arr = [...prev];
-        const [removed] = arr.splice(dragItem.current, 1);
-        arr.splice(dragOverItem.current, 0, removed);
-        return arr;
-      });
+      setEditImages(swap);
+      setEditForm(prev => ({ ...prev, imageLabels: swap(prev.imageLabels || []) }));
     } else {
-      setImageFiles((prev) => {
-        const arr = [...prev];
-        const [removed] = arr.splice(dragItem.current, 1);
-        arr.splice(dragOverItem.current, 0, removed);
-        return arr;
-      });
+      setImageFiles(swap);
+      setUploadForm(prev => ({ ...prev, imageLabels: swap(prev.imageLabels || []) }));
     }
     dragItem.current = null;
     dragOverItem.current = null;
@@ -377,7 +456,11 @@ const AdminDashboard = () => {
   // Compress image
   const compressImage = (file, maxWidth = 1200, quality = 0.82) =>
     new Promise((resolve) => {
-      if (file.type === 'image/gif') {
+      if (!file || !(file instanceof Blob)) {
+        resolve(file);
+        return;
+      }
+      if (file.type === 'image/gif' || file.type === 'image/svg+xml' || file.name?.endsWith('.svg') || file.name?.endsWith('.gif')) {
         resolve(file);
         return;
       }
@@ -387,17 +470,29 @@ const AdminDashboard = () => {
         const img = new Image();
         img.src = e.target.result;
         img.onload = () => {
-          const scale = Math.min(1, maxWidth / img.width);
+          const scale = Math.min(1, maxWidth / (img.width || maxWidth));
           const canvas = document.createElement('canvas');
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          canvas.toBlob((blob) => resolve(new File([blob], file.name, { type: 'image/jpeg' })), 'image/jpeg', quality);
+          canvas.width = (img.width || maxWidth) * scale;
+          canvas.height = (img.height || maxWidth) * scale;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => resolve(blob ? new File([blob], file.name, { type: 'image/jpeg' }) : file), 'image/jpeg', quality);
+          } else {
+            resolve(file);
+          }
         };
+        img.onerror = () => resolve(file);
       };
+      reader.onerror = () => resolve(file);
     });
 
   const handleCancelUpload = () => {
+    imageFiles.forEach(item => {
+      if (item?.preview && item.preview.startsWith('blob:')) {
+        try { URL.revokeObjectURL(item.preview); } catch {}
+      }
+    });
     setUploadForm({ title: '', category: 'illustration', description: '', year: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false, imageLabels: [] });
     setImageFiles([]);
     setIsUploadModalOpen(false);
@@ -413,11 +508,15 @@ const AdminDashboard = () => {
       const uploadedUrls = [];
 
       for (let i = 0; i < imageFiles.length; i++) {
-        const file = imageFiles[i];
+        const item = imageFiles[i];
+        const file = item.file || item;
         const compressed = await compressImage(file);
         const url = await uploadProjectImage(compressed);
-        const label = (uploadForm.imageLabels && uploadForm.imageLabels[i]) ? uploadForm.imageLabels[i] : (i === 0 ? 'Homepage' : `Preview ${i + 1}`);
-        uploadedUrls.push(`${label}|${url}`);
+        const cleanUrl = url.includes('|') ? url.split('|').pop().trim() : url.trim();
+        const customLabel = isDevProject && uploadForm.imageLabels?.[i]
+          ? uploadForm.imageLabels[i].replace(/,/g, ' - ').replace(/\|/g, '-').trim()
+          : '';
+        uploadedUrls.push(customLabel ? `${customLabel}|${cleanUrl}` : cleanUrl);
       }
 
       const publicUrl = uploadedUrls.join(',');
@@ -456,6 +555,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      const isDevProject = editForm.category === 'frontend' || editForm.category === 'uiux';
       const parsedTags = editForm.tags.split(',').map(t => t.trim()).filter(Boolean);
       const projectData = {
         title: editForm.title,
@@ -471,15 +571,18 @@ const AdminDashboard = () => {
       const finalUrls = [];
       for (let i = 0; i < editImages.length; i++) {
         const item = editImages[i];
-        const label = (editForm.imageLabels && editForm.imageLabels[i]) ? editForm.imageLabels[i] : (i === 0 ? 'Homepage' : `Preview ${i + 1}`);
-        let url = '';
+        let rawUrl = '';
         if (item.type === 'file') {
-          const compressed = await compressImage(item.data);
-          url = await uploadProjectImage(compressed);
+          const compressed = await compressImage(item.data || item.file);
+          rawUrl = await uploadProjectImage(compressed);
         } else {
-          url = item.data;
+          rawUrl = item.url || item.data || item.preview || '';
         }
-        finalUrls.push(`${label}|${url}`);
+        const cleanUrl = rawUrl.includes('|') ? rawUrl.split('|').pop().trim() : rawUrl.trim();
+        const customLabel = isDevProject && editForm.imageLabels?.[i]
+          ? editForm.imageLabels[i].replace(/,/g, ' - ').replace(/\|/g, '-').trim()
+          : '';
+        finalUrls.push(customLabel ? `${customLabel}|${cleanUrl}` : cleanUrl);
       }
       projectData.image_url = finalUrls.join(',');
 
@@ -526,18 +629,19 @@ const AdminDashboard = () => {
     });
     setEditingId(project.id);
     setEditingProject(project);
-    const existingImgsRaw = (project.image_url || project.image || '').split(',').map(s => s.trim()).filter(Boolean);
+    const parsed = parseProjectImages(project.image_url || project.image || '');
     const existingImgs = [];
     const existingLabels = [];
-    existingImgsRaw.forEach((raw) => {
-      const parts = raw.split('|');
-      if (parts.length > 1) {
-        existingLabels.push(parts[0]);
-        existingImgs.push({ type: 'url', data: parts[1] });
-      } else {
-        existingLabels.push('');
-        existingImgs.push({ type: 'url', data: parts[0] });
-      }
+    parsed.forEach((item) => {
+      existingLabels.push(item.label || '');
+      existingImgs.push({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+        type: 'url',
+        data: item.url,
+        url: item.url,
+        preview: item.url,
+        name: 'Project Image',
+      });
     });
     setEditImages(existingImgs);
     setEditForm(prev => ({ ...prev, imageLabels: existingLabels }));
@@ -545,7 +649,12 @@ const AdminDashboard = () => {
   };
 
   const handleCancelEdit = () => {
-    setEditForm({ title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false });
+    editImages.forEach(item => {
+      if (item?.preview && item.preview.startsWith('blob:')) {
+        try { URL.revokeObjectURL(item.preview); } catch {}
+      }
+    });
+    setEditForm({ title: '', category: 'illustration', description: '', tags: '', techStack: '', liveUrl: '', githubUrl: '', isFeatured: false, imageLabels: [] });
     setEditingId(null);
     setEditingProject(null);
     setEditImages([]);
@@ -674,7 +783,7 @@ const AdminDashboard = () => {
                   <div key={project.id} className="bg-white rounded-2xl p-4 flex gap-4 shadow-[0_1px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] transition-all group">
                     <div className="w-20 h-20 bg-[#f5f5f7] rounded-xl overflow-hidden flex-shrink-0">
                       <img
-                        src={(project.image_url || project.image) ? (project.image_url || project.image).split(',')[0].split('|').pop().trim() : ''}
+                        src={getFirstProjectImage(project.image_url || project.image)}
                         alt=""
                         loading="lazy"
                         className="w-full h-full object-cover"
@@ -759,9 +868,9 @@ const AdminDashboard = () => {
                   <div className="relative group">
                     <input
                       type="file"
-                      accept="image/jpeg, image/png"
+                      accept="image/*"
                       multiple={true}
-                      onChange={(e) => handleFileSelection(Array.from(e.target.files), false)}
+                      onChange={(e) => { handleFileSelection(Array.from(e.target.files), false); e.target.value = ''; }}
                       className="hidden"
                       id="file-upload"
                     />
@@ -770,15 +879,15 @@ const AdminDashboard = () => {
                       webkitdirectory="true"
                       directory="true"
                       multiple
-                      onChange={(e) => handleFileSelection(Array.from(e.target.files), false)}
+                      onChange={(e) => { handleFileSelection(Array.from(e.target.files), false); e.target.value = ''; }}
                       className="hidden"
                       id="folder-upload"
                     />
                     <input
                       type="file"
-                      accept="image/jpeg, image/png"
+                      accept="image/*"
                       multiple={true}
-                      onChange={(e) => handleFileSelection(Array.from(e.target.files), false, true)}
+                      onChange={(e) => { handleFileSelection(Array.from(e.target.files), false, true); e.target.value = ''; }}
                       className="hidden"
                       id="append-upload-file"
                     />
@@ -787,7 +896,7 @@ const AdminDashboard = () => {
                       webkitdirectory="true"
                       directory="true"
                       multiple
-                      onChange={(e) => handleFileSelection(Array.from(e.target.files), false, true)}
+                      onChange={(e) => { handleFileSelection(Array.from(e.target.files), false, true); e.target.value = ''; }}
                       className="hidden"
                       id="append-upload-folder"
                     />
@@ -800,9 +909,9 @@ const AdminDashboard = () => {
                             className="flex w-full h-full overflow-x-auto gap-2 p-2"
                             onDragOver={handleDragOverScroll}
                           >
-                            {imageFiles.map((file, i) => (
+                            {imageFiles.map((item, i) => (
                               <div
-                                key={i}
+                                key={item.id || i}
                                 className="relative h-full shrink-0 group/img cursor-grab active:cursor-grabbing"
                                 draggable
                                 onDragStart={(e) => { e.stopPropagation(); dragItem.current = i; }}
@@ -810,7 +919,7 @@ const AdminDashboard = () => {
                                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onDragEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleDragSort(false); }}
                               >
-                                <img src={URL.createObjectURL(file)} alt="Preview" className="h-full w-auto object-contain rounded-lg pointer-events-none" draggable={false} />
+                                <img src={item.preview} alt={item.name || 'Preview'} className="h-full w-auto object-contain rounded-lg pointer-events-none" draggable={false} />
                                 <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeImage(i, false); }} className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm text-[#1d1d1f] hover:text-red-500 hover:bg-white rounded-full shadow-md opacity-0 group-hover/img:opacity-100 transition-all z-10">
                                   <X size={14} />
                                 </button>
@@ -880,16 +989,22 @@ const AdminDashboard = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
                 {(gridSortType === 'upload' ? imageFiles : editImages).map((item, i) => {
                   const isEdit = gridSortType !== 'upload';
-                  const src = isEdit ? (item.type === 'file' ? URL.createObjectURL(item.data) : item.data) : URL.createObjectURL(item);
+                  const src = item.preview || '';
 
                   return (
                     <div
-                      key={i}
+                      key={item.id || i}
                       data-grid-index={i}
-                      className={`relative aspect-square bg-white rounded-2xl shadow-sm overflow-hidden cursor-grab active:cursor-grabbing group border-2 transition-all ${activeDragIndex === i ? 'opacity-30 scale-95 border-[#0071e3]' : 'border-transparent hover:border-[#0071e3]/30'}`}
+                      className={`relative aspect-square bg-white rounded-2xl shadow-sm overflow-hidden cursor-grab active:cursor-grabbing group border-2 transition-all ${
+                        activeDragIndex === i
+                          ? 'opacity-30 scale-95 border-[#0071e3]'
+                          : dragOverIndex === i
+                          ? 'border-[#0071e3] ring-2 ring-[#0071e3]/40 scale-105'
+                          : 'border-transparent hover:border-[#0071e3]/30'
+                      }`}
                       onPointerDown={(e) => handlePointerDown(e, i)}
                     >
-                      <img src={src} alt="Grid Item" className="w-full h-full object-cover pointer-events-none" draggable={false} />
+                      <img src={src} alt={item.name || `Grid Item ${i + 1}`} className="w-full h-full object-cover pointer-events-none" draggable={false} />
                       <div className="absolute top-2 left-2 w-7 h-7 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-[#1d1d1f] text-xs font-bold shadow-sm pointer-events-none">
                         {i + 1}
                       </div>
@@ -968,9 +1083,9 @@ const AdminDashboard = () => {
                   <div className="relative group mb-4">
                     <input
                       type="file"
-                      accept="image/jpeg, image/png"
+                      accept="image/*"
                       multiple={true}
-                      onChange={(e) => handleFileSelection(Array.from(e.target.files), true)}
+                      onChange={(e) => { handleFileSelection(Array.from(e.target.files), true); e.target.value = ''; }}
                       className="hidden"
                       id="edit-file-upload"
                     />
@@ -979,15 +1094,15 @@ const AdminDashboard = () => {
                       webkitdirectory="true"
                       directory="true"
                       multiple
-                      onChange={(e) => handleFileSelection(Array.from(e.target.files), true)}
+                      onChange={(e) => { handleFileSelection(Array.from(e.target.files), true); e.target.value = ''; }}
                       className="hidden"
                       id="edit-folder-upload"
                     />
                     <input
                       type="file"
-                      accept="image/jpeg, image/png"
+                      accept="image/*"
                       multiple={true}
-                      onChange={(e) => handleFileSelection(Array.from(e.target.files), true, true)}
+                      onChange={(e) => { handleFileSelection(Array.from(e.target.files), true, true); e.target.value = ''; }}
                       className="hidden"
                       id="edit-append-file"
                     />
@@ -996,7 +1111,7 @@ const AdminDashboard = () => {
                       webkitdirectory="true"
                       directory="true"
                       multiple
-                      onChange={(e) => handleFileSelection(Array.from(e.target.files), true, true)}
+                      onChange={(e) => { handleFileSelection(Array.from(e.target.files), true, true); e.target.value = ''; }}
                       className="hidden"
                       id="edit-append-folder"
                     />
@@ -1010,10 +1125,10 @@ const AdminDashboard = () => {
                             onDragOver={handleDragOverScroll}
                           >
                             {editImages.map((item, i) => {
-                              const src = item.type === 'file' ? URL.createObjectURL(item.data) : item.data;
+                              const src = item.preview || '';
                               return (
                               <div
-                                key={i}
+                                key={item.id || i}
                                 className="relative h-full shrink-0 group/img cursor-grab active:cursor-grabbing"
                                 draggable
                                 onDragStart={(e) => { e.stopPropagation(); dragItem.current = i; }}
@@ -1021,7 +1136,7 @@ const AdminDashboard = () => {
                                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onDragEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleDragSort(true); }}
                               >
-                                <img src={src} alt="Preview" className="h-full w-auto object-contain rounded-lg pointer-events-none" draggable={false} />
+                                <img src={src} alt={item.name || 'Preview'} className="h-full w-auto object-contain rounded-lg pointer-events-none" draggable={false} />
                                 <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeImage(i, true); }} className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm text-[#1d1d1f] hover:text-red-500 hover:bg-white rounded-full shadow-md opacity-0 group-hover/img:opacity-100 transition-all z-10">
                                   <X size={14} />
                                 </button>
@@ -1120,12 +1235,18 @@ const AdminDashboard = () => {
             >
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {featuredProjects.map((project, i) => {
-                  const coverImage = (project.image_url || project.image || '').split(',')[0].trim();
+                  const coverImage = getFirstProjectImage(project.image_url || project.image);
                   return (
                     <div
                       key={project.id}
                       data-grid-index={i}
-                      className={`relative aspect-square bg-white rounded-2xl shadow-sm overflow-hidden cursor-grab active:cursor-grabbing group border-2 transition-all ${activeDragIndex === i ? 'opacity-30 scale-95 border-[#0071e3]' : 'border-[#e8e8ed] hover:border-[#0071e3]/50'}`}
+                      className={`relative aspect-square bg-white rounded-2xl shadow-sm overflow-hidden cursor-grab active:cursor-grabbing group border-2 transition-all ${
+                        activeDragIndex === i
+                          ? 'opacity-30 scale-95 border-[#0071e3]'
+                          : dragOverIndex === i
+                          ? 'border-[#0071e3] ring-2 ring-[#0071e3]/40 scale-105'
+                          : 'border-[#e8e8ed] hover:border-[#0071e3]/50'
+                      }`}
                       onPointerDown={(e) => handlePointerDown(e, i)}
                     >
                       <img src={coverImage} alt={project.title} className="w-full h-full object-cover pointer-events-none" draggable={false} />

@@ -46,14 +46,17 @@ export const subscribeProjects = (onData, onError) => {
 export const uploadProjectImage = async (file) => {
   if (!supabase) throw new Error('Supabase belum dikonfigurasi.');
 
-  const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+  const extMatch = file.name?.match(/\.([a-zA-Z0-9]+)$/);
+  const ext = extMatch ? extMatch[1].toLowerCase() : 'jpg';
+  const baseName = (file.name || 'image').replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}_${baseName}.${ext}`;
 
   const { data, error } = await supabase
     .storage
     .from('project-images')
     .upload(fileName, file, {
       cacheControl: '3600',
-      upsert: false,
+      upsert: true,
     });
 
   if (error) throw error;

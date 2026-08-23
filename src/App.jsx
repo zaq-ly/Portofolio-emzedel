@@ -15,7 +15,6 @@ import { useEffect, useRef, useState, Suspense, lazy } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import LoadingScreen from './components/LoadingScreen';
-import CustomCursor from './components/CustomCursor';
 import { LoaderOne } from './components/ui/loader';
 
 const Gallery = lazy(() => import('./pages/Gallery'));
@@ -88,7 +87,6 @@ function App() {
           transition={{ duration: 0.5 }}
         >
           <Router>
-            <CustomCursor />
             <ScrollToHash />
             <div className="min-h-screen bg-surface text-text-primary transition-colors duration-300">
               <Suspense 

@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, Github, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/image';
+import { parseProjectImages } from '../utils/projects';
 
 const ImageModal = ({ isOpen, project, onClose, initialIndex = 0 }) => {
   const [currentImgIndex, setCurrentImgIndex] = useState(initialIndex);
@@ -35,13 +36,13 @@ const ImageModal = ({ isOpen, project, onClose, initialIndex = 0 }) => {
   if (!project) return null;
 
   const isDevProject = project.category === 'frontend' || project.category === 'uiux';
-  const isMultiImage = project.image.split(',').length > 1;
-  
-  const currentImageString = project.image.split(',')[currentImgIndex]?.trim() || '';
-  const parts = currentImageString.split('|');
-  const hasCustomLabel = parts.length > 1;
-  const currentImageLabel = hasCustomLabel ? parts[0] : (currentImgIndex === 0 ? 'Homepage' : `Preview ${currentImgIndex + 1}`);
-  const showLabel = hasCustomLabel || isMultiImage || isDevProject;
+  const parsedImages = parseProjectImages(project.image);
+  const totalImages = parsedImages.length;
+  const isMultiImage = totalImages > 1;
+  const safeIndex = totalImages > 0 ? Math.min(Math.max(0, currentImgIndex), totalImages - 1) : 0;
+  const currentItem = parsedImages[safeIndex] || { label: '', url: '' };
+  const currentImageLabel = currentItem.label || (safeIndex === 0 ? 'Homepage' : `Preview ${safeIndex + 1}`);
+  const showLabel = Boolean(currentItem.label) || (isDevProject && isMultiImage);
 
   return (
     <AnimatePresence>
@@ -75,25 +76,27 @@ const ImageModal = ({ isOpen, project, onClose, initialIndex = 0 }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-full h-full overflow-y-auto md:overflow-hidden p-0 md:p-8 pb-0 md:pb-8 relative group flex flex-col md:items-center md:justify-center">
-              {project.image && project.image.split(',').length > 1 ? (
+              {totalImages > 1 ? (
                 <>
                   <div className="w-full min-h-full relative flex flex-col md:items-center md:justify-center overflow-y-auto md:overflow-hidden m-auto">
-                    <img
-                      src={getOptimizedImageUrl(project.image.split(',')[currentImgIndex].split('|').pop().trim(), 1600, 90)}
-                      alt={`${project.title} - ${currentImgIndex + 1}`}
-                      className="w-full md:w-auto h-auto md:max-w-full md:max-h-full md:object-contain md:rounded-md md:shadow-2xl m-auto"
-                    />
+                    {currentItem.url ? (
+                      <img
+                        src={getOptimizedImageUrl(currentItem.url, 1600, 90)}
+                        alt={`${project.title} - ${safeIndex + 1}`}
+                        className="w-full md:w-auto h-auto md:max-w-full md:max-h-full md:object-contain md:rounded-md md:shadow-2xl m-auto"
+                      />
+                    ) : null}
                   </div>
                   
                   {/* Controls */}
                   <button 
-                    onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev - 1 + project.image.split(',').length) % project.image.split(',').length); }}
+                    onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev - 1 + totalImages) % totalImages); }}
                     className="fixed md:absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-all border border-white/10 z-50"
                   >
                     <ChevronLeft size={24} />
                   </button>
                   <button 
-                    onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev + 1) % project.image.split(',').length); }}
+                    onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(prev => (prev + 1) % totalImages); }}
                     className="fixed md:absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-all border border-white/10 z-50"
                   >
                     <ChevronRight size={24} />
@@ -101,22 +104,26 @@ const ImageModal = ({ isOpen, project, onClose, initialIndex = 0 }) => {
 
                   {/* Dots */}
                   <div className="fixed md:absolute bottom-[220px] md:bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-[200]">
-                    {project.image.split(',').map((_, idx) => (
+                    {parsedImages.map((_, idx) => (
                       <button
                         key={idx}
                         onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(idx); }}
-                        className={`w-2 h-2 rounded-full transition-all shadow-md border border-black/10 ${currentImgIndex === idx ? 'bg-white w-5' : 'bg-white/50 hover:bg-white/80'}`}
+                        className={`w-2 h-2 rounded-full transition-all shadow-md border border-black/10 ${safeIndex === idx ? 'bg-white w-5' : 'bg-white/50 hover:bg-white/80'}`}
                       />
                     ))}
                   </div>
                 </>
               ) : (
                 <div className="w-full min-h-full flex flex-col md:items-center md:justify-center m-auto">
-                  <img
-                    src={getOptimizedImageUrl(project.image.split(',')[0].split('|').pop().trim(), 1600, 90)}
-                    alt={project.title}
-                    className="w-full md:w-auto h-auto md:max-w-full md:max-h-full md:object-contain md:rounded-md md:shadow-2xl m-auto"
-                  />
+                  {currentItem.url ? (
+                    <img
+                      src={getOptimizedImageUrl(currentItem.url, 1600, 90)}
+                      alt={project.title}
+                      className="w-full md:w-auto h-auto md:max-w-full md:max-h-full md:object-contain md:rounded-md md:shadow-2xl m-auto"
+                    />
+                  ) : (
+                    <div className="text-white/50 font-medium">Belum ada preview</div>
+                  )}
                 </div>
               )}
             </div>

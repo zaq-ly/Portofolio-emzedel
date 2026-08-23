@@ -7,7 +7,7 @@ import ProjectCard from '../components/ProjectCard';
 import ITProjectCard from '../components/ITProjectCard';
 import ImageModal from '../components/ImageModal';
 import { fetchProjects } from '../lib/projectsService';
-import { transformProjectForGallery } from '../utils/projects';
+import { transformProjectForGallery, getFirstProjectImage } from '../utils/projects';
 import { FadeIn } from '../components/animations/FadeIn';
 
 const StackedITCard = ({ project, index, total, onClick }) => {
@@ -129,8 +129,7 @@ const Projects = () => {
                   <div className="hidden lg:flex w-full lg:w-1/2 lg:sticky lg:top-32 rounded-[2rem] overflow-hidden shadow-2xl bg-[#111] border border-white/10 aspect-[4/3] items-center justify-center transition-all duration-500">
                     {(() => {
                       const displayProject = hoveredProject || itProjects[0];
-                      const firstImgRaw = displayProject?.image ? displayProject.image.split(',')[0].trim() : '';
-                      const firstImg = firstImgRaw ? firstImgRaw.split('|').pop() : '';
+                      const firstImg = displayProject?.image ? getFirstProjectImage(displayProject.image) : '';
                       return firstImg ? (
                         <img
                           src={firstImg}
@@ -152,8 +151,7 @@ const Projects = () => {
 
                     <div className="flex flex-col">
                       {itProjects.map((project) => {
-                        const firstImgRaw = project.image ? project.image.split(',')[0].trim() : '';
-                        const firstImg = firstImgRaw ? firstImgRaw.split('|').pop() : '';
+                        const firstImg = project.image ? getFirstProjectImage(project.image) : '';
                         return (
                           <div
                             key={project.id}
