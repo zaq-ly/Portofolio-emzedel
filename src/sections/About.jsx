@@ -18,9 +18,9 @@ const About = () => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     handleResize();
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -171,7 +171,7 @@ const About = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <iframe
-                src="/CV_Muhammad_Zaqly_Luluang.pdf#toolbar=0&navpanes=0&scrollbar=0"
+                src="/CV_ATS_MUHAMMAD ZAQLY LULUANG.pdf#toolbar=0&navpanes=0&scrollbar=0"
                 className="w-full h-full border-0"
                 title="CV Muhammad Zaqly Luluang"
               />
