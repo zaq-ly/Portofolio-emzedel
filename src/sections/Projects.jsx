@@ -81,8 +81,8 @@ const Projects = () => {
 
   const itCategories = ['frontend', 'uiux'];
 
-  // IT Projects (hanya ambil yang di-feature admin, maksimal 6)
-  const itProjects = dbProjects.filter(p => itCategories.includes(p.category) && p.isFeatured).slice(0, 6);
+  // IT Projects (hanya ambil yang di-feature admin, maksimal 5)
+  const itProjects = dbProjects.filter(p => itCategories.includes(p.category) && p.isFeatured).slice(0, 5);
 
   // Design Projects (hanya ambil yang di-feature admin, maksimal 6)
   const designProjects = dbProjects.filter(p => !itCategories.includes(p.category) && p.category !== 'certificate' && p.isFeatured).slice(0, 6);
