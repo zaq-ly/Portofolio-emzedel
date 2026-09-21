@@ -13,13 +13,22 @@ export const fetchProjects = async () => {
     }));
   }
 
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) throw error;
-  return data;
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.warn('[Supabase] Gagal fetch data (project paused/offline), fallback ke data statis:', err);
+    return staticProjects.map(p => transformProject({
+      ...p,
+      image_url: p.image || p.image_url,
+      created_at: new Date().toISOString(),
+    }));
+  }
 };
 
 // ===== REALTIME SUBSCRIBE =====
