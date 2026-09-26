@@ -11,6 +11,7 @@ import Contact from './sections/Contact';
 import Certificates from './sections/Certificates';
 
 import ProtectedRoute from './components/admin/ProtectedRoute';
+import { Analytics } from '@vercel/analytics/react';
 import { useEffect, useRef, useState, Suspense, lazy } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -88,6 +89,7 @@ function App() {
         >
           <Router>
             <ScrollToHash />
+            <Analytics />
             <div className="min-h-screen bg-surface text-text-primary transition-colors duration-300">
               <Suspense 
                 fallback={
