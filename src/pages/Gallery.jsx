@@ -40,17 +40,37 @@ const Gallery = () => {
     setIsModalOpen(true);
   };
 
-  const itCategories = ['frontend', 'uiux'];
-  
-  // Design Projects & Categories
-  const designCategoriesList = categories.filter(c => !itCategories.includes(c.key) && c.key !== 'certificate');
-  const allDesignProjects = dbProjects.filter(p => !itCategories.includes(p.category) && p.category !== 'certificate');
+  const isDevCategory = (cat) => {
+    if (!cat) return false;
+    const c = cat.toLowerCase();
+    return c === 'frontend' || c === 'uiux' || c.includes('front-end') || c.includes('frontend') || c.includes('ui/ux') || c.includes('uiux');
+  };
+
+  const isCertCategory = (cat) => {
+    if (!cat) return false;
+    const c = cat.toLowerCase();
+    return c === 'certificate' || c === 'sertifikat' || c.includes('certificate') || c.includes('sertifikat');
+  };
+
+  // Only Visual Design projects (not IT and not Certificates)
+  const allDesignProjects = dbProjects.filter(p => !isDevCategory(p.category) && !isCertCategory(p.category));
+
+  // Dynamically derive tabs from actual visual projects in db
+  const uniqueCats = Array.from(
+    new Set(allDesignProjects.map(p => p.category?.trim()).filter(Boolean))
+  );
+
+  const dynamicCategories = [
+    { key: 'all', label: 'Semua' },
+    ...uniqueCats.map(cat => ({
+      key: cat,
+      label: cat.charAt(0).toUpperCase() + cat.slice(1)
+    }))
+  ];
 
   const filteredProjects = activeCategory === 'all'
     ? allDesignProjects
-    : activeCategory === 'poster-banner'
-      ? allDesignProjects.filter(p => p.category === 'poster' || p.category === 'banner')
-      : allDesignProjects.filter(p => p.category === activeCategory);
+    : allDesignProjects.filter(p => (p.category || '').toLowerCase() === activeCategory.toLowerCase());
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
@@ -81,7 +101,7 @@ const Gallery = () => {
 
           <FadeIn direction="up" delay={0.1}>
             <div className="flex flex-wrap justify-center gap-2 mb-12">
-              {designCategoriesList.map((cat) => (
+              {dynamicCategories.map((cat) => (
                 <button
                   key={cat.key}
                   onClick={() => setActiveCategory(cat.key)}

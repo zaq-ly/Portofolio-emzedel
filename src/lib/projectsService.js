@@ -172,3 +172,25 @@ export const updateFeaturedOrder = async (updates) => {
     }
   }
 };
+
+// ===== RENAME CATEGORY =====
+export const renameCategory = async (oldCategory, newCategory) => {
+  if (!supabase) return;
+  const { error } = await supabase
+    .from('projects')
+    .update({ category: newCategory })
+    .ilike('category', oldCategory);
+
+  if (error) throw error;
+};
+
+// ===== DELETE CATEGORY =====
+export const deleteCategory = async (categoryToDelete, fallback = 'illustration') => {
+  if (!supabase) return;
+  const { error } = await supabase
+    .from('projects')
+    .update({ category: fallback })
+    .ilike('category', categoryToDelete);
+
+  if (error) throw error;
+};

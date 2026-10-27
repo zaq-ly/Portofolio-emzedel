@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { LogIn, Loader2, Eye, EyeOff, ArrowLeft, Mail, Lock } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -10,7 +12,13 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('admin_auth') === 'true') {
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          navigate('/zaqlyneroth/dashboard');
+        }
+      });
+    } else if (localStorage.getItem('admin_auth') === 'true') {
       navigate('/zaqlyneroth/dashboard');
     }
   }, [navigate]);
@@ -20,17 +28,40 @@ const Login = () => {
     setLoading(true);
     setError(null);
 
-    await new Promise(resolve => setTimeout(resolve, 400));
+    try {
+      if (!supabase) {
+        // Fallback untuk development lokal tanpa Supabase credentials
+        const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
+        if (password === adminPassword) {
+          localStorage.setItem('admin_auth', 'true');
+          navigate('/zaqlyneroth/dashboard');
+          return;
+        } else {
+          throw new Error('Password salah (mode offline).');
+        }
+      }
 
-    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
-    
-    if (password === adminPassword) {
-      localStorage.setItem('admin_auth', 'true');
-      navigate('/zaqlyneroth/dashboard');
-    } else {
-      setError('Password salah.');
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password,
+      });
+
+      if (authError) {
+        if (authError.message.includes('Invalid login credentials')) {
+          throw new Error('Email atau password salah.');
+        }
+        throw authError;
+      }
+
+      if (data?.session) {
+        localStorage.removeItem('admin_auth');
+        navigate('/zaqlyneroth/dashboard');
+      }
+    } catch (err) {
+      setError(err.message || 'Login gagal. Silakan coba lagi.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -39,38 +70,57 @@ const Login = () => {
         {/* Logo */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold tracking-tight text-[#1d1d1f]">MZL</h1>
-          <p className="text-[#86868b] text-sm mt-2">Admin Dashboard</p>
+          <p className="text-[#86868b] text-sm mt-2">Admin Dashboard Authentication</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-3xl p-8 shadow-[0_2px_20px_rgba(0,0,0,0.06)]">
-          <h2 className="text-2xl font-bold text-[#1d1d1f] mb-1 tracking-tight">Selamat datang.</h2>
-          <p className="text-[#86868b] text-sm mb-8">Masukkan password untuk melanjutkan.</p>
+        <div className="bg-white rounded-3xl p-8 shadow-[0_2px_24px_rgba(0,0,0,0.06)] border border-[#d2d2d7]/40">
+          <h2 className="text-2xl font-bold text-[#1d1d1f] mb-1 tracking-tight">Selamat Datang</h2>
+          <p className="text-[#86868b] text-sm mb-8">Masuk dengan akun admin Supabase Anda.</p>
 
           {error && (
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-2xl text-sm mb-6 font-medium">
+            <div className="bg-red-50 border border-red-200/60 text-red-600 px-4 py-3 rounded-2xl text-sm mb-6 font-medium animate-in fade-in duration-200">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-2">
+                Email Admin
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868b]" size={18} />
+                <input
+                  type="email"
+                  required
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-[#f5f5f7] border border-[#d2d2d7] rounded-xl text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all placeholder:text-[#86868b]"
+                  placeholder="admin@email.com"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-2">
                 Password
               </label>
               <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868b]" size={18} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3.5 bg-[#f5f5f7] border border-[#d2d2d7] rounded-xl text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all"
+                  className="w-full pl-11 pr-11 py-3 bg-[#f5f5f7] border border-[#d2d2d7] rounded-xl text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all placeholder:text-[#86868b]"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] hover:text-[#1d1d1f] transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#86868b] hover:text-[#1d1d1f] transition-colors p-1"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -80,14 +130,14 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#0071e3] hover:bg-[#0077ED] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm"
+              className="w-full mt-2 bg-[#0071e3] hover:bg-[#0077ED] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm shadow-sm"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={18} />
               ) : (
                 <>
                   <LogIn size={18} />
-                  Masuk
+                  Masuk ke Dashboard
                 </>
               )}
             </button>

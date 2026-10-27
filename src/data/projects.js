@@ -507,7 +507,7 @@ export const projects = [
   {
     "id": 46,
     "title": "Cook pocket",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - cook pocket.png",
     "tags": [
@@ -518,7 +518,7 @@ export const projects = [
   {
     "id": 47,
     "title": "Double zaqly",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - double zaqly.jpg",
     "tags": [
@@ -529,7 +529,7 @@ export const projects = [
   {
     "id": 48,
     "title": "EMZEDEL",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - EMZEDEL.jpg",
     "tags": [
@@ -540,7 +540,7 @@ export const projects = [
   {
     "id": 49,
     "title": "FinBuddy",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - FinBuddy.png",
     "tags": [
@@ -551,7 +551,7 @@ export const projects = [
   {
     "id": 50,
     "title": "Futsal IPMR FC",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - Futsal IPMR FC.jpg",
     "tags": [
@@ -562,7 +562,7 @@ export const projects = [
   {
     "id": 51,
     "title": "GoCleanCity",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - GoCleanCity.jpg",
     "tags": [
@@ -573,7 +573,7 @@ export const projects = [
   {
     "id": 52,
     "title": "KKP Dprd 2025",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - KKP Dprd 2025.jpg",
     "tags": [
@@ -584,7 +584,7 @@ export const projects = [
   {
     "id": 53,
     "title": "Muh Zaqly",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - Muh Zaqly.jpg",
     "tags": [
@@ -595,7 +595,7 @@ export const projects = [
   {
     "id": 54,
     "title": "MZ Pentagon",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZ Pentagon.jpg",
     "tags": [
@@ -606,7 +606,7 @@ export const projects = [
   {
     "id": 55,
     "title": "MZ triangle",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZ triangle.jpg",
     "tags": [
@@ -617,7 +617,7 @@ export const projects = [
   {
     "id": 56,
     "title": "MZ v2",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZ v2.jpg",
     "tags": [
@@ -628,7 +628,7 @@ export const projects = [
   {
     "id": 57,
     "title": "MZ v3",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZ v3.jpg",
     "tags": [
@@ -639,7 +639,7 @@ export const projects = [
   {
     "id": 58,
     "title": "MZ",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZ.jpg",
     "tags": [
@@ -650,7 +650,7 @@ export const projects = [
   {
     "id": 59,
     "title": "MZL Hangeul korea",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZL Hangeul korea.jpg",
     "tags": [
@@ -661,7 +661,7 @@ export const projects = [
   {
     "id": 60,
     "title": "MZL serif",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZL serif.jpg",
     "tags": [
@@ -672,7 +672,7 @@ export const projects = [
   {
     "id": 61,
     "title": "MZL v2",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZL v2.jpg",
     "tags": [
@@ -683,7 +683,7 @@ export const projects = [
   {
     "id": 62,
     "title": "MZL",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - MZL.jpg",
     "tags": [
@@ -694,7 +694,7 @@ export const projects = [
   {
     "id": 63,
     "title": "Qly v2",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - Qly v2.jpg",
     "tags": [
@@ -705,7 +705,7 @@ export const projects = [
   {
     "id": 64,
     "title": "Qly",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - Qly.jpg",
     "tags": [
@@ -716,7 +716,7 @@ export const projects = [
   {
     "id": 65,
     "title": "Wordmark qlyyy",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - wordmark qlyyy.jpg",
     "tags": [
@@ -727,7 +727,7 @@ export const projects = [
   {
     "id": 66,
     "title": "Zaqly arab",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo - zaqly arab.jpg",
     "tags": [
@@ -738,7 +738,7 @@ export const projects = [
   {
     "id": 67,
     "title": "Logo Arena Six",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo Arena Six.png",
     "tags": [
@@ -749,7 +749,7 @@ export const projects = [
   {
     "id": 68,
     "title": "Logo Esport - Kaum Toxic",
-    "category": "branding",
+    "category": "Logo",
     "description": "Karya branding kreatif oleh Muhammad Zaqly Luluang.",
     "image": "/gallery/Logo Esport - Kaum Toxic.jpg",
     "tags": [
@@ -903,7 +903,7 @@ export const projects = [
   {
     "id": 82,
     "title": "Portfolio Website EMZEDEL",
-    "category": "frontend",
+    "category": "Front-End Project",
     "type": "frontend",
     "description": "Website portfolio pribadi yang dibangun dengan React + Tailwind CSS. Menampilkan karya desain, project front-end, dan keahlian UI/UX dalam satu platform.",
     "image": "/gallery/foto_profil.JPG",
@@ -915,7 +915,7 @@ export const projects = [
   {
     "id": 83,
     "title": "Contoh Project Front-End",
-    "category": "frontend",
+    "category": "Front-End Project",
     "type": "frontend",
     "description": "Ini adalah placeholder project. Ganti dengan project front-end kamu melalui Admin Dashboard.",
     "image": "/gallery/foto_profil.JPG",

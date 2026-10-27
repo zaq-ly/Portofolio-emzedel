@@ -31,18 +31,26 @@ const ITProjects = () => {
     loadData();
   }, []);
 
-  const itCategories = ['frontend', 'uiux'];
-  
-  // IT Categories from data
-  const itCategoriesList = categories.filter(c => itCategories.includes(c.key));
-  // Include 'all' option manually
-  const filterTabs = [{ key: 'all', label: 'Semua Project' }, ...itCategoriesList];
-  
-  const allItProjects = dbProjects.filter(p => itCategories.includes(p.category));
+  const isDevCategory = (cat) => {
+    if (!cat) return false;
+    const c = cat.toLowerCase();
+    return c === 'frontend' || c === 'uiux' || c.includes('front-end') || c.includes('frontend') || c.includes('ui/ux') || c.includes('uiux');
+  };
+
+  const allItProjects = dbProjects.filter(p => isDevCategory(p.category));
+
+  const uniqueItCats = Array.from(new Set(allItProjects.map(p => p.category).filter(Boolean)));
+  const filterTabs = [
+    { key: 'all', label: 'Semua Project' },
+    ...uniqueItCats.map(cat => ({
+      key: cat,
+      label: cat === 'uiux' ? 'UI/UX' : cat
+    }))
+  ];
 
   const filteredProjects = activeCategory === 'all'
     ? allItProjects
-    : allItProjects.filter(p => p.category === activeCategory);
+    : allItProjects.filter(p => p.category.toLowerCase() === activeCategory.toLowerCase());
 
   const displayProject = hoveredProject || (filteredProjects.length > 0 ? filteredProjects[0] : null);
 

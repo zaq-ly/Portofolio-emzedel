@@ -7,7 +7,15 @@ export const transformProject = (p) => ({
   liveUrl: p.live_url || p.liveUrl || '',
   githubUrl: p.github_url || p.githubUrl || '',
   isFeatured: p.is_featured || p.isFeatured || false,
-  category: p.category === 'print' ? 'poster' : p.category,
+  category: (() => {
+    const raw = p.category;
+    if (!raw) return 'Illustration';
+    const lower = raw.toLowerCase().trim();
+    if (lower === 'print') return 'Poster';
+    if (lower === 'branding') return 'Logo';
+    if (lower === 'frontend' || lower === 'front-end' || lower === 'front end') return 'Front-End Project';
+    return raw;
+  })(),
   tags: Array.isArray(p.tags)
     ? p.tags.map((t) => {
         const lowerT = t.toLowerCase();

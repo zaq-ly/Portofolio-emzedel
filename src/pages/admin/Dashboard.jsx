@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   fetchProjects,
@@ -8,34 +8,169 @@ import {
   deleteProject,
   uploadProjectImage,
   updateFeaturedOrder,
+  renameCategory,
+  deleteCategory,
 } from '../../lib/projectsService';
-import { Upload, Plus, LogOut, Loader2, CheckCircle2, AlertCircle, Trash2, Edit, X, Search, ArrowLeft, ChevronLeft, ChevronRight, LayoutGrid, Eye } from 'lucide-react';
+import { Upload, Plus, LogOut, Loader2, CheckCircle2, AlertCircle, Trash2, Edit, X, Search, ArrowLeft, ChevronLeft, ChevronRight, LayoutGrid, Eye, Tags, Check, Filter, ChevronDown } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { parseProjectImages, getFirstProjectImage } from '../../utils/projects';
+import { supabase } from '../../lib/supabaseClient';
 
 const inputClass = "w-full px-4 py-3 bg-[#f5f5f7] border border-[#d2d2d7] rounded-xl text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all placeholder:text-[#86868b]";
 const labelClass = "block text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-2";
 
-const FormFields = ({ form, setForm, isEdit = false, imageCount = 0 }) => {
-  const isDevProject = form.category === 'frontend' || form.category === 'uiux';
+
+const STORAGE_KEY_CATEGORIES = 'portfolio_all_categories_v2';
+const INITIAL_DEFAULT_CATEGORIES = [
+  'Illustration',
+  'Logo',
+  'Vector',
+  'Poster',
+  'Banner',
+  'Front-End Project',
+  'UI/UX Project',
+  'Sertifikat',
+];
+
+const getStoredCategories = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_CATEGORIES);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setStoredCategories = (cats) => {
+  try {
+    localStorage.setItem(STORAGE_KEY_CATEGORIES, JSON.stringify(cats));
+  } catch {}
+};
+
+const isDevCategory = (cat) => {
+  if (!cat) return false;
+  const c = cat.toLowerCase();
+  return c === 'frontend' || c === 'uiux' || c.includes('front-end') || c.includes('frontend') || c.includes('ui/ux') || c.includes('uiux');
+};
+
+const isCertCategory = (cat) => {
+  if (!cat) return false;
+  const c = cat.toLowerCase();
+  return c === 'certificate' || c === 'sertifikat' || c.includes('certificate') || c.includes('sertifikat');
+};
+
+const FormFields = ({ form, setForm, isEdit = false, imageCount = 0, categoriesList = [], onManageCategories }) => {
+  const isDevProject = isDevCategory(form.category);
+  const isCert = isCertCategory(form.category);
+
+  const [isCustomMode, setIsCustomMode] = useState(() => {
+    if (!form.category) return false;
+    return !categoriesList.some(c => c.toLowerCase() === form.category.toLowerCase());
+  });
+
+  const [customInputValue, setCustomInputValue] = useState(() => {
+    if (!form.category) return '';
+    const exists = categoriesList.some(c => c.toLowerCase() === form.category.toLowerCase());
+    return exists ? '' : form.category;
+  });
+
+  useEffect(() => {
+    if (!form.category) return;
+    const exists = categoriesList.some(c => c.toLowerCase() === form.category.toLowerCase());
+    if (!exists) {
+      setIsCustomMode(true);
+      setCustomInputValue(form.category);
+    } else {
+      setIsCustomMode(false);
+      setCustomInputValue('');
+    }
+  }, [form.category, categoriesList]);
+
+  const handleSelectCategory = (e) => {
+    const val = e.target.value;
+    if (val === '__custom__') {
+      setIsCustomMode(true);
+      setForm({ ...form, category: customInputValue || '' });
+    } else {
+      setIsCustomMode(false);
+      setForm({ ...form, category: val });
+    }
+  };
+
+  const handleCustomInputChange = (e) => {
+    const val = e.target.value;
+    setCustomInputValue(val);
+    setForm({ ...form, category: val });
+  };
+
+  const getSelectValue = () => {
+    if (isCustomMode) return '__custom__';
+    const match = categoriesList.find(c => c.toLowerCase() === (form.category || '').toLowerCase());
+    if (match) return match;
+    return form.category || (categoriesList[0] || 'Illustration');
+  };
+
   return (
     <>
       <div>
-        <label className={labelClass}>{form.category === 'certificate' ? 'Nama Sertifikat' : 'Judul'}</label>
-        <input type="text" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass} placeholder={form.category === 'certificate' ? "Contoh: Dicoding Front-End Developer" : "Nama project"} />
+        <label className={labelClass}>{isCert ? 'Nama Sertifikat' : 'Judul'}</label>
+        <input type="text" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass} placeholder={isCert ? "Contoh: Dicoding Front-End Developer" : "Nama project"} />
       </div>
       <div>
-        <label className={labelClass}>Kategori</label>
-        <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inputClass + " appearance-none"}>
-          <option value="illustration">Illustration</option>
-          <option value="logo">Logo</option>
-          <option value="vector">Vector</option>
-          <option value="poster">Poster</option>
-          <option value="banner">Banner</option>
-          <option value="frontend">Front-End Project</option>
-          <option value="uiux">UI/UX Project</option>
-          <option value="certificate">Sertifikat</option>
+        <div className="flex items-center justify-between mb-2">
+          <label className={labelClass + " mb-0"}>Kategori</label>
+          {onManageCategories && (
+            <button
+              type="button"
+              onClick={onManageCategories}
+              className="text-xs text-[#0071e3] hover:underline font-semibold flex items-center gap-1"
+            >
+              <Tags size={12} /> Kelola Kategori
+            </button>
+          )}
+        </div>
+        <select
+          value={getSelectValue()}
+          onChange={handleSelectCategory}
+          className={inputClass + " appearance-none cursor-pointer"}
+        >
+          {categoriesList.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+          <option value="__custom__">+ Tambah Kategori Baru...</option>
         </select>
+
+        {isCustomMode && (
+          <div className="mt-2.5">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">
+                Nama Kategori Baru
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCustomMode(false);
+                  setCustomInputValue('');
+                  setForm({ ...form, category: categoriesList[0] || 'Illustration' });
+                }}
+                className="text-xs text-[#0071e3] hover:underline"
+              >
+                Batal (Pilih Dari Daftar)
+              </button>
+            </div>
+            <input
+              type="text"
+              required
+              autoFocus
+              value={customInputValue}
+              onChange={handleCustomInputChange}
+              placeholder="Contoh: 3D Art, Motion Graphic, Packaging..."
+              className={inputClass}
+            />
+          </div>
+        )}
       </div>
       <div className="flex items-center gap-2 mt-2 mb-4">
         <input
@@ -54,10 +189,10 @@ const FormFields = ({ form, setForm, isEdit = false, imageCount = 0 }) => {
         <input type="text" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} className={inputClass} placeholder="React, Figma, Digital Art" />
       </div>
       <div>
-        <label className={labelClass}>{form.category === 'certificate' ? 'Lembaga Penerbit' : 'Deskripsi'}</label>
-        <textarea rows="3" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputClass + " resize-none"} placeholder={form.category === 'certificate' ? "Contoh: Dicoding Academy" : "Jelaskan singkat tentang project ini..."} />
+        <label className={labelClass}>{isCert ? 'Lembaga Penerbit' : 'Deskripsi'}</label>
+        <textarea rows="3" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputClass + " resize-none"} placeholder={isCert ? "Contoh: Dicoding Academy" : "Jelaskan singkat tentang project ini..."} />
       </div>
-      {form.category === 'certificate' && (
+      {isCert && (
         <div>
           <label className={labelClass}>Tahun</label>
           <input type="text" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} className={inputClass} placeholder="Contoh: 2024" />
@@ -105,6 +240,116 @@ const FormFields = ({ form, setForm, isEdit = false, imageCount = 0 }) => {
         </>
       )}
     </>
+  );
+};
+
+
+const CategoryFilterDropdown = ({ categories, projects, selected, onSelect }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('pointerdown', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('pointerdown', handleOutsideClick);
+    };
+  }, [isOpen]);
+
+  const selectedCount = selected === 'all'
+    ? projects.length
+    : projects.filter(p => (p.category || '').toLowerCase() === selected.toLowerCase()).length;
+
+  const currentLabel = selected === 'all' ? 'Semua Kategori' : selected;
+
+  return (
+    <div className="relative shrink-0" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center gap-2.5 px-4 py-2.5 bg-white border rounded-xl text-sm font-semibold transition-all shadow-sm ${
+          isOpen
+            ? 'border-[#0071e3] ring-2 ring-[#0071e3]/20 text-[#1d1d1f]'
+            : selected !== 'all'
+            ? 'border-[#0071e3] text-[#0071e3]'
+            : 'border-[#d2d2d7] hover:border-[#0071e3] text-[#1d1d1f]'
+        }`}
+      >
+        <Filter size={15} className={selected !== 'all' ? 'text-[#0071e3]' : 'text-[#86868b]'} />
+        <span className="truncate max-w-[130px] sm:max-w-[180px]">{currentLabel}</span>
+        <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+          selected !== 'all' ? 'bg-[#0071e3]/10 text-[#0071e3]' : 'bg-[#f5f5f7] text-[#86868b]'
+        }`}>
+          {selectedCount}
+        </span>
+        <ChevronDown
+          size={15}
+          className={`text-[#86868b] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-2 z-50 min-w-[230px] max-w-[280px] bg-white/95 backdrop-blur-xl border border-[#d2d2d7]/80 rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.12)] p-1.5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="max-h-[300px] overflow-y-auto minimal-scrollbar space-y-0.5">
+            <button
+              type="button"
+              onClick={() => { onSelect('all'); setIsOpen(false); }}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                selected === 'all'
+                  ? 'bg-[#0071e3] text-white shadow-sm'
+                  : 'text-[#1d1d1f] hover:bg-[#f5f5f7]'
+              }`}
+            >
+              <div className="flex items-center gap-2 truncate">
+                {selected === 'all' && <Check size={14} className="shrink-0" />}
+                <span className="truncate">Semua Kategori</span>
+              </div>
+              <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-2 ${
+                selected === 'all' ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#86868b]'
+              }`}>
+                {projects.length}
+              </span>
+            </button>
+
+            <div className="h-px bg-[#f5f5f7] my-1" />
+
+            {categories.map((cat) => {
+              const count = projects.filter(p => (p.category || '').toLowerCase() === cat.toLowerCase()).length;
+              const isSelected = selected.toLowerCase() === cat.toLowerCase();
+
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => { onSelect(cat); setIsOpen(false); }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                    isSelected
+                      ? 'bg-[#0071e3] text-white shadow-sm'
+                      : 'text-[#1d1d1f] hover:bg-[#f5f5f7]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    {isSelected && <Check size={14} className="shrink-0" />}
+                    <span className="truncate">{cat}</span>
+                  </div>
+                  <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold shrink-0 ml-2 ${
+                    isSelected ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#86868b]'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -241,11 +486,205 @@ const AdminDashboard = () => {
   const [projectToDelete, setProjectToDelete] = useState(null);
   const [gridSortType, setGridSortType] = useState('upload');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [previewImage, setPreviewImage] = useState(null);
   const [isFeaturedSortOpen, setIsFeaturedSortOpen] = useState(false);
   const [featuredProjects, setFeaturedProjects] = useState([]);
   const navigate = useNavigate();
+
+  const [categoriesList, setCategoriesList] = useState(() => {
+    const saved = getStoredCategories();
+    return saved && saved.length > 0 ? saved : INITIAL_DEFAULT_CATEGORIES;
+  });
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCategoryInput, setNewCategoryInput] = useState('');
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [returnToModal, setReturnToModal] = useState(null);
+
+  const handleOpenCategoryManager = (fromModal = null) => {
+    if (fromModal === 'edit') {
+      setIsEditModalOpen(false);
+      setReturnToModal('edit');
+    } else if (fromModal === 'upload') {
+      setIsUploadModalOpen(false);
+      setReturnToModal('upload');
+    } else {
+      setReturnToModal(null);
+    }
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleCloseCategoryModal = () => {
+    setIsCategoryModalOpen(false);
+    setEditingCategory(null);
+    if (returnToModal === 'edit') {
+      setIsEditModalOpen(true);
+      setReturnToModal(null);
+    } else if (returnToModal === 'upload') {
+      setIsUploadModalOpen(true);
+      setReturnToModal(null);
+    }
+  };
+
+  useEffect(() => {
+    if (projects.length === 0) return;
+
+    // 1. Migrasi otomatis branding -> Logo & frontend -> Front-End Project jika masih ada di DB
+    const hasBranding = projects.some(p => (p.category || '').toLowerCase() === 'branding');
+    const hasFrontend = projects.some(p => {
+      const c = (p.category || '').toLowerCase();
+      return c === 'frontend' || c === 'front end';
+    });
+
+    if (hasBranding) {
+      renameCategory('branding', 'Logo').catch(console.error);
+    }
+    if (hasFrontend) {
+      renameCategory('frontend', 'Front-End Project').catch(console.error);
+    }
+
+    // 2. Normalisasi state lokal
+    setProjects(prev => prev.map(p => {
+      const lower = (p.category || '').toLowerCase().trim();
+      if (lower === 'branding') return { ...p, category: 'Logo' };
+      if (lower === 'frontend' || lower === 'front end') return { ...p, category: 'Front-End Project' };
+      return p;
+    }));
+
+    // 3. Hanya simpan kategori yang benar-benar dipakai oleh proyek (hapus yang tidak terpakai)
+    setCategoriesList(prev => {
+      const activeCategoryMap = new Map();
+      projects.forEach(p => {
+        if (!p.category) return;
+        const raw = p.category.trim();
+        const lower = raw.toLowerCase();
+        let canonical = raw.charAt(0).toUpperCase() + raw.slice(1);
+        if (lower === 'branding' || lower === 'logo') canonical = 'Logo';
+        if (lower === 'frontend' || lower === 'front end' || lower === 'front-end project') canonical = 'Front-End Project';
+        if (lower === 'uiux' || lower === 'ui/ux project') canonical = 'UI/UX Project';
+        
+        if (!activeCategoryMap.has(canonical.toLowerCase())) {
+          activeCategoryMap.set(canonical.toLowerCase(), canonical);
+        }
+      });
+
+      // Tetap sediakan kategori yang sedang dibuat manual jika ada
+      prev.forEach(c => {
+        if (c && !activeCategoryMap.has(c.toLowerCase())) {
+          // Hanya pertahankan jika belum ada proyek sama sekali
+        }
+      });
+
+      const activeList = Array.from(activeCategoryMap.values()).sort((a, b) => a.localeCompare(b));
+      if (activeList.length > 0) {
+        setStoredCategories(activeList);
+        return activeList;
+      }
+      return prev;
+    });
+  }, [projects.length]);
+
+  const handleAddCategory = () => {
+    const val = newCategoryInput.trim();
+    if (!val) { toast.error('Masukkan nama kategori.'); return; }
+    if (categoriesList.some(c => c.toLowerCase() === val.toLowerCase())) {
+      toast.error(`Kategori "${val}" sudah ada.`);
+      return;
+    }
+    const next = [...categoriesList, val];
+    setCategoriesList(next);
+    setStoredCategories(next);
+    setNewCategoryInput('');
+    toast.success(`Kategori "${val}" berhasil ditambahkan.`);
+  };
+
+  const handleSaveEditCategory = async () => {
+    if (!editingCategory) return;
+    const oldName = editingCategory.name;
+    const newName = editingCategory.value.trim();
+    if (!newName) { toast.error('Nama kategori tidak boleh kosong.'); return; }
+    if (newName.toLowerCase() === oldName.toLowerCase()) { setEditingCategory(null); return; }
+    if (categoriesList.some(c => c.toLowerCase() === newName.toLowerCase() && c.toLowerCase() !== oldName.toLowerCase())) {
+      toast.error(`Kategori "${newName}" sudah ada.`);
+      return;
+    }
+
+    try {
+      const count = projects.filter(p => (p.category || '').toLowerCase() === oldName.toLowerCase()).length;
+      if (count > 0) {
+        await renameCategory(oldName, newName);
+      }
+
+      const updated = categoriesList.map(c => c.toLowerCase() === oldName.toLowerCase() ? newName : c);
+      setCategoriesList(updated);
+      setStoredCategories(updated);
+
+      setProjects(prev => prev.map(p => {
+        if ((p.category || '').toLowerCase() === oldName.toLowerCase()) {
+          return { ...p, category: newName };
+        }
+        return p;
+      }));
+
+      if (uploadForm.category?.toLowerCase() === oldName.toLowerCase()) {
+        setUploadForm(prev => ({ ...prev, category: newName }));
+      }
+      if (editForm.category?.toLowerCase() === oldName.toLowerCase()) {
+        setEditForm(prev => ({ ...prev, category: newName }));
+      }
+
+      toast.success(`Kategori "${oldName}" diubah menjadi "${newName}".`);
+      setEditingCategory(null);
+    } catch (err) {
+      toast.error(err.message || 'Gagal mengubah nama kategori.');
+    }
+  };
+
+  const promptDeleteCategory = (cat, count) => {
+    if (categoriesList.length <= 1) {
+      toast.error('Minimal harus ada satu kategori tersisa.');
+      return;
+    }
+    setCategoryToDelete({ name: cat, count });
+  };
+
+  const executeDeleteCategory = async () => {
+    if (!categoryToDelete) return;
+    const catName = categoryToDelete.name;
+    const count = categoryToDelete.count;
+    const fallback = categoriesList.find(c => c.toLowerCase() !== catName.toLowerCase()) || 'Illustration';
+
+    try {
+      if (count > 0) {
+        await deleteCategory(catName, fallback);
+      }
+
+      const updated = categoriesList.filter(c => c.toLowerCase() !== catName.toLowerCase());
+      setCategoriesList(updated);
+      setStoredCategories(updated);
+
+      setProjects(prev => prev.map(p => {
+        if ((p.category || '').toLowerCase() === catName.toLowerCase()) {
+          return { ...p, category: fallback };
+        }
+        return p;
+      }));
+
+      if (uploadForm.category?.toLowerCase() === catName.toLowerCase()) {
+        setUploadForm(prev => ({ ...prev, category: fallback }));
+      }
+      if (editForm.category?.toLowerCase() === catName.toLowerCase()) {
+        setEditForm(prev => ({ ...prev, category: fallback }));
+      }
+
+      toast.success(`Kategori "${catName}" berhasil dihapus.`);
+    } catch (err) {
+      toast.error(err.message || 'Gagal menghapus kategori.');
+    } finally {
+      setCategoryToDelete(null);
+    }
+  };
 
   const openFeaturedSort = () => {
     const featured = projects.filter(p => p.is_featured || p.isFeatured);
@@ -360,7 +799,14 @@ const AdminDashboard = () => {
     return unsubscribe;
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+    }
     localStorage.removeItem('admin_auth');
     navigate('/zaqlyneroth');
   };
@@ -502,9 +948,11 @@ const AdminDashboard = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
     if (imageFiles.length === 0) { toast.error('Pilih gambar terlebih dahulu.'); return; }
+    if (!uploadForm.title?.trim()) { toast.error('Judul wajib diisi.'); return; }
+    if (!uploadForm.category?.trim()) { toast.error('Kategori wajib diisi.'); return; }
     setLoading(true);
     try {
-      const isDevProject = uploadForm.category === 'frontend' || uploadForm.category === 'uiux';
+      const isDevProject = isDevCategory(uploadForm.category);
       const uploadedUrls = [];
 
       for (let i = 0; i < imageFiles.length; i++) {
@@ -523,9 +971,9 @@ const AdminDashboard = () => {
       const parsedTags = uploadForm.tags.split(',').map(t => t.trim()).filter(Boolean);
 
       const projectData = {
-        title: uploadForm.title,
-        category: uploadForm.category,
-        description: uploadForm.category === 'certificate' && uploadForm.year ? `${uploadForm.description} - ${uploadForm.year}` : uploadForm.description,
+        title: uploadForm.title.trim(),
+        category: uploadForm.category.trim(),
+        description: isCertCategory(uploadForm.category) && uploadForm.year ? `${uploadForm.description} - ${uploadForm.year}` : uploadForm.description,
         tags: parsedTags,
         image_url: publicUrl,
         isFeatured: uploadForm.isFeatured,
@@ -537,6 +985,13 @@ const AdminDashboard = () => {
         projectData.githubUrl = uploadForm.githubUrl;
       }
       await createProject(projectData);
+
+      const uploadCatTrim = uploadForm.category.trim();
+      if (uploadCatTrim && !categoriesList.some(c => c.toLowerCase() === uploadCatTrim.toLowerCase())) {
+        const next = [...categoriesList, uploadCatTrim];
+        setCategoriesList(next);
+        setStoredCategories(next);
+      }
 
       const newData = await fetchProjects();
       setProjects(newData);
@@ -553,14 +1008,16 @@ const AdminDashboard = () => {
   // Update
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!editForm.title?.trim()) { toast.error('Judul wajib diisi.'); return; }
+    if (!editForm.category?.trim()) { toast.error('Kategori wajib diisi.'); return; }
     setLoading(true);
     try {
-      const isDevProject = editForm.category === 'frontend' || editForm.category === 'uiux';
+      const isDevProject = isDevCategory(editForm.category);
       const parsedTags = editForm.tags.split(',').map(t => t.trim()).filter(Boolean);
       const projectData = {
-        title: editForm.title,
-        category: editForm.category,
-        description: editForm.category === 'certificate' && editForm.year ? `${editForm.description} - ${editForm.year}` : editForm.description,
+        title: editForm.title.trim(),
+        category: editForm.category.trim(),
+        description: isCertCategory(editForm.category) && editForm.year ? `${editForm.description} - ${editForm.year}` : editForm.description,
         tags: parsedTags,
         techStack: editForm.techStack ? editForm.techStack.split(',').map(t => t.trim()).filter(Boolean) : [],
         liveUrl: editForm.liveUrl,
@@ -587,6 +1044,13 @@ const AdminDashboard = () => {
       projectData.image_url = finalUrls.join(',');
 
       await updateProject(editingId, projectData);
+
+      const editCatTrim = editForm.category.trim();
+      if (editCatTrim && !categoriesList.some(c => c.toLowerCase() === editCatTrim.toLowerCase())) {
+        const next = [...categoriesList, editCatTrim];
+        setCategoriesList(next);
+        setStoredCategories(next);
+      }
 
       const newData = await fetchProjects();
       setProjects(newData);
@@ -681,15 +1145,9 @@ const AdminDashboard = () => {
 
   const filtered = projects.filter(p => {
     const matchesSearch = !searchQuery || p.title?.toLowerCase().includes(searchQuery.toLowerCase());
-    let matchesTab = true;
-    if (activeTab === 'it') {
-      matchesTab = p.category === 'frontend' || p.category === 'uiux';
-    } else if (activeTab === 'visual') {
-      matchesTab = p.category !== 'frontend' && p.category !== 'uiux' && p.category !== 'certificate';
-    } else if (activeTab === 'certificate') {
-      matchesTab = p.category === 'certificate';
-    }
-    return matchesSearch && matchesTab;
+    const matchesCategory = selectedCategory === 'all' || 
+      (p.category || '').toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesCategory;
   });
 
 
@@ -715,48 +1173,49 @@ const AdminDashboard = () => {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <h2 className="text-2xl font-bold text-[#1d1d1f] tracking-tight">
-              Proyek <span className="text-[#86868b] font-normal text-lg">({filtered.length})</span>
-            </h2>
-            <div className="flex bg-[#f5f5f7] p-1 rounded-xl shadow-sm overflow-x-auto hide-scrollbar">
-              <button onClick={() => setActiveTab('all')} className={`px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeTab === 'all' ? 'bg-white text-[#1d1d1f] shadow' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
-                Semua
-              </button>
-              <button onClick={() => setActiveTab('it')} className={`px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeTab === 'it' ? 'bg-white text-[#1d1d1f] shadow' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
-                IT Development
-              </button>
-              <button onClick={() => setActiveTab('visual')} className={`px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeTab === 'visual' ? 'bg-white text-[#1d1d1f] shadow' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
-                Karya Visual
-              </button>
-              <button onClick={() => setActiveTab('certificate')} className={`px-4 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-all ${activeTab === 'certificate' ? 'bg-white text-[#1d1d1f] shadow' : 'text-[#86868b] hover:text-[#1d1d1f]'}`}>
-                Sertifikat
-              </button>
+          <div className="flex flex-col gap-6 mb-8">
+            {/* Header: Judul & Action Buttons */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="text-2xl font-bold text-[#1d1d1f] tracking-tight">
+                Proyek <span className="text-[#86868b] font-normal text-lg">({filtered.length})</span>
+              </h2>
+
+              <div className="flex items-center gap-3 flex-wrap">
+                <button onClick={() => handleOpenCategoryManager(null)} className="px-4 py-2.5 bg-white border border-[#d2d2d7] hover:border-[#0071e3] text-[#1d1d1f] hover:text-[#0071e3] font-semibold rounded-xl transition-all shadow-sm flex items-center gap-2 text-sm whitespace-nowrap">
+                  <Tags size={17} />
+                  Kelola Kategori
+                </button>
+                <button onClick={openFeaturedSort} className="px-4 py-2.5 bg-white border border-[#d2d2d7] hover:border-[#0071e3] text-[#1d1d1f] hover:text-[#0071e3] font-semibold rounded-xl transition-all shadow-sm flex items-center gap-2 text-sm whitespace-nowrap">
+                  <LayoutGrid size={17} />
+                  Urutkan Featured
+                </button>
+                <button onClick={() => setIsUploadModalOpen(true)} className="px-5 py-2.5 bg-[#1d1d1f] hover:bg-black text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-xl flex items-center gap-2 text-sm whitespace-nowrap">
+                  <Plus size={17} />
+                  Tambah Proyek
+                </button>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4 mb-8">
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="relative w-full max-w-md">
+
+            {/* Search Bar & Custom Category Dropdown */}
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868b]" size={18} />
                 <input
                   type="text"
-                  placeholder="Cari proyek..."
+                  placeholder="Cari proyek berdasarkan judul..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-11 pr-4 py-2.5 bg-white border border-[#d2d2d7] rounded-xl text-[#1d1d1f] text-sm outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all placeholder:text-[#86868b]"
                 />
               </div>
-              <div className="flex gap-3">
-                <button onClick={openFeaturedSort} className="px-5 py-2.5 bg-white border border-[#d2d2d7] hover:border-[#0071e3] text-[#1d1d1f] hover:text-[#0071e3] font-semibold rounded-xl transition-all shadow-sm flex items-center gap-2 text-sm whitespace-nowrap">
-                  <LayoutGrid size={18} />
-                  Urutkan Featured
-                </button>
-                <button onClick={() => setIsUploadModalOpen(true)} className="px-6 py-2.5 bg-[#1d1d1f] hover:bg-black text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-xl flex items-center gap-2 text-sm whitespace-nowrap">
-                  <Plus size={18} />
-                  Tambah Proyek
-                </button>
-              </div>
+
+              {/* Custom Apple-style Category Dropdown */}
+              <CategoryFilterDropdown
+                categories={categoriesList}
+                projects={projects}
+                selected={selectedCategory}
+                onSelect={setSelectedCategory}
+              />
             </div>
           </div>
 
@@ -812,7 +1271,26 @@ const AdminDashboard = () => {
                 ))}
                 {filtered.length === 0 && (
                   <div className="col-span-full py-20 text-center bg-white border-2 border-dashed border-[#d2d2d7] rounded-3xl">
-                    <p className="text-[#86868b] text-sm">{searchQuery ? 'Tidak ada yang cocok.' : 'Belum ada project.'}</p>
+                    <div className="text-center">
+                      <p className="text-[#86868b] text-sm">
+                        {searchQuery || selectedCategory !== 'all' ? (
+                          <>
+                            Tidak ada proyek {selectedCategory !== 'all' ? `di kategori "${selectedCategory}"` : ''} {searchQuery ? `dengan kata kunci "${searchQuery}"` : ''}.
+                          </>
+                        ) : (
+                          'Belum ada project.'
+                        )}
+                      </p>
+                      {(searchQuery || selectedCategory !== 'all') && (
+                        <button
+                          type="button"
+                          onClick={() => { setSelectedCategory('all'); setSearchQuery(''); }}
+                          className="mt-3 px-4 py-1.5 bg-[#f5f5f7] hover:bg-[#e8e8ed] text-[#1d1d1f] font-semibold text-xs rounded-lg transition-colors"
+                        >
+                          Reset Filter
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </>
@@ -946,7 +1424,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                <FormFields form={uploadForm} setForm={setUploadForm} imageCount={imageFiles.length} />
+                <FormFields form={uploadForm} setForm={setUploadForm} imageCount={imageFiles.length} categoriesList={categoriesList} onManageCategories={() => handleOpenCategoryManager('upload')} />
 
                 <div className="flex gap-3 pt-2">
                   <button disabled={loading} type="submit" className="flex-1 bg-[#0071e3] hover:bg-[#0077ED] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm">
@@ -1034,7 +1512,215 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* ===== EDIT MODAL ===== */}
+
+      {/* ===== CATEGORY MANAGER MODAL ===== */}
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={handleCloseCategoryModal}>
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+          <div
+            className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 border-b border-[#f5f5f7]">
+              <div>
+                <h2 className="text-xl font-bold text-[#1d1d1f] flex items-center gap-2 tracking-tight">
+                  <Tags size={18} className="text-[#0071e3]" />
+                  Kelola Kategori
+                </h2>
+                <p className="text-xs text-[#86868b] mt-0.5">Ubah nama, tambah, atau hapus kategori apapun</p>
+              </div>
+              <button onClick={handleCloseCategoryModal} className="p-2 text-[#86868b] hover:text-[#1d1d1f] hover:bg-[#f5f5f7] rounded-xl transition-all">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto minimal-scrollbar flex-grow space-y-6">
+              {/* Tambah Kategori Baru */}
+              <div>
+                <label className="block text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-2">
+                  Tambah Kategori Baru
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newCategoryInput}
+                    onChange={(e) => setNewCategoryInput(e.target.value)}
+                    placeholder="Contoh: 3D Art, Mural, Packaging..."
+                    className={inputClass}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCategory(); } }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddCategory}
+                    className="px-5 bg-[#1d1d1f] hover:bg-black text-white text-sm font-semibold rounded-xl whitespace-nowrap transition-all flex items-center gap-1.5"
+                  >
+                    <Plus size={16} /> Tambah
+                  </button>
+                </div>
+              </div>
+
+              {/* List Semua Kategori */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-xs font-semibold text-[#86868b] uppercase tracking-wider">
+                    Daftar Semua Kategori ({categoriesList.length})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const inUse = categoriesList.filter(cat => 
+                        projects.some(p => (p.category || '').toLowerCase() === cat.toLowerCase())
+                      );
+                      const cleaned = inUse.length > 0 ? inUse : categoriesList.slice(0, 1);
+                      setCategoriesList(cleaned);
+                      setStoredCategories(cleaned);
+                      toast.success('Kategori yang tidak digunakan berhasil dibersihkan.');
+                    }}
+                    className="text-xs text-[#0071e3] hover:underline font-semibold"
+                  >
+                    Bersihkan Yang Tidak Dipakai
+                  </button>
+                </div>
+
+                {categoriesList.length === 0 ? (
+                  <div className="text-center py-8 bg-[#f5f5f7] rounded-2xl border border-dashed border-[#d2d2d7]">
+                    <p className="text-sm text-[#86868b]">Belum ada kategori tersimpan.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {categoriesList.map((cat) => {
+                      const count = projects.filter(p => (p.category || '').toLowerCase() === cat.toLowerCase()).length;
+                      const isEditing = editingCategory?.name === cat;
+
+                      return (
+                        <div
+                          key={cat}
+                          className="flex items-center justify-between p-3.5 bg-[#f5f5f7] border border-[#d2d2d7]/60 rounded-xl gap-2"
+                        >
+                          {isEditing ? (
+                            <div className="flex items-center gap-2 flex-1">
+                              <input
+                                type="text"
+                                value={editingCategory.value}
+                                onChange={(e) => setEditingCategory({ ...editingCategory, value: e.target.value })}
+                                className="flex-1 px-3 py-1.5 bg-white border border-[#0071e3] rounded-lg text-sm outline-none font-medium"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') { e.preventDefault(); handleSaveEditCategory(); }
+                                  if (e.key === 'Escape') { setEditingCategory(null); }
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={handleSaveEditCategory}
+                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                title="Simpan"
+                              >
+                                <Check size={16} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingCategory(null)}
+                                className="p-2 text-[#86868b] hover:bg-black/5 rounded-lg transition-colors"
+                                title="Batal"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-sm text-[#1d1d1f] truncate">{cat}</span>
+                                  <span className="text-[11px] text-[#86868b] bg-white px-2 py-0.5 rounded-full border border-[#d2d2d7]/50 font-medium">
+                                    {count} proyek
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingCategory({ name: cat, value: cat })}
+                                  className="p-2 text-[#86868b] hover:text-[#0071e3] hover:bg-white rounded-lg transition-colors"
+                                  title="Edit Nama Kategori"
+                                >
+                                  <Edit size={16} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => promptDeleteCategory(cat, count)}
+                                  className="p-2 text-[#86868b] hover:text-red-500 hover:bg-white rounded-lg transition-colors"
+                                  title="Hapus Kategori"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-[#f5f5f7] border-t border-[#d2d2d7]/50 flex justify-end">
+              <button
+                type="button"
+                onClick={handleCloseCategoryModal}
+                className="px-6 py-2.5 bg-[#1d1d1f] hover:bg-black text-white text-sm font-semibold rounded-xl transition-all shadow-sm"
+              >
+                {returnToModal ? 'Selesai & Kembali' : 'Tutup'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CATEGORY DELETE CONFIRMATION MODAL (NO BROWSER ALERT) */}
+      {categoryToDelete && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setCategoryToDelete(null)}>
+          <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-red-100">
+                <Trash2 size={28} />
+              </div>
+              <h3 className="text-xl font-bold text-[#1d1d1f] mb-2">Hapus Kategori?</h3>
+              <p className="text-sm text-[#86868b] leading-relaxed">
+                Hapus kategori <span className="font-bold text-[#1d1d1f]">"{categoryToDelete.name}"</span>?
+                {categoryToDelete.count > 0 ? (
+                  <span className="block text-amber-600 font-medium text-xs mt-2 bg-amber-50 py-1.5 px-3 rounded-lg border border-amber-200/60">
+                    ⚠️ {categoryToDelete.count} proyek terkait akan dialihkan ke kategori lain agar tidak hilang.
+                  </span>
+                ) : (
+                  <span className="block text-[#86868b] text-xs mt-1">
+                    Kategori ini tidak sedang digunakan oleh proyek manapun.
+                  </span>
+                )}
+              </p>
+            </div>
+            <div className="flex border-t border-[#f5f5f7]">
+              <button
+                type="button"
+                onClick={() => setCategoryToDelete(null)}
+                className="flex-1 py-4 text-sm font-semibold text-[#86868b] hover:bg-[#f5f5f7] hover:text-[#1d1d1f] transition-colors border-r border-[#f5f5f7]"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={executeDeleteCategory}
+                className="flex-1 py-4 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors"
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+{/* ===== EDIT MODAL ===== */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={handleCancelEdit}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
@@ -1163,7 +1849,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                <FormFields form={editForm} setForm={setEditForm} isEdit imageCount={editImages.length} />
+                <FormFields form={editForm} setForm={setEditForm} isEdit imageCount={editImages.length} categoriesList={categoriesList} onManageCategories={() => handleOpenCategoryManager('edit')} />
                 <div className="flex gap-3 pt-2">
                   <button disabled={loading} type="submit" className="flex-1 bg-[#0071e3] hover:bg-[#0077ED] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-sm">
                     {loading ? <Loader2 className="animate-spin" size={18} /> : 'Simpan'}

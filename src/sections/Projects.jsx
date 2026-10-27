@@ -79,13 +79,23 @@ const Projects = () => {
     setIsModalOpen(true);
   };
 
-  const itCategories = ['frontend', 'uiux'];
+  const isDevCategory = (cat) => {
+    if (!cat) return false;
+    const c = cat.toLowerCase();
+    return c === 'frontend' || c === 'uiux' || c.includes('front-end') || c.includes('frontend') || c.includes('ui/ux') || c.includes('uiux');
+  };
+
+  const isCertCategory = (cat) => {
+    if (!cat) return false;
+    const c = cat.toLowerCase();
+    return c === 'certificate' || c === 'sertifikat' || c.includes('certificate') || c.includes('sertifikat');
+  };
 
   // IT Projects (hanya ambil yang di-feature admin, maksimal 5)
-  const itProjects = dbProjects.filter(p => itCategories.includes(p.category) && p.isFeatured).slice(0, 5);
+  const itProjects = dbProjects.filter(p => isDevCategory(p.category) && p.isFeatured).slice(0, 5);
 
   // Design Projects (hanya ambil yang di-feature admin, maksimal 6)
-  const designProjects = dbProjects.filter(p => !itCategories.includes(p.category) && p.category !== 'certificate' && p.isFeatured).slice(0, 6);
+  const designProjects = dbProjects.filter(p => !isDevCategory(p.category) && !isCertCategory(p.category) && p.isFeatured).slice(0, 6);
 
   return (
     <div className="bg-surface w-full flex flex-col">
