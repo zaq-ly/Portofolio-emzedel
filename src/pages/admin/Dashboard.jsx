@@ -823,16 +823,7 @@ const AdminDashboard = () => {
     navigate('/');
   };
 
-  // Otomatis logout ketika keluar/berpindah dari halaman admin
-  useEffect(() => {
-    return () => {
-      if (supabase) {
-        supabase.auth.signOut().catch(() => {});
-      }
-      localStorage.removeItem('admin_auth');
-      sessionStorage.removeItem('admin_auth');
-    };
-  }, []);
+
 
   const removeImage = (index, isEdit) => {
     if (isEdit) {

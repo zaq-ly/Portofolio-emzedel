@@ -12,13 +12,19 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Selalu paksa reset sesi saat membuka halaman login
     if (supabase) {
-      supabase.auth.signOut().catch(() => {});
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          navigate('/zaqlyneroth/dashboard', { replace: true });
+        }
+      });
+    } else {
+      const isAuth = sessionStorage.getItem('admin_auth') === 'true' || localStorage.getItem('admin_auth') === 'true';
+      if (isAuth) {
+        navigate('/zaqlyneroth/dashboard', { replace: true });
+      }
     }
-    localStorage.removeItem('admin_auth');
-    sessionStorage.removeItem('admin_auth');
-  }, []);
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
