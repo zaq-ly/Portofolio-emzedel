@@ -808,8 +808,31 @@ const AdminDashboard = () => {
       }
     }
     localStorage.removeItem('admin_auth');
+    sessionStorage.removeItem('admin_auth');
     navigate('/zaqlyneroth');
   };
+
+  const handleBackToHome = async () => {
+    if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch {}
+    }
+    localStorage.removeItem('admin_auth');
+    sessionStorage.removeItem('admin_auth');
+    navigate('/');
+  };
+
+  // Otomatis logout ketika keluar/berpindah dari halaman admin
+  useEffect(() => {
+    return () => {
+      if (supabase) {
+        supabase.auth.signOut().catch(() => {});
+      }
+      localStorage.removeItem('admin_auth');
+      sessionStorage.removeItem('admin_auth');
+    };
+  }, []);
 
   const removeImage = (index, isEdit) => {
     if (isEdit) {
@@ -1158,7 +1181,7 @@ const AdminDashboard = () => {
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-[#d2d2d7]/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/')} className="text-[#0071e3] hover:underline text-sm font-medium flex items-center gap-1">
+            <button onClick={handleBackToHome} className="text-[#0071e3] hover:underline text-sm font-medium flex items-center gap-1">
               <ArrowLeft size={14} /> Beranda
             </button>
             <span className="text-[#d2d2d7]">|</span>

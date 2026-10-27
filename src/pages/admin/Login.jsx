@@ -12,16 +12,13 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Selalu paksa reset sesi saat membuka halaman login
     if (supabase) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-          navigate('/zaqlyneroth/dashboard');
-        }
-      });
-    } else if (localStorage.getItem('admin_auth') === 'true') {
-      navigate('/zaqlyneroth/dashboard');
+      supabase.auth.signOut().catch(() => {});
     }
-  }, [navigate]);
+    localStorage.removeItem('admin_auth');
+    sessionStorage.removeItem('admin_auth');
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
